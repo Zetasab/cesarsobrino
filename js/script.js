@@ -152,37 +152,37 @@ $(window).load(function() {
         window.location.href = 'index.html';
     });
     $('#paginawebantigua').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/paginasweb/portfolioCesarSobrino/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/websites/antiguo_portfolio/index.html");
     });
     $('#paginawebjuegos').on("click", function() {
-        window.open("https://zgamingz.000webhostapp.com/languages/es/inicio/");
+        window.open("https://extraordinary-kindness-zetap-roduction.up.railway.app/languages/es/inicio/");
     });
     $('#fullpageid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/javascript/fullpage/fullpagejv/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/js/forcescroll/fullPage.js-master/examples/simple.html");
     });
     $('#parrallaxid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/javascript/parallax/html/index.html");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/js/backgroundparallaxonscroll/html/index.html");
     });
     $('#onscrollid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/javascript/scrollactive/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/js/onscrollbg/index.html");
     });
     $('#animacionesid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/css/animaciones/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/css/animations/index.html");
     });
     $('#loadingid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/css/loading/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/css/loader/loading/index.html");
     });
     $('#socialmediaid').on("click", function() {
         window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/css/socialnetworks/");
     });
     $('#caracruzid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/juegos/caracruz/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/games/caracruz/index.html");
     });
     $('#precisionid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/juegos/preciosion/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/games/preciosion/index.html");
     });
     $('#quieresnoviaid').on("click", function() {
-        window.open("https://cesarsobrinoarribas.000webhostapp.com/Portfolio/cesar/juegos/quiereserminovia/");
+        window.open("https://zetasab.github.io/ZetaProyectos/repositories/games/quiereserminovia/index.html");
     });
 
     proyectosid = Math.floor(Math.random() * (4)) + 1;;
