@@ -141,17 +141,63 @@ setupHeroAnimation();
 const debouncedRefresh = debounce(() => ScrollTrigger.refresh(), 180);
 window.addEventListener("resize", debouncedRefresh);
 
+// Animación para el título "Sobre mí"
+gsap.from(".intro .eyebrow", {
+    y: 20,
+    autoAlpha: 0,
+    duration: 0.8,
+    ease: "power2.out",
+    scrollTrigger: {
+        trigger: ".intro",
+        start: "top 95%" // Empieza a mostrarse casi en cuanto asoma
+    }
+});
+
+// Animación para el saludo "Buenas,"
+gsap.from(".greeting", {
+    y: 60,
+    autoAlpha: 0,
+    duration: 1,
+    ease: "power2.out",
+    scrollTrigger: {
+        trigger: ".greeting",
+        start: "top 100%", // Empieza a animarse en cuanto toca el borde inferior de la pantalla
+        end: "top 50%",
+        scrub: 1
+    }
+});
+
+// Animación para los párrafos grandes (se revelan línea por línea con el scroll)
+const introParagraphs = gsap.utils.toArray(".intro-p");
+introParagraphs.forEach((p) => {
+    // Dividimos el texto en líneas usando SplitType
+    const splitText = new SplitType(p, { types: 'lines' });
+    
+    // Animamos cada línea individualmente
+    gsap.from(splitText.lines, {
+        y: 40,
+        autoAlpha: 0,
+        stagger: 0.1, // Retraso entre cada línea para el efecto cascada
+        ease: "power2.out",
+        scrollTrigger: {
+            trigger: p,
+            start: "top 100%", // Empieza a animarse en cuanto toca el borde inferior de la pantalla
+            end: "top 40%",   // Termina la animación cuando llega al 40%
+            scrub: 1          // Hace que la animación esté vinculada al scroll
+        }
+    });
+});
+
 const revealTimeline = gsap.timeline({
     defaults: { ease: "power2.out", duration: 0.8 },
     scrollTrigger: {
-        trigger: "#portfolio",
+        trigger: ".projects",
         start: "top 75%"
     }
 });
 
 revealTimeline
-    .from(".intro", { y: 40, autoAlpha: 0 })
-    .from(".projects", { y: 45, autoAlpha: 0 }, "-=0.45")
+    .from(".projects", { y: 45, autoAlpha: 0 })
     .from(".contact", { y: 45, autoAlpha: 0 }, "-=0.45");
 
 const revealCards = gsap.utils.toArray(".card");
