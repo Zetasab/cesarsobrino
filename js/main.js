@@ -34,7 +34,7 @@ const setupHeroAnimation = () => {
         scrollTrigger: {
             trigger: ".hero",
             start: "top top",
-            end: "+=250%",
+            end: "+=400%", // Increased to allow more scroll for the loading animation
             scrub: 0.5,
             pin: ".hero-stage",
             anticipatePin: 1
@@ -87,7 +87,34 @@ const setupHeroAnimation = () => {
         .to(".lid-back", {
             autoAlpha: 0,
             duration: 0.3
-        }, 1.8);
+        }, 1.8)
+
+        // 4. Loading sequence (after screen is fully open at 2.7s)
+        // Hide button, show spinner
+        .to(".btn-entrar", {
+            autoAlpha: 0,
+            duration: 0.2
+        }, 2.8)
+        .to(".spinner", {
+            autoAlpha: 1,
+            duration: 0.2
+        }, 2.8)
+        
+        // Hide spinner, show tick (after some scroll distance)
+        .to(".spinner", {
+            autoAlpha: 0,
+            duration: 0.2
+        }, 4.0)
+        .to(".tick", {
+            autoAlpha: 1,
+            duration: 0.2
+        }, 4.0)
+        
+        // Hold the tick for a moment before unpinning
+        .to(".tick", {
+            scale: 1.2,
+            duration: 0.5
+        }, 4.2);
 };
 
 setupHeroAnimation();
