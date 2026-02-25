@@ -22,7 +22,7 @@ const setupHeroAnimation = () => {
         rotateY: 0,
         rotateZ: 0,
         scale: 0.8,
-        y: 50,
+        y: 180, // Bajado un poco más por debajo del centro
         transformOrigin: "center center"
     });
     gsap.set(laptopLid, { rotateX: 0 }); // Closed flat on base
@@ -50,7 +50,7 @@ const setupHeroAnimation = () => {
         .to(laptop, {
             rotateX: 65, // Tilt base slightly more to see keyboard
             scale: 0.9,
-            y: 20,
+            y: 140, // Mantiene la posición un poco más baja al abrirse
             duration: 1
         }, 0)
 
