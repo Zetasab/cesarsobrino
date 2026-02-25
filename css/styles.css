@@ -44,8 +44,10 @@ body {
 }
 
 .laptop {
-    width: min(76vw, 880px);
-    height: min(50vw, 580px);
+    width: 76vw;
+    max-width: 880px;
+    height: 50vw;
+    max-height: 580px;
     position: relative;
     transform-style: preserve-3d;
 }
@@ -133,6 +135,7 @@ body {
     overflow: hidden;
     display: grid;
     grid-template-rows: 0.65rem 1fr;
+    transform: translateZ(0); /* Fix for Safari rendering */
 }
 
 .screen-topbar {
@@ -274,8 +277,10 @@ p {
     }
 
     .laptop {
-        width: min(95vw, 520px);
-        height: min(70vw, 390px);
+        width: 95vw;
+        max-width: 520px;
+        height: 70vw;
+        max-height: 390px;
     }
 
     .keyboard {

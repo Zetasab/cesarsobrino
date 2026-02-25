@@ -54,36 +54,40 @@ const setupHeroAnimation = () => {
             duration: 1
         }, 0)
 
-        // 2. Face the camera and zoom
+        // 2. Face the camera and expand to 100vw/100vh
         .to(laptop, {
-            rotateX: 75, // Base points mostly OUT and DOWN
-            scale: () => {
-                const scaleX = window.innerWidth / laptop.offsetWidth;
-                const scaleY = window.innerHeight / laptop.offsetHeight;
-                return Math.max(scaleX, scaleY) * 1.05; // Slight overscale to hide edges
-            },
-            y: () => {
-                // Center the screen in the viewport
-                const scale = Math.max(window.innerWidth / laptop.offsetWidth, window.innerHeight / laptop.offsetHeight) * 1.05;
-                return (laptop.offsetHeight / 2) * 1.25 * scale; 
-            },
+            rotateX: 0, // Flatten the laptop base
+            scale: 1, // Reset scale so width/height take full effect
+            width: "100vw",
+            height: "100vh",
+            maxWidth: "100vw",
+            maxHeight: "100vh",
+            y: () => window.innerHeight, // Push base down so the flipped-up lid centers on screen
             duration: 1.5
         }, 1.2)
         .to(laptopLid, {
-            rotateX: 105, // Keep it at 105 so absolute is 180 (75 + 105 = 180)
+            rotateX: 180, // Open fully flat (180deg). Since lid-front is 180deg, total is 360deg (facing camera)
             duration: 1.5
         }, 1.2)
 
-        // 3. Square off screen
+        // 3. Square off screen and hide everything else
         .to(screenWrap, {
             borderRadius: 0,
             padding: 0,
             duration: 0.5
         }, 2.2)
+        .to(".laptop-screen", {
+            borderRadius: 0,
+            duration: 0.5
+        }, 2.2)
         .to(laptopBase, {
             autoAlpha: 0,
             duration: 0.3
-        }, 1.8); // Hide base before it gets too weird
+        }, 1.8)
+        .to(".lid-back", {
+            autoAlpha: 0,
+            duration: 0.3
+        }, 1.8);
 };
 
 setupHeroAnimation();
