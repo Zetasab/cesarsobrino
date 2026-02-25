@@ -34,14 +34,17 @@ const setupHeroAnimation = () => {
         scrollTrigger: {
             trigger: ".hero",
             start: "top top",
-            end: "+=400%", // Increased to allow more scroll for the loading animation
-            scrub: 0.5,
-            pin: ".hero-stage",
-            anticipatePin: 1
+            end: "bottom bottom", // End when the bottom of .hero reaches the bottom of the viewport
+            scrub: 0.5
         }
     });
 
     timeline
+        // Hide scroll hint early
+        .to(scrollHint, {
+            autoAlpha: 0,
+            duration: 0.5
+        }, 0)
         // 1. Open the lid (Image 2)
         .to(laptopLid, {
             rotateX: 105, // Open past 90deg
@@ -110,11 +113,27 @@ const setupHeroAnimation = () => {
             duration: 0.2
         }, 4.0)
         
-        // Hold the tick for a moment before unpinning
+        // Hold the tick for a moment
         .to(".tick", {
             scale: 1.2,
             duration: 0.5
-        }, 4.2);
+        }, 4.2)
+        
+        // Hide logo and tick
+        .to(".login-container", {
+            autoAlpha: 0,
+            duration: 0.5
+        }, 4.7)
+        
+        // Turn background black
+        .to(".screen-wallpaper", {
+            autoAlpha: 0,
+            duration: 0.5
+        }, 5.2)
+        .to(".laptop-screen", {
+            backgroundColor: "#000000",
+            duration: 0.5
+        }, 5.2);
 };
 
 setupHeroAnimation();
