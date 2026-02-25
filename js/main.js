@@ -200,6 +200,60 @@ revealTimeline
     .from(".projects", { y: 45, autoAlpha: 0 })
     .from(".contact", { y: 45, autoAlpha: 0 }, "-=0.45");
 
+// Animación para el título de lenguajes (aparece antes de pinear)
+gsap.from(".languages-right .eyebrow, .languages-title", {
+    y: 30,
+    autoAlpha: 0,
+    stagger: 0.2,
+    duration: 1,
+    ease: "power2.out",
+    scrollTrigger: {
+        trigger: ".block.languages",
+        start: "top 70%"
+    }
+});
+
+// Animación para los lenguajes de programación (Pinned)
+const langItems = gsap.utils.toArray(".lang-item");
+
+// Ocultar inicialmente los lenguajes
+gsap.set(langItems, { autoAlpha: 0, y: 50 });
+
+const langTl = gsap.timeline({
+    scrollTrigger: {
+        trigger: ".block.languages",
+        start: "center center", // Pinear cuando el centro de la sección llega al centro de la pantalla
+        end: "+=2500", // Mantener pineado durante 2500px de scroll
+        pin: ".languages-layout",
+        scrub: 1
+    }
+});
+
+// Si la lista de lenguajes es más alta que la ventana, la desplazamos hacia arriba mientras hacemos scroll
+langTl.to(".languages-left", {
+    y: () => {
+        const leftHeight = document.querySelector(".languages-left").offsetHeight;
+        const windowHeight = window.innerHeight;
+        // Si es más alto que el 80% de la ventana, lo subimos para que se vea todo
+        return leftHeight > windowHeight * 0.8 ? -(leftHeight - windowHeight * 0.8) : 0;
+    },
+    ease: "none",
+    duration: langItems.length * 0.5
+}, 0);
+
+// Hacer que los lenguajes aparezcan uno por uno
+langItems.forEach((item, i) => {
+    langTl.to(item, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 1,
+        ease: "power2.out"
+    }, i * 0.5);
+});
+
+// Añadir un poco de espacio al final para que el último elemento se lea bien antes de soltar el pin
+langTl.to({}, { duration: 1 });
+
 const revealCards = gsap.utils.toArray(".card");
 revealCards.forEach((card) => {
     gsap.from(card, {
