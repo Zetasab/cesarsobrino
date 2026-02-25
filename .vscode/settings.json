@@ -1,0 +1,40 @@
+{"workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#4B0082",    // Morado oscuro
+    "titleBar.activeForeground": "#FFFFFF",
+    "titleBar.inactiveBackground": "#3A0066",  // Morado más apagado para inactivo
+    "titleBar.inactiveForeground": "#E0E0E0",
+    
+    "statusBar.background": "#5D00A1",         // Morado intenso en la barra de estado
+    "statusBar.foreground": "#FFFFFF",
+    "statusBar.noFolderBackground": "#5D00A1"
+},
+"chat.tools.terminal.autoApprove": {
+    "npm install": true,
+    "npm uninstall": true,
+    "/^node -e \"const p=require\\('animejs/package\\.json'\\); console\\.log\\(p\\.exports\\);\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+    },
+    "/^node -e \"const fs=require\\('fs'\\);const p='node_modules/animejs/dist/modules/index\\.d\\.ts';console\\.log\\(fs\\.readFileSync\\(p,'utf8'\\)\\.slice\\(0,800\\)\\);\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+    },
+    "/^node -e \"const fs=require\\('fs'\\);const p='node_modules/animejs/dist/modules/animation/index\\.d\\.ts';console\\.log\\(fs\\.readFileSync\\(p,'utf8'\\)\\.slice\\(0,1200\\)\\);\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+    },
+    "/^node -e \"const fs=require\\('fs'\\);const p='node_modules/animejs/dist/modules/animation/animation\\.d\\.ts';console\\.log\\(fs\\.readFileSync\\(p,'utf8'\\)\\.slice\\(0,2200\\)\\);\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+    },
+    "/^node -e \"const fs=require\\('fs'\\);const p='node_modules/animejs/dist/modules/utils/index\\.d\\.ts';console\\.log\\(fs\\.readFileSync\\(p,'utf8'\\)\\.slice\\(0,1800\\)\\);\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+    },
+    "/^node -e \"const fs=require\\('fs'\\);const p='node_modules/animejs/dist/modules/utils/target\\.d\\.ts';console\\.log\\(fs\\.readFileSync\\(p,'utf8'\\)\\.slice\\(0,2200\\)\\);\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+    },
+    "npx ng": true
+}
+}
