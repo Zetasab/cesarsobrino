@@ -214,45 +214,102 @@ gsap.from(".languages-right .eyebrow, .languages-title", {
 });
 
 // Animación para los lenguajes de programación (Pinned)
+const langCategories = gsap.utils.toArray(".lang-category");
 const langItems = gsap.utils.toArray(".lang-item");
 
-// Ocultar inicialmente los lenguajes
+// Ocultar inicialmente los lenguajes y categorías
+gsap.set(langCategories, { autoAlpha: 0, y: 30 });
 gsap.set(langItems, { autoAlpha: 0, y: 50 });
 
-const langTl = gsap.timeline({
-    scrollTrigger: {
-        trigger: ".block.languages",
-        start: "center center", // Pinear cuando el centro de la sección llega al centro de la pantalla
-        end: "+=2500", // Mantener pineado durante 2500px de scroll
-        pin: ".languages-layout",
-        scrub: 1
-    }
+// Usar matchMedia para aplicar diferentes configuraciones según el tamaño de pantalla
+let mm = gsap.matchMedia();
+
+mm.add("(min-width: 768px)", () => {
+    // Configuración para Desktop
+    const langTl = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".block.languages",
+            start: "center center", // Pinear cuando el centro de la sección llega al centro de la pantalla
+            end: "+=3000", // Aumentado el tiempo de pin para dar cabida a las categorías
+            pin: ".languages-layout",
+            scrub: 1
+        }
+    });
+
+    // Si la lista de lenguajes es más alta que la ventana, la desplazamos hacia arriba mientras hacemos scroll
+    langTl.to(".languages-left", {
+        y: () => {
+            const leftHeight = document.querySelector(".languages-left").offsetHeight;
+            const windowHeight = window.innerHeight;
+            // Si es más alto que el 80% de la ventana, lo subimos para que se vea todo
+            return leftHeight > windowHeight * 0.8 ? -(leftHeight - windowHeight * 0.8) : 0;
+        },
+        ease: "none",
+        duration: (langItems.length + langCategories.length) * 0.5
+    }, 0);
+
+    // Animar categorías y sus items
+    let timeOffset = 0;
+    langCategories.forEach((category) => {
+        // Animar el título de la categoría
+        langTl.to(category, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out"
+        }, timeOffset);
+        
+        timeOffset += 0.4;
+
+        // Animar los items dentro de esta categoría
+        const itemsInCategory = category.querySelectorAll(".lang-item");
+        itemsInCategory.forEach((item) => {
+            langTl.to(item, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out"
+            }, timeOffset);
+            timeOffset += 0.5;
+        });
+        
+        timeOffset += 0.2; // Pequeña pausa entre categorías
+    });
+
+    // Añadir un poco de espacio al final para que el último elemento se lea bien antes de soltar el pin
+    langTl.to({}, { duration: 1 });
 });
 
-// Si la lista de lenguajes es más alta que la ventana, la desplazamos hacia arriba mientras hacemos scroll
-langTl.to(".languages-left", {
-    y: () => {
-        const leftHeight = document.querySelector(".languages-left").offsetHeight;
-        const windowHeight = window.innerHeight;
-        // Si es más alto que el 80% de la ventana, lo subimos para que se vea todo
-        return leftHeight > windowHeight * 0.8 ? -(leftHeight - windowHeight * 0.8) : 0;
-    },
-    ease: "none",
-    duration: langItems.length * 0.5
-}, 0);
+mm.add("(max-width: 767px)", () => {
+    // Configuración para Móvil (sin pin, animación normal al hacer scroll)
+    langCategories.forEach((category) => {
+        gsap.to(category, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: category,
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+            }
+        });
+    });
 
-// Hacer que los lenguajes aparezcan uno por uno
-langItems.forEach((item, i) => {
-    langTl.to(item, {
-        autoAlpha: 1,
-        y: 0,
-        duration: 1,
-        ease: "power2.out"
-    }, i * 0.5);
+    langItems.forEach((item) => {
+        gsap.to(item, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: item,
+                start: "top 85%", // Aparece cuando el elemento entra en el 85% de la pantalla
+                toggleActions: "play none none reverse" // Se reproduce al entrar, se revierte al salir hacia arriba
+            }
+        });
+    });
 });
-
-// Añadir un poco de espacio al final para que el último elemento se lea bien antes de soltar el pin
-langTl.to({}, { duration: 1 });
 
 const revealCards = gsap.utils.toArray(".card");
 revealCards.forEach((card) => {
