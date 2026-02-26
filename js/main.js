@@ -512,6 +512,41 @@ const setupProjectsGallery = () => {
         invalidateOnRefresh: true
     });
 
+    // Background change logic
+    const bgs = gsap.utils.toArray(".project-bg");
+    const wrappers = gsap.utils.toArray(".project-wrapper");
+
+    wrappers.forEach((wrapper, i) => {
+        ScrollTrigger.create({
+            trigger: wrapper,
+            containerAnimation: tween,
+            start: "left 65%", // Cuando el lado izquierdo del proyecto llega al 65% de la pantalla
+            end: "right 35%",  // Cuando el lado derecho del proyecto llega al 35% de la pantalla
+            onEnter: () => changeBg(i),
+            onEnterBack: () => changeBg(i),
+        });
+    });
+
+    // Trigger especial para cuando el último proyecto sale por la izquierda
+    ScrollTrigger.create({
+        trigger: wrappers[wrappers.length - 1],
+        containerAnimation: tween,
+        start: "right 35%", // Cuando el lado derecho del último proyecto pasa el 35% (saliendo)
+        onEnter: () => changeBg(-1), // -1 para ocultar todos los fondos
+        onLeaveBack: () => changeBg(wrappers.length - 1) // Volver a mostrar el último fondo si se hace scroll hacia arriba
+    });
+
+    function changeBg(index) {
+        bgs.forEach((bg, i) => {
+            gsap.to(bg, { 
+                opacity: i === index ? 1 : 0, 
+                duration: 0.8, 
+                ease: "power2.inOut", 
+                overwrite: "auto" 
+            });
+        });
+    }
+
     // Video hover logic
     const projectWrappers = document.querySelectorAll(".project-wrapper");
     projectWrappers.forEach(wrapper => {
