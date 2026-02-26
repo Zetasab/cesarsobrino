@@ -143,13 +143,27 @@ window.addEventListener("resize", debouncedRefresh);
 
 // Animación para el título "Sobre mí"
 gsap.from(".intro .eyebrow", {
-    y: 20,
+    x: -100,
     autoAlpha: 0,
     duration: 0.8,
     ease: "power2.out",
     scrollTrigger: {
         trigger: ".intro",
-        start: "top 95%" // Empieza a mostrarse casi en cuanto asoma
+        start: "top 80%", // Empieza a mostrarse cuando la sección entra en el viewport
+        toggleActions: "play none none reverse"
+    }
+});
+
+// Animación para el título "Lenguajes utilizados"
+gsap.from(".languages-title", {
+    x: 100,
+    autoAlpha: 0,
+    duration: 0.8,
+    ease: "power2.out",
+    scrollTrigger: {
+        trigger: ".languages",
+        start: "top 80%", // Empieza a mostrarse cuando la sección entra en el viewport
+        toggleActions: "play none none reverse"
     }
 });
 
@@ -322,5 +336,25 @@ revealCards.forEach((card) => {
             trigger: card,
             start: "top 88%"
         }
+    });
+});
+
+// --- Scroll to Top Button ---
+const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+// Mostrar/ocultar el botón basado en el scroll
+window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) { // Mostrar después de 300px de scroll
+        scrollToTopBtn.classList.add("visible");
+    } else {
+        scrollToTopBtn.classList.remove("visible");
+    }
+});
+
+// Hacer scroll hacia arriba suavemente al hacer clic
+scrollToTopBtn.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
     });
 });

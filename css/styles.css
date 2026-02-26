@@ -524,6 +524,19 @@ p {
     height: 40px;
     object-fit: contain;
     flex-shrink: 0; /* Evitar que la imagen se encoja */
+    transition: transform 0.2s ease-in-out;
+}
+
+.lang-item img:hover {
+    animation: wiggle 0.4s ease-in-out;
+}
+
+@keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
 }
 
 @media (min-width: 768px) {
@@ -565,6 +578,45 @@ p {
     color: #ffffff;
     text-decoration: none;
     font-weight: 700;
+}
+
+/* --- Scroll to Top Button --- */
+.scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    mix-blend-mode: difference; /* Esto hace que el color se invierta según el fondo */
+}
+
+.scroll-to-top:hover {
+    transform: translateY(15px); /* Sube un poco al hacer hover */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.scroll-to-top.visible:hover {
+    transform: translateY(-5px);
 }
 
 @media (max-width: 820px) {
