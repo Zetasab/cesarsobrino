@@ -364,77 +364,96 @@ const setupTimelineAnimation = () => {
     const path = document.getElementById("timeline-path");
     const logo = document.getElementById("timeline-logo");
     const nodes = gsap.utils.toArray(".timeline-node");
+    const svg = document.querySelector(".timeline-svg");
     
-    if (!path || !logo || nodes.length === 0) return;
+    if (!path || !logo || nodes.length === 0 || !svg) return;
 
-    // Get the total length of the path
-    const pathLength = path.getTotalLength();
-    
-    // Set initial state for path
-    gsap.set(path, {
-        strokeDasharray: pathLength,
-        strokeDashoffset: pathLength
+    let mm = gsap.matchMedia();
+
+    mm.add("(min-width: 769px)", () => {
+        // Desktop Setup
+        svg.setAttribute("viewBox", "0 0 1000 1000");
+        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        path.setAttribute("d", "M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800");
+        
+        gsap.set(nodes[0], { left: "75%", top: "10%" });
+        gsap.set(nodes[1], { left: "74%", top: "34%" });
+        gsap.set(nodes[2], { left: "26%", top: "36%" });
+        gsap.set(nodes[3], { left: "26%", top: "79%" });
+        gsap.set(nodes[4], { left: "75%", top: "80%" });
+
+        const pathLength = path.getTotalLength();
+        gsap.set(path, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
+        gsap.set(logo, { opacity: 0 });
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".timeline-section",
+                start: "top top",
+                end: "+=2000",
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1
+            }
+        });
+
+        tl.to(logo, { opacity: 1, duration: 0.05 });
+        tl.to(path, { strokeDashoffset: 0, duration: 1, ease: "none" }, 0);
+        tl.to(logo, {
+            motionPath: { path: path, align: path, alignOrigin: [0.5, 0.5], autoRotate: false },
+            duration: 1, ease: "none"
+        }, 0);
+
+        const nodeProgress = [0, 0.15, 0.45, 0.72, 1];
+        nodes.forEach((node, index) => {
+            gsap.set(node, { xPercent: -50, yPercent: -50, y: 20, opacity: 0 });
+            tl.to(node, { opacity: 1, y: 0, duration: 0.05, ease: "power1.out" }, nodeProgress[index]);
+        });
+
+        return () => { tl.kill(); };
     });
 
-    // Set initial state for logo
-    gsap.set(logo, { opacity: 0 });
+    mm.add("(max-width: 768px)", () => {
+        // Mobile Setup
+        svg.setAttribute("viewBox", "0 0 100 1000");
+        svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+        path.setAttribute("d", "M 50 100 L 50 900");
+        
+        gsap.set(nodes[0], { left: "50px", top: "10%" });
+        gsap.set(nodes[1], { left: "50px", top: "30%" });
+        gsap.set(nodes[2], { left: "50px", top: "50%" });
+        gsap.set(nodes[3], { left: "50px", top: "70%" });
+        gsap.set(nodes[4], { left: "50px", top: "90%" });
 
-    // Create a timeline for the scroll animation
-    const tl = gsap.timeline({
-        scrollTrigger: {
-            trigger: ".timeline-section",
-            start: "top top",
-            end: "+=2000", // Adjust this value to control scroll duration
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1
-        }
-    });
+        const pathLength = path.getTotalLength();
+        gsap.set(path, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
+        gsap.set(logo, { opacity: 0 });
 
-    // Show logo at the beginning
-    tl.to(logo, { opacity: 1, duration: 0.05 });
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".timeline-section",
+                start: "top top",
+                end: "+=1500", // Slightly shorter scroll for mobile
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1
+            }
+        });
 
-    // Animate the path drawing
-    tl.to(path, {
-        strokeDashoffset: 0,
-        duration: 1,
-        ease: "none"
-    }, 0);
+        tl.to(logo, { opacity: 1, duration: 0.05 });
+        tl.to(path, { strokeDashoffset: 0, duration: 1, ease: "none" }, 0);
+        tl.to(logo, {
+            motionPath: { path: path, align: path, alignOrigin: [0.5, 0.5], autoRotate: false },
+            duration: 1, ease: "none"
+        }, 0);
 
-    // Animate the logo along the path
-    tl.to(logo, {
-        motionPath: {
-            path: path,
-            align: path,
-            alignOrigin: [0.5, 0.5],
-            autoRotate: false
-        },
-        duration: 1,
-        ease: "none"
-    }, 0);
+        const nodeProgress = [0, 0.25, 0.5, 0.75, 1];
+        nodes.forEach((node, index) => {
+            gsap.set(node, { xPercent: -50, yPercent: -50, y: 20, opacity: 0 });
+            tl.to(node, { opacity: 1, y: 0, duration: 0.05, ease: "power1.out" }, nodeProgress[index]);
+        });
 
-    // Calculate positions for nodes to appear
-    // The path is: M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800
-    // Total length approx: 210 + 63 (curve) + 420 + 63 (curve) + 370 + 63 (curve) + 460 = 1649
-    // Node 1: 0
-    // Node 2: 250 / 1649 = 0.15
-    // Node 3: (250 + 500) / 1649 = 750 / 1649 = 0.45
-    // Node 4: (750 + 450) / 1649 = 1200 / 1649 = 0.72
-    // Node 5: 1.0
-
-    const nodeProgress = [0, 0.15, 0.45, 0.72, 1];
-
-    nodes.forEach((node, index) => {
-        // Set initial state for nodes to handle transform correctly
-        gsap.set(node, { xPercent: -50, yPercent: -50, y: 20 });
-
-        // We want the node to appear when the line reaches it
-        tl.to(node, {
-            opacity: 1,
-            y: 0, // Move to original position
-            duration: 0.05,
-            ease: "power1.out"
-        }, nodeProgress[index]);
+        return () => { tl.kill(); };
     });
 };
 

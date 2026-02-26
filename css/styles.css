@@ -802,23 +802,28 @@ p {
 @media (max-width: 768px) {
     .timeline-container {
         width: 100%;
-        aspect-ratio: 1 / 1; /* Keep square to match SVG */
+        height: 1000px;
+        aspect-ratio: auto;
+    }
+    .timeline-svg {
+        width: 100px;
     }
     .node-content {
-        width: 180px;
-        padding: 0.4rem;
+        width: calc(100vw - 100px);
+        max-width: 320px;
+        padding: 0;
     }
     .node-date {
-        font-size: 0.75rem;
+        font-size: 0.8rem;
     }
     .node-content p {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
     }
     .right-align, .left-align, .bottom-align {
-        top: 20px;
-        left: 50%;
+        top: 50%;
+        left: 30px;
         right: auto;
-        transform: translateX(-50%);
-        text-align: center;
+        transform: translateY(-50%);
+        text-align: left;
     }
 }
