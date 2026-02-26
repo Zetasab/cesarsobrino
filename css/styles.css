@@ -426,6 +426,10 @@ body.no-scroll {
     border-right: 4px solid var(--text);
     width: 0;
     margin: 0;
+    /* Quitamos la animación automática de CSS para controlarla con JS */
+}
+
+.hero-title.start-typing {
     animation: typing 2s steps(16) forwards, blink 0.75s step-end infinite;
 }
 

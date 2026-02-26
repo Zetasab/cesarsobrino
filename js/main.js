@@ -34,6 +34,7 @@ window.addEventListener('load', () => {
     
     const splashScreen = document.getElementById('splash-screen');
     const progressBar = document.getElementById('splashProgressBar');
+    const heroTitle = document.querySelector('.hero-title');
     
     if (splashScreen && progressBar) {
         // Simular progreso de carga
@@ -51,6 +52,11 @@ window.addEventListener('load', () => {
                 setTimeout(() => {
                     splashScreen.classList.add('loaded');
                     
+                    // Iniciar la animación de escritura del título justo cuando empieza a abrirse el splash screen
+                    if (heroTitle) {
+                        heroTitle.classList.add('start-typing');
+                    }
+                    
                     // Permitir scroll después de que termine la animación (1.2s)
                     setTimeout(() => {
                         lenis.start();
@@ -64,6 +70,9 @@ window.addEventListener('load', () => {
     } else {
         lenis.start();
         document.body.classList.remove('no-scroll');
+        if (heroTitle) {
+            heroTitle.classList.add('start-typing');
+        }
     }
 });
 
