@@ -6,6 +6,7 @@ const screenWrap = document.getElementById("screenWrap");
 const screen = document.getElementById("screen");
 const laptopBase = document.getElementById("laptopBase");
 const scrollHint = document.querySelector(".scroll-hint");
+const heroTitleWrapper = document.getElementById("heroTitleWrapper");
 
 const debounce = (fn, delay = 120) => {
     let timer;
@@ -44,6 +45,12 @@ const setupHeroAnimation = () => {
         .to(scrollHint, {
             autoAlpha: 0,
             duration: 0.5
+        }, 0)
+        // Hide title when scrolling down
+        .to(heroTitleWrapper, {
+            autoAlpha: 0,
+            y: -50,
+            duration: 0.8
         }, 0)
         // 1. Open the lid (Image 2)
         .to(laptopLid, {

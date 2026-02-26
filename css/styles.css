@@ -221,6 +221,46 @@ body {
     z-index: 0;
 }
 
+.hero-title-wrapper {
+    position: absolute;
+    top: 8%;
+    display: inline-block;
+    z-index: -1; /* Detrás del portátil */
+}
+
+.hero-title-hidden {
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    font-weight: 800;
+    white-space: nowrap;
+    margin: 0;
+    visibility: hidden;
+}
+
+.hero-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    font-weight: 800;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 4px solid var(--text);
+    width: 0;
+    margin: 0;
+    animation: typing 2s steps(16) forwards, blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--text); }
+}
+
 .laptop {
     width: 76vw;
     max-width: 880px;
