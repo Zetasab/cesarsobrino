@@ -231,14 +231,14 @@ gsap.from(".languages-right .eyebrow, .languages-title", {
 const langCategories = gsap.utils.toArray(".lang-category");
 const langItems = gsap.utils.toArray(".lang-item");
 
-// Ocultar inicialmente los lenguajes y categorías
-gsap.set(langCategories, { autoAlpha: 0, y: 30 });
-gsap.set(langItems, { autoAlpha: 0, y: 50 });
-
 // Usar matchMedia para aplicar diferentes configuraciones según el tamaño de pantalla
 let mm = gsap.matchMedia();
 
 mm.add("(min-width: 768px)", () => {
+    // En lugar de ocultar con set, usamos from() en la timeline para que GSAP maneje el estado inicial
+    // Asegurarnos de que el contenedor izquierdo esté en su posición original
+    gsap.set(".languages-left", { y: 0 });
+
     // Configuración para Desktop
     const langTl = gsap.timeline({
         scrollTrigger: {
@@ -253,7 +253,9 @@ mm.add("(min-width: 768px)", () => {
     // Si la lista de lenguajes es más alta que la ventana, la desplazamos hacia arriba mientras hacemos scroll
     langTl.to(".languages-left", {
         y: () => {
-            const leftHeight = document.querySelector(".languages-left").offsetHeight;
+            const leftEl = document.querySelector(".languages-left");
+            if (!leftEl) return 0;
+            const leftHeight = leftEl.offsetHeight;
             const windowHeight = window.innerHeight;
             // Si es más alto que el 80% de la ventana, lo subimos para que se vea todo
             return leftHeight > windowHeight * 0.8 ? -(leftHeight - windowHeight * 0.8) : 0;
@@ -265,22 +267,22 @@ mm.add("(min-width: 768px)", () => {
     // Animar categorías y sus items
     let timeOffset = 0;
     langCategories.forEach((category) => {
-        // Animar el título de la categoría
-        langTl.to(category, {
-            autoAlpha: 1,
-            y: 0,
+        // Animar el título de la categoría desde oculto
+        langTl.from(category, {
+            autoAlpha: 0,
+            y: 30,
             duration: 0.8,
             ease: "power2.out"
         }, timeOffset);
         
         timeOffset += 0.4;
 
-        // Animar los items dentro de esta categoría
+        // Animar los items dentro de esta categoría desde oculto
         const itemsInCategory = category.querySelectorAll(".lang-item");
         itemsInCategory.forEach((item) => {
-            langTl.to(item, {
-                autoAlpha: 1,
-                y: 0,
+            langTl.from(item, {
+                autoAlpha: 0,
+                y: 50,
                 duration: 1,
                 ease: "power2.out"
             }, timeOffset);
@@ -292,14 +294,23 @@ mm.add("(min-width: 768px)", () => {
 
     // Añadir un poco de espacio al final para que el último elemento se lea bien antes de soltar el pin
     langTl.to({}, { duration: 1 });
+    
+    return () => {
+        langTl.kill();
+    };
 });
 
 mm.add("(max-width: 767px)", () => {
+    // En móvil, nos aseguramos de que estén visibles y en su posición original
+    // para evitar problemas si el ScrollTrigger no se dispara correctamente
+    gsap.set(langCategories, { autoAlpha: 1, y: 0 });
+    gsap.set(langItems, { autoAlpha: 1, y: 0 });
+
     // Configuración para Móvil (sin pin, animación normal al hacer scroll)
     langCategories.forEach((category) => {
-        gsap.to(category, {
-            autoAlpha: 1,
-            y: 0,
+        gsap.from(category, {
+            autoAlpha: 0,
+            y: 30,
             duration: 0.8,
             ease: "power2.out",
             scrollTrigger: {
@@ -311,9 +322,9 @@ mm.add("(max-width: 767px)", () => {
     });
 
     langItems.forEach((item) => {
-        gsap.to(item, {
-            autoAlpha: 1,
-            y: 0,
+        gsap.from(item, {
+            autoAlpha: 0,
+            y: 50,
             duration: 0.8,
             ease: "power2.out",
             scrollTrigger: {
@@ -323,6 +334,15 @@ mm.add("(max-width: 767px)", () => {
             }
         });
     });
+    
+    // Return a cleanup function if needed, though simple to() tweens with scrollTriggers usually clean themselves up
+    return () => {
+        ScrollTrigger.getAll().forEach(st => {
+            if(st.trigger && (st.trigger.classList.contains('lang-category') || st.trigger.classList.contains('lang-item'))) {
+                st.kill();
+            }
+        });
+    };
 });
 
 const revealCards = gsap.utils.toArray(".card");
