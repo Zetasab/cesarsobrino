@@ -184,6 +184,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
 .social-icon:hover {
@@ -201,6 +202,23 @@ body {
 
 .social-icon.instagram:hover {
     color: #e1306c; /* Instagram pink/red */
+}
+
+.social-icon.cv:hover {
+    color: #e74c3c; /* Red for PDF/CV */
+}
+
+.cv-icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.cv-text {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
 }
 
 .hero {
@@ -475,6 +493,40 @@ body {
     text-transform: uppercase;
     z-index: 20;
     opacity: 0.8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mouse-icon {
+    width: 24px;
+    height: 36px;
+    border: 2px solid var(--muted);
+    border-radius: 12px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.wheel {
+    width: 4px;
+    height: 8px;
+    background-color: var(--muted);
+    border-radius: 2px;
+    margin-top: 4px;
+    animation: scrollWheel 1.5s infinite;
+}
+
+@keyframes scrollWheel {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(12px);
+        opacity: 0;
+    }
 }
 
 .content {
