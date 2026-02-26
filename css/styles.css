@@ -651,3 +651,152 @@ p {
         gap: 4.5rem;
     }
 }
+
+/* --- Timeline Section --- */
+.timeline-section {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timeline-header {
+    width: 100%;
+    max-width: 1060px;
+    margin: 0 auto 4rem auto;
+    text-align: center;
+}
+
+.timeline-header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    color: #ffffff;
+}
+
+.timeline-container {
+    position: relative;
+    width: min(100%, 80vh);
+    max-width: 1000px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+}
+
+.timeline-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.timeline-path {
+    stroke-dasharray: 3000; /* Will be calculated in JS */
+    stroke-dashoffset: 3000;
+}
+
+.timeline-logo-wrapper {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #000;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    opacity: 0; /* Hidden initially */
+}
+
+.timeline-logo-img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.timeline-node {
+    position: absolute;
+    z-index: 2;
+    /* transform: translate(-50%, -50%); Removed, handled by GSAP */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0; /* Hidden initially */
+}
+
+.node-point {
+    width: 20px;
+    height: 20px;
+    background-color: #000;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.node-content {
+    position: absolute;
+    width: 250px;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.node-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #e2e8f0;
+}
+
+/* Positioning text relative to nodes */
+.right-align {
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.left-align {
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: right;
+}
+
+.bottom-align {
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .timeline-container {
+        width: 100%;
+        aspect-ratio: 1 / 1; /* Keep square to match SVG */
+    }
+    .node-content {
+        width: 120px;
+        padding: 0.4rem;
+    }
+    .node-content p {
+        font-size: 0.65rem;
+    }
+    .right-align, .left-align, .bottom-align {
+        top: 20px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+}

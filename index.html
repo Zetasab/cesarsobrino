@@ -197,6 +197,63 @@
                 </div>
             </section>
 
+            <section class="block timeline-section" id="timeline">
+                <div class="timeline-header">
+                    <h2>Mi experiencia</h2>
+                </div>
+                <div class="timeline-container">
+                    <svg class="timeline-svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <clipPath id="logo-clip">
+                                <circle cx="0" cy="0" r="16" />
+                            </clipPath>
+                        </defs>
+                        <path id="timeline-path" class="timeline-path" d="M 750 100 L 750 350 L 250 350 L 250 800 L 750 800" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+                        
+                        <!-- Logo inside SVG to scale perfectly with the path -->
+                        <g id="timeline-logo" opacity="0">
+                            <circle cx="0" cy="0" r="20" fill="#000" stroke="#fff" stroke-width="3" />
+                            <image href="assets/img/logo.png" x="-16" y="-16" width="32" height="32" clip-path="url(#logo-clip)" preserveAspectRatio="xMidYMid slice" />
+                        </g>
+                    </svg>
+
+                    <div class="timeline-node" data-node="1" style="left: 75%; top: 10%;">
+                        <div class="node-point"></div>
+                        <div class="node-content right-align">
+                            <p>graduado en Grado medio de de sistemas microinformáticos en red, 2019</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node" data-node="2" style="left: 75%; top: 35%;">
+                        <div class="node-point"></div>
+                        <div class="node-content right-align">
+                            <p>Graduado en el Grado Superior de Programación de Aplicaciones Multiplataforma (DAM), 2021.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node" data-node="3" style="left: 25%; top: 35%;">
+                        <div class="node-point"></div>
+                        <div class="node-content left-align">
+                            <p>Graduado en el Grado Superior de Programación de Aplicaciones Web (DAW), 2022</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node" data-node="4" style="left: 25%; top: 80%;">
+                        <div class="node-point"></div>
+                        <div class="node-content bottom-align">
+                            <p>Octubre 2021 – marzo 2022. Desarrollador de Software de Aplicaciones .NET Core con Angular en VisibleSoft.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-node" data-node="5" style="left: 75%; top: 80%;">
+                        <div class="node-point"></div>
+                        <div class="node-content bottom-align">
+                            <p>Diciembre 2022 – actualmente. Desarrollador de Software de Aplicaciones .NET Core con Angular/Blazor en Excem Technologies.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="block contact">
                 <p class="eyebrow">Contacto</p>
                 <h2>¿Trabajamos juntos?</h2>
@@ -214,6 +271,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
     <script src="https://unpkg.com/split-type"></script>
     <script src="js/main.js"></script>
 </body>

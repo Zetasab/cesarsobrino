@@ -1,4 +1,4 @@
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 const laptop = document.getElementById("laptop");
 const laptopLid = document.getElementById("laptopLid");
@@ -358,3 +358,85 @@ scrollToTopBtn.addEventListener("click", () => {
         behavior: "smooth"
     });
 });
+
+// --- Timeline Animation ---
+const setupTimelineAnimation = () => {
+    const path = document.getElementById("timeline-path");
+    const logo = document.getElementById("timeline-logo");
+    const nodes = gsap.utils.toArray(".timeline-node");
+    
+    if (!path || !logo || nodes.length === 0) return;
+
+    // Get the total length of the path
+    const pathLength = path.getTotalLength();
+    
+    // Set initial state for path
+    gsap.set(path, {
+        strokeDasharray: pathLength,
+        strokeDashoffset: pathLength
+    });
+
+    // Set initial state for logo
+    gsap.set(logo, { opacity: 0 });
+
+    // Create a timeline for the scroll animation
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: ".timeline-section",
+            start: "top top",
+            end: "+=2000", // Adjust this value to control scroll duration
+            scrub: 1,
+            pin: true,
+            anticipatePin: 1
+        }
+    });
+
+    // Show logo at the beginning
+    tl.to(logo, { opacity: 1, duration: 0.05 });
+
+    // Animate the path drawing
+    tl.to(path, {
+        strokeDashoffset: 0,
+        duration: 1,
+        ease: "none"
+    }, 0);
+
+    // Animate the logo along the path
+    tl.to(logo, {
+        motionPath: {
+            path: path,
+            align: path,
+            alignOrigin: [0.5, 0.5],
+            autoRotate: false
+        },
+        duration: 1,
+        ease: "none"
+    }, 0);
+
+    // Calculate positions for nodes to appear
+    // The path is: M 750 100 L 750 350 L 250 350 L 250 800 L 750 800
+    // Total length = 250 + 500 + 450 + 500 = 1700
+    // Node 1: 0
+    // Node 2: 250 / 1700 = 0.147
+    // Node 3: (250 + 500) / 1700 = 750 / 1700 = 0.441
+    // Node 4: (750 + 450) / 1700 = 1200 / 1700 = 0.706
+    // Node 5: 1700 / 1700 = 1.0
+
+    const nodeProgress = [0, 0.147, 0.441, 0.706, 1];
+
+    nodes.forEach((node, index) => {
+        // Set initial state for nodes to handle transform correctly
+        gsap.set(node, { xPercent: -50, yPercent: -50, y: 20 });
+
+        // We want the node to appear when the line reaches it
+        tl.to(node, {
+            opacity: 1,
+            y: 0, // Move to original position
+            duration: 0.05,
+            ease: "power1.out"
+        }, nodeProgress[index]);
+    });
+};
+
+// Call the setup function
+setupTimelineAnimation();
