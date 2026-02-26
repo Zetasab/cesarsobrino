@@ -414,15 +414,15 @@ const setupTimelineAnimation = () => {
     }, 0);
 
     // Calculate positions for nodes to appear
-    // The path is: M 750 100 L 750 350 L 250 350 L 250 800 L 750 800
-    // Total length = 250 + 500 + 450 + 500 = 1700
+    // The path is: M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800
+    // Total length approx: 210 + 63 (curve) + 420 + 63 (curve) + 370 + 63 (curve) + 460 = 1649
     // Node 1: 0
-    // Node 2: 250 / 1700 = 0.147
-    // Node 3: (250 + 500) / 1700 = 750 / 1700 = 0.441
-    // Node 4: (750 + 450) / 1700 = 1200 / 1700 = 0.706
-    // Node 5: 1700 / 1700 = 1.0
+    // Node 2: 250 / 1649 = 0.15
+    // Node 3: (250 + 500) / 1649 = 750 / 1649 = 0.45
+    // Node 4: (750 + 450) / 1649 = 1200 / 1649 = 0.72
+    // Node 5: 1.0
 
-    const nodeProgress = [0, 0.147, 0.441, 0.706, 1];
+    const nodeProgress = [0, 0.15, 0.45, 0.72, 1];
 
     nodes.forEach((node, index) => {
         // Set initial state for nodes to handle transform correctly
