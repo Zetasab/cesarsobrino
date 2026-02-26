@@ -570,3 +570,30 @@ if (projectWrappers.length > 1) {
         }
     });
 }
+
+// --- Footer Parallax Landscape ---
+function setupFooterParallax() {
+    const layers = document.querySelectorAll('.parallax-layer');
+    
+    layers.forEach(layer => {
+        const speed = parseFloat(layer.getAttribute('data-speed')) || 0;
+        
+        // Animamos las capas desde abajo hacia su posición original (0)
+        // a medida que el footer se va revelando (cuando .page hace scroll hacia arriba)
+        gsap.fromTo(layer, 
+            { y: `${120 * speed}vh` }, 
+            { 
+                y: "0vh",
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".page",
+                    start: "bottom bottom", // Cuando el final de .page toca el final de la pantalla (empieza a verse el footer)
+                    end: "bottom top",      // Cuando el final de .page toca el inicio de la pantalla (footer 100% visible)
+                    scrub: true
+                }
+            }
+        );
+    });
+}
+
+setupFooterParallax();

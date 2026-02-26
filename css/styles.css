@@ -29,7 +29,7 @@ body {
     position: relative;
     z-index: 2;
     background: var(--bg); /* Fondo principal de la página */
-    margin-bottom: 100vh; /* Deja el hueco exacto para el footer */
+    margin-bottom: 120vh; /* Deja el hueco exacto para el footer */
     box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 
@@ -49,7 +49,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 100vh;
+    height: 120vh;
     z-index: 1; /* Detrás de .page (z-index: 2) */
     pointer-events: none; /* Para que no interfiera con el scroll hasta que sea visible */
 }
@@ -63,12 +63,63 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: var(--text);
+    color: #000000;
     pointer-events: auto; /* Reactivamos los eventos para los enlaces */
+    position: relative;
+    overflow: hidden;
+}
+
+.parallax-layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.parallax-layer svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%; /* Ajusta la altura de las montañas */
+    display: block;
+}
+
+.layer-sky {
+    background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
+    z-index: 0;
+}
+
+.layer-sun {
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.layer-sun .sun {
+    width: 200px;
+    height: 200px;
+    background: #cccccc;
+    border-radius: 50%;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+    margin-top: -20vh;
+}
+
+.layer-mountains-1 { z-index: 2; }
+.layer-mountains-2 { z-index: 3; }
+.layer-mountains-3 { z-index: 4; }
+.layer-trees { z-index: 5; }
+
+.footer-content {
+    position: relative;
+    z-index: 10;
 }
 
 .footer-parallax .eyebrow {
-    color: var(--muted);
+    color: #666666;
     margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -81,11 +132,12 @@ body {
     margin-bottom: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.02em;
+    color: #000000;
 }
 
 .footer-parallax p {
     font-size: clamp(1.1rem, 1.5vw, 1.3rem);
-    color: var(--muted);
+    color: #333333;
     margin-bottom: 3rem;
     max-width: 600px;
 }
@@ -93,7 +145,7 @@ body {
 .footer-parallax .mail {
     font-size: clamp(1.5rem, 3vw, 2.5rem);
     font-weight: 700;
-    color: var(--text);
+    color: #000000;
     text-decoration: none;
     position: relative;
     display: inline-block;
