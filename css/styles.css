@@ -3,10 +3,47 @@
     --surface: #ffffff;
     --text: #0f172a;
     --muted: #475569;
+    
+    /* Scrollbar variables */
+    --scrollbar-track: var(--bg);
+    --scrollbar-thumb: var(--muted);
+    --scrollbar-thumb-hover: var(--text);
+    --scrollbar-border: var(--bg);
+}
+
+html.dark-scrollbar {
+    --scrollbar-track: #000000;
+    --scrollbar-thumb: #ffffff;
+    --scrollbar-thumb-hover: #cccccc;
+    --scrollbar-border: #000000;
 }
 
 * {
     box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Custom Scrollbar for WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+    border: 2px solid var(--scrollbar-border);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
 }
 
 html,

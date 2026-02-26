@@ -204,6 +204,16 @@ const setupHeroAnimation = () => {
 
 setupHeroAnimation();
 
+// --- Scrollbar Color Adaptation ---
+// El fondo se vuelve negro al final de la animación del hero y vuelve a ser blanco en el footer
+ScrollTrigger.create({
+    trigger: ".hero",
+    start: "73% top", // Se activa cuando el fondo del portátil se vuelve negro (aprox 91% del scroll del hero)
+    endTrigger: ".page",
+    end: "bottom bottom", // Se desactiva cuando el footer (fondo blanco) empieza a verse
+    toggleClass: { targets: "html", className: "dark-scrollbar" }
+});
+
 const debouncedRefresh = debounce(() => ScrollTrigger.refresh(), 180);
 window.addEventListener("resize", debouncedRefresh);
 
