@@ -479,3 +479,35 @@ const setupTimelineAnimation = () => {
 
 // Call the setup function
 setupTimelineAnimation();
+
+// --- Projects Horizontal Scroll Animation ---
+const setupProjectsGallery = () => {
+    const track = document.querySelector(".projects-track");
+    const gallery = document.querySelector(".projects-gallery");
+    
+    if (!track || !gallery) return;
+
+    // Calculate the total scroll distance
+    // It's the track width minus the viewport width, plus some padding
+    let getScrollAmount = () => {
+        let trackWidth = track.scrollWidth;
+        return -(trackWidth - window.innerWidth);
+    };
+
+    const tween = gsap.to(track, {
+        x: getScrollAmount,
+        ease: "none"
+    });
+
+    ScrollTrigger.create({
+        trigger: gallery,
+        start: "top top",
+        end: () => `+=${getScrollAmount() * -1}`,
+        pin: true,
+        animation: tween,
+        scrub: 1,
+        invalidateOnRefresh: true
+    });
+};
+
+setupProjectsGallery();
