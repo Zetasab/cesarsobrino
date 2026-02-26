@@ -202,18 +202,6 @@ introParagraphs.forEach((p) => {
     });
 });
 
-const revealTimeline = gsap.timeline({
-    defaults: { ease: "power2.out", duration: 0.8 },
-    scrollTrigger: {
-        trigger: ".projects",
-        start: "top 75%"
-    }
-});
-
-revealTimeline
-    .from(".projects", { y: 45, autoAlpha: 0 })
-    .from(".contact", { y: 45, autoAlpha: 0 }, "-=0.45");
-
 // Animación para el título de lenguajes (aparece antes de pinear)
 gsap.from(".languages-right .eyebrow, .languages-title", {
     y: 30,
@@ -498,7 +486,8 @@ const setupProjectsGallery = () => {
         { x: () => window.innerWidth },
         { 
             x: () => -track.scrollWidth,
-            ease: "none"
+            ease: "none",
+            id: "projectsTween"
         }
     );
 
@@ -564,3 +553,20 @@ const setupProjectsGallery = () => {
 };
 
 setupProjectsGallery();
+
+// --- Ocultar Hero Stage en la sección de proyectos ---
+// Lo ocultamos cuando el segundo proyecto (ZetaMovies) entra en pantalla
+const projectWrappers = document.querySelectorAll(".project-wrapper");
+if (projectWrappers.length > 1) {
+    ScrollTrigger.create({
+        trigger: projectWrappers[1], // El segundo proyecto (índice 1) es ZetaMovies
+        containerAnimation: gsap.getById("projectsTween"), // Necesitamos referenciar el tween horizontal
+        start: "left center", // Cuando el lado izquierdo de ZetaMovies llega al centro de la pantalla
+        onEnter: () => {
+            gsap.set(".hero-stage", { display: "none" });
+        },
+        onLeaveBack: () => {
+            gsap.set(".hero-stage", { display: "grid" });
+        }
+    });
+}

@@ -13,7 +13,8 @@
 </head>
 <body>
     <main class="page">
-        <section class="hero" id="inicio">
+        <div class="main-content-wrapper">
+            <section class="hero" id="inicio">
             <div class="hero-stage" aria-hidden="true">
                 <article class="laptop" id="laptop">
                     <div class="laptop-base" id="laptopBase">
@@ -258,9 +259,10 @@
                     </div>
                 </div>
             </section>
+        </section> <!-- End of content -->
 
-            <section class="projects-gallery" id="projects">
-                <div class="projects-bg-container">
+        <section class="projects-gallery" id="projects">
+            <div class="projects-bg-container">
                     <div class="project-bg" style="background-image: url('assets/img/proyects/backgrounds/dashboard_bg.jpg');"></div>
                     <div class="project-bg" style="background-image: url('assets/img/proyects/backgrounds/movies_bg.jpg');"></div>
                     <div class="project-bg" style="background-image: url('assets/img/proyects/backgrounds/games_bg.avif');"></div>
@@ -318,15 +320,22 @@
                     </div>
                 </div>
             </section>
+        </div> <!-- End of main-content-wrapper -->
 
-            <section class="block contact">
+        <!-- Espaciador para permitir el scroll hasta el footer -->
+        <div class="footer-spacer"></div>
+    </main>
+
+    <div class="footer-parallax-container">
+        <footer class="footer-parallax">
+            <div class="footer-content">
                 <p class="eyebrow">Contacto</p>
                 <h2>¿Trabajamos juntos?</h2>
                 <p>Disponible para proyectos freelance y colaboraciones creativas.</p>
                 <a class="mail" href="mailto:cesar@example.com">cesar@example.com</a>
-            </section>
-        </section>
-    </main>
+            </div>
+        </footer>
+    </div>
 
     <button id="scrollToTopBtn" class="scroll-to-top" aria-label="Volver arriba">
         <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
