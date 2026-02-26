@@ -286,6 +286,7 @@ body {
     max-height: 580px;
     position: relative;
     transform-style: preserve-3d;
+    cursor: pointer;
 }
 
 .laptop-base {

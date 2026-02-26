@@ -163,6 +163,43 @@ const setupHeroAnimation = () => {
             backgroundColor: "#000000",
             duration: 0.5
         }, 5.2);
+
+    // Añadir evento click al portátil para hacer scroll hasta que el fondo esté full
+    laptop.addEventListener('click', () => {
+        const st = timeline.scrollTrigger;
+        if (st) {
+            // El momento en el que el fondo está full y cuadrado es a los 2.7s
+            // La duración total de la línea de tiempo es 5.7s
+            const targetProgress = 2.7 / timeline.duration();
+            const targetScroll = st.start + (st.end - st.start) * targetProgress;
+            
+            // Usar lenis para hacer scroll suave hasta esa posición
+            lenis.scrollTo(targetScroll, {
+                duration: 3.5, // Aumentado para que tarde más
+                easing: (t) => {
+                    // Easing easeInOutQuart para un efecto más pronunciado
+                    return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+                }
+            });
+        }
+    });
+
+    // Añadir evento click al botón "Entrar" para hacer scroll hasta la sección "Sobre mí"
+    const btnEntrar = document.querySelector('.btn-entrar');
+    if (btnEntrar) {
+        btnEntrar.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el click se propague al portátil
+            
+            // Hacer scroll hasta la sección "Sobre mí" (id="portfolio" o clase ".intro")
+            lenis.scrollTo('.intro', {
+                duration: 3.5,
+                easing: (t) => {
+                    // Easing easeInOutQuart
+                    return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+                }
+            });
+        });
+    }
 };
 
 setupHeroAnimation();
