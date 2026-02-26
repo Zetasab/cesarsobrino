@@ -22,6 +22,51 @@ gsap.ticker.add((time) => {
 
 gsap.ticker.lagSmoothing(0);
 
+// Detener el scroll inicialmente para el splash screen
+lenis.stop();
+
+// Forzar scroll al inicio sin animación al cargar la página
+window.scrollTo(0, 0);
+
+window.addEventListener('load', () => {
+    // Asegurarnos de que estamos arriba del todo
+    window.scrollTo(0, 0);
+    
+    const splashScreen = document.getElementById('splash-screen');
+    const progressBar = document.getElementById('splashProgressBar');
+    
+    if (splashScreen && progressBar) {
+        // Simular progreso de carga
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15; // Incremento aleatorio
+            if (progress > 100) progress = 100;
+            
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress === 100) {
+                clearInterval(progressInterval);
+                
+                // Pequeño retraso después de llegar al 100% antes de abrir
+                setTimeout(() => {
+                    splashScreen.classList.add('loaded');
+                    
+                    // Permitir scroll después de que termine la animación (1.2s)
+                    setTimeout(() => {
+                        lenis.start();
+                        document.body.classList.remove('no-scroll');
+                        splashScreen.classList.add('hidden');
+                    }, 1200);
+                }, 400);
+            }
+        }, 100); // Actualizar cada 100ms
+        
+    } else {
+        lenis.start();
+        document.body.classList.remove('no-scroll');
+    }
+});
+
 const laptop = document.getElementById("laptop");
 const laptopLid = document.getElementById("laptopLid");
 const screenWrap = document.getElementById("screenWrap");
@@ -177,8 +222,8 @@ const setupHeroAnimation = () => {
             lenis.scrollTo(targetScroll, {
                 duration: 3.5, // Aumentado para que tarde más
                 easing: (t) => {
-                    // Easing easeInOutQuart para un efecto más pronunciado
-                    return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+                    // Easing easeOutQuart
+                    return 1 - Math.pow(1 - t, 4);
                 }
             });
         }
@@ -194,8 +239,8 @@ const setupHeroAnimation = () => {
             lenis.scrollTo('.intro', {
                 duration: 3.5,
                 easing: (t) => {
-                    // Easing easeInOutQuart
-                    return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+                    // Easing easeOutQuart
+                    return 1 - Math.pow(1 - t, 4);
                 }
             });
         });
