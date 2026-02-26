@@ -102,7 +102,7 @@ const setupHeroAnimation = () => {
             autoAlpha: 1,
             duration: 0.2
         }, 2.8)
-        
+
         // Hide spinner, show tick (after some scroll distance)
         .to(".spinner", {
             autoAlpha: 0,
@@ -112,19 +112,19 @@ const setupHeroAnimation = () => {
             autoAlpha: 1,
             duration: 0.2
         }, 4.0)
-        
+
         // Hold the tick for a moment
         .to(".tick", {
             scale: 1.2,
             duration: 0.5
         }, 4.2)
-        
+
         // Hide logo and tick
         .to(".login-container", {
             autoAlpha: 0,
             duration: 0.5
         }, 4.7)
-        
+
         // Turn background black
         .to(".screen-wallpaper", {
             autoAlpha: 0,
@@ -186,7 +186,7 @@ const introParagraphs = gsap.utils.toArray(".intro-p");
 introParagraphs.forEach((p) => {
     // Dividimos el texto en líneas usando SplitType
     const splitText = new SplitType(p, { types: 'lines' });
-    
+
     // Animamos cada línea individualmente
     gsap.from(splitText.lines, {
         y: 40,
@@ -262,7 +262,7 @@ mm.add("(min-width: 768px)", () => {
             duration: 0.8,
             ease: "power2.out"
         }, timeOffset);
-        
+
         timeOffset += 0.4;
 
         // Animar los items dentro de esta categoría desde oculto
@@ -276,13 +276,13 @@ mm.add("(min-width: 768px)", () => {
             }, timeOffset);
             timeOffset += 0.5;
         });
-        
+
         timeOffset += 0.2; // Pequeña pausa entre categorías
     });
 
     // Añadir un poco de espacio al final para que el último elemento se lea bien antes de soltar el pin
     langTl.to({}, { duration: 1 });
-    
+
     return () => {
         langTl.kill();
     };
@@ -322,11 +322,11 @@ mm.add("(max-width: 767px)", () => {
             }
         });
     });
-    
+
     // Return a cleanup function if needed, though simple to() tweens with scrollTriggers usually clean themselves up
     return () => {
         ScrollTrigger.getAll().forEach(st => {
-            if(st.trigger && (st.trigger.classList.contains('lang-category') || st.trigger.classList.contains('lang-item'))) {
+            if (st.trigger && (st.trigger.classList.contains('lang-category') || st.trigger.classList.contains('lang-item'))) {
                 st.kill();
             }
         });
@@ -373,7 +373,7 @@ const setupTimelineAnimation = () => {
     const logo = document.getElementById("timeline-logo");
     const nodes = gsap.utils.toArray(".timeline-node");
     const svg = document.querySelector(".timeline-svg");
-    
+
     if (!path || !logo || nodes.length === 0 || !svg) return;
 
     let mm = gsap.matchMedia();
@@ -383,7 +383,7 @@ const setupTimelineAnimation = () => {
         svg.setAttribute("viewBox", "0 0 1000 1000");
         svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
         path.setAttribute("d", "M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800");
-        
+
         gsap.set(nodes[0], { left: "75%", top: "10%" });
         gsap.set(nodes[1], { left: "74%", top: "34%" });
         gsap.set(nodes[2], { left: "26%", top: "36%" });
@@ -426,7 +426,7 @@ const setupTimelineAnimation = () => {
         svg.setAttribute("viewBox", "0 0 100 1000");
         svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
         path.setAttribute("d", "M 50 100 L 50 900");
-        
+
         gsap.set(nodes[0], { left: "50px", top: "10%" });
         gsap.set(nodes[1], { left: "50px", top: "30%" });
         gsap.set(nodes[2], { left: "50px", top: "50%" });
@@ -472,7 +472,7 @@ setupTimelineAnimation();
 const setupProjectsGallery = () => {
     const track = document.querySelector(".projects-track");
     const gallery = document.querySelector(".projects-gallery");
-    
+
     if (!track || !gallery) return;
 
     // Calculate the total scroll distance
@@ -482,9 +482,9 @@ const setupProjectsGallery = () => {
         return trackWidth + window.innerWidth;
     };
 
-    const tween = gsap.fromTo(track, 
+    const tween = gsap.fromTo(track,
         { x: () => window.innerWidth },
-        { 
+        {
             x: () => -track.scrollWidth,
             ease: "none",
             id: "projectsTween"
@@ -527,11 +527,11 @@ const setupProjectsGallery = () => {
 
     function changeBg(index) {
         bgs.forEach((bg, i) => {
-            gsap.to(bg, { 
-                opacity: i === index ? 1 : 0, 
-                duration: 0.8, 
-                ease: "power2.inOut", 
-                overwrite: "auto" 
+            gsap.to(bg, {
+                opacity: i === index ? 1 : 0,
+                duration: 0.8,
+                ease: "power2.inOut",
+                overwrite: "auto"
             });
         });
     }
@@ -574,15 +574,15 @@ if (projectWrappers.length > 1) {
 // --- Footer Parallax Landscape ---
 function setupFooterParallax() {
     const layers = document.querySelectorAll('.parallax-layer');
-    
+
     layers.forEach(layer => {
         const speed = parseFloat(layer.getAttribute('data-speed')) || 0;
-        
+
         // Animamos las capas desde abajo hacia su posición original (0)
         // a medida que el footer se va revelando (cuando .page hace scroll hacia arriba)
-        gsap.fromTo(layer, 
-            { y: `${120 * speed}vh` }, 
-            { 
+        gsap.fromTo(layer,
+            { y: `${120 * speed}vh` },
+            {
                 y: "0vh",
                 ease: "none",
                 scrollTrigger: {
@@ -594,6 +594,32 @@ function setupFooterParallax() {
             }
         );
     });
+
+    // Inicializar Vanta Birds en el cielo del footer
+    if (typeof VANTA !== 'undefined') {
+        VANTA.BIRDS({
+            el: ".layer-sky",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            backgroundColor: 0x0,
+            color1: 0x0,
+            color2: 0xffffff,
+            colorMode: "lerpGradient",
+            birdSize: 0.90,
+            wingSpan: 23.00,
+            speedLimit: 3.00,
+            separation: 88.00,
+            alignment: 14.00,
+            cohesion: 14.00,
+            quantity: 4.00,
+            backgroundAlpha: 0.00
+        });
+    }
 }
 
 setupFooterParallax();
