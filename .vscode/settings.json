@@ -35,6 +35,11 @@
         "approve": true,
         "matchCommandLine": true
     },
-    "npx ng": true
+    "npx ng": true,
+    "npm run build": true,
+    "/^node -c js/main\\.js$/": {
+        "approve": true,
+        "matchCommandLine": true
+    }
 }
 }

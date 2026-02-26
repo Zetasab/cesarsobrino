@@ -488,25 +488,43 @@ const setupProjectsGallery = () => {
     if (!track || !gallery) return;
 
     // Calculate the total scroll distance
-    // It's the track width minus the viewport width, plus some padding
+    // It's the track width plus the viewport width to allow full entry and exit
     let getScrollAmount = () => {
         let trackWidth = track.scrollWidth;
-        return -(trackWidth - window.innerWidth);
+        return trackWidth + window.innerWidth;
     };
 
-    const tween = gsap.to(track, {
-        x: getScrollAmount,
-        ease: "none"
-    });
+    const tween = gsap.fromTo(track, 
+        { x: () => window.innerWidth },
+        { 
+            x: () => -track.scrollWidth,
+            ease: "none"
+        }
+    );
 
     ScrollTrigger.create({
         trigger: gallery,
         start: "top top",
-        end: () => `+=${getScrollAmount() * -1}`,
+        end: () => `+=${getScrollAmount()}`,
         pin: true,
         animation: tween,
         scrub: 1,
         invalidateOnRefresh: true
+    });
+
+    // Video hover logic
+    const projectWrappers = document.querySelectorAll(".project-wrapper");
+    projectWrappers.forEach(wrapper => {
+        const video = wrapper.querySelector("video");
+        if (video) {
+            wrapper.addEventListener("mouseenter", () => {
+                video.play().catch(e => console.log("Video play prevented:", e));
+            });
+            wrapper.addEventListener("mouseleave", () => {
+                video.pause();
+                video.currentTime = 0; // Opcional: reiniciar el video al quitar el ratón
+            });
+        }
     });
 };
 
