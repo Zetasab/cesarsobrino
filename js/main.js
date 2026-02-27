@@ -567,7 +567,7 @@ const setupTimelineAnimation = () => {
             scrollTrigger: {
                 trigger: ".timeline-section",
                 start: "top top",
-                end: "+=1500", // Slightly shorter scroll for mobile
+                end: "+=1000", // Reducido para que el scroll sea más corto en móvil
                 scrub: 1,
                 pin: true,
                 anticipatePin: 1
@@ -624,7 +624,9 @@ const setupProjectsGallery = () => {
         pin: true,
         animation: tween,
         scrub: 1,
-        invalidateOnRefresh: true
+        invalidateOnRefresh: true,
+        // Añadimos un pequeño margen de seguridad para que no se solape con la sección anterior
+        fastScrollEnd: true
     });
 
     // Background change logic
@@ -846,7 +848,7 @@ if (scrollHint) {
             if ((window.innerHeight + window.scrollY) < document.body.offsetHeight - 50) {
                 scrollHint.classList.remove('hidden');
             }
-        }, 3500);
+        }, 2500);
     };
 
     const handleScrollHint = () => {
