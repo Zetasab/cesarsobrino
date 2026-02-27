@@ -292,19 +292,6 @@ gsap.from(".intro .eyebrow", {
     }
 });
 
-// Animación para el título "Lenguajes utilizados"
-gsap.from(".languages-title", {
-    x: 100,
-    autoAlpha: 0,
-    duration: 0.8,
-    ease: "power2.out",
-    scrollTrigger: {
-        trigger: ".languages",
-        start: "top 80%", // Empieza a mostrarse cuando la sección entra en el viewport
-        toggleActions: "play none none reverse"
-    }
-});
-
 // Animación para el saludo "Buenas,"
 gsap.from(".greeting", {
     y: 60,
@@ -349,7 +336,8 @@ gsap.from(".languages-right .eyebrow, .languages-title", {
     ease: "power2.out",
     scrollTrigger: {
         trigger: ".block.languages",
-        start: "top 70%"
+        start: "top 70%",
+        toggleActions: "play none none reverse"
     }
 });
 
