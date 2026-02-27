@@ -930,3 +930,40 @@ if (scrollHint) {
     // Inicializar el timeout por si el usuario no hace scroll al cargar la página
     resetScrollHintTimeout();
 }
+
+// --- Custom Cursor Logic ---
+const customCursorDot = document.getElementById('customCursorDot');
+
+if (customCursorDot) {
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+
+    // Update mouse coordinates
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    // Animation loop for the delayed cursor
+    const animateCursor = () => {
+        // Ease the cursor position towards the mouse position (lower value = smoother/more delay)
+        cursorX += (mouseX - cursorX) * 0.08;
+        cursorY += (mouseY - cursorY) * 0.08;
+        
+        customCursorDot.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+        
+        requestAnimationFrame(animateCursor);
+    };
+    animateCursor();
+    
+    // Hide cursor when leaving the window
+    document.addEventListener('mouseleave', () => {
+        customCursorDot.style.opacity = '0';
+    });
+    
+    document.addEventListener('mouseenter', () => {
+        customCursorDot.style.opacity = '1';
+    });
+}

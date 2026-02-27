@@ -65,6 +65,33 @@ body.no-scroll {
     overflow: hidden;
 }
 
+/* --- Custom Cursor --- */
+.custom-cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    background: rgba(71, 85, 105, 0.4); /* Color gris (var(--muted)) con transparencia */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transition: opacity 0.3s ease;
+    will-change: transform;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Hide custom cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .custom-cursor-dot {
+        display: none !important;
+    }
+}
+
 /* --- Navbar --- */
 .navbar {
     position: fixed;
