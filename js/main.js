@@ -31,32 +31,32 @@ window.scrollTo(0, 0);
 window.addEventListener('load', () => {
     // Asegurarnos de que estamos arriba del todo
     window.scrollTo(0, 0);
-    
+
     const splashScreen = document.getElementById('splash-screen');
     const progressBar = document.getElementById('splashProgressBar');
     const heroTitle = document.querySelector('.hero-title');
-    
+
     if (splashScreen && progressBar) {
         // Simular progreso de carga
         let progress = 0;
         const progressInterval = setInterval(() => {
             progress += Math.random() * 15; // Incremento aleatorio
             if (progress > 100) progress = 100;
-            
+
             progressBar.style.width = `${progress}%`;
-            
+
             if (progress === 100) {
                 clearInterval(progressInterval);
-                
+
                 // Pequeño retraso después de llegar al 100% antes de abrir
                 setTimeout(() => {
                     splashScreen.classList.add('loaded');
-                    
+
                     // Iniciar la animación de escritura del título justo cuando empieza a abrirse el splash screen
                     if (heroTitle) {
                         heroTitle.classList.add('start-typing');
                     }
-                    
+
                     // Permitir scroll después de que termine la animación (1.2s)
                     setTimeout(() => {
                         lenis.start();
@@ -66,7 +66,7 @@ window.addEventListener('load', () => {
                 }, 400);
             }
         }, 100); // Actualizar cada 100ms
-        
+
     } else {
         lenis.start();
         document.body.classList.remove('no-scroll');
@@ -114,7 +114,7 @@ const setupHeroAnimation = () => {
             end: "bottom bottom", // End when the bottom of .hero reaches the bottom of the viewport
             scrub: 0.5
         },
-        onUpdate: function() {
+        onUpdate: function () {
             if (this.time() >= 2.7) {
                 laptop.classList.add('expanded');
             } else {
@@ -239,7 +239,7 @@ const setupHeroAnimation = () => {
             // La duración total de la línea de tiempo es 5.7s
             const targetProgress = 2.7 / timeline.duration();
             const targetScroll = st.start + (st.end - st.start) * targetProgress;
-            
+
             // Usar lenis para hacer scroll suave hasta esa posición
             lenis.scrollTo(targetScroll, {
                 duration: 3.5, // Aumentado para que tarde más
@@ -256,7 +256,7 @@ const setupHeroAnimation = () => {
     if (btnEntrar) {
         btnEntrar.addEventListener('click', (e) => {
             e.stopPropagation(); // Evitar que el click se propague al portátil
-            
+
             // Hacer scroll hasta la sección "Sobre mí" (id="portfolio" o clase ".intro")
             lenis.scrollTo('.intro', {
                 duration: 3.5,
@@ -772,6 +772,7 @@ document.querySelectorAll('.nav-links a').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const targetId = this.getAttribute('href');
+        console.log(targetId)
         if (targetId && targetId.startsWith('#')) {
             if (targetId === '#inicio') {
                 lenis.scrollTo(0, {
@@ -781,7 +782,12 @@ document.querySelectorAll('.nav-links a').forEach(anchor => {
             } else {
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
+                    let offset = 0;
+                    if (targetId === '#lenguajes') {
+                        offset = 800; // Ajusta este valor para que baje más o menos
+                    }
                     lenis.scrollTo(targetElement, {
+                        offset: offset,
                         duration: 1.5,
                         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
                     });

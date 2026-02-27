@@ -291,7 +291,7 @@ html.dark-scrollbar .navbar {
 
 /* Eliminamos el footer-spacer porque usaremos margin-bottom en .page */
 .footer-spacer {
-    display: none;
+    display: block;
 }
 
 .footer-parallax-container {
