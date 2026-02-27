@@ -782,13 +782,53 @@ document.querySelectorAll('.nav-links a').forEach(anchor => {
 
 // --- Navbar Scroll Effect ---
 const navbar = document.querySelector('.navbar');
+const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+
 if (navbar) {
     window.addEventListener('scroll', () => {
         if (window.scrollY > 200) {
             navbar.classList.add('scrolled');
+            if (mobileMenuToggle) mobileMenuToggle.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
+            if (mobileMenuToggle) mobileMenuToggle.classList.remove('scrolled');
         }
+    });
+}
+
+if (mobileMenuToggle && navbar) {
+    mobileMenuToggle.addEventListener('click', () => {
+        navbar.classList.toggle('open');
+        
+        // Cambiar el icono del botón
+        const svg = mobileMenuToggle.querySelector('svg');
+        if (navbar.classList.contains('open')) {
+            svg.innerHTML = `
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            `;
+        } else {
+            svg.innerHTML = `
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            `;
+        }
+    });
+
+    // Cerrar el menú al hacer clic en un enlace
+    const navLinks = navbar.querySelectorAll('a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                navbar.classList.remove('open');
+                mobileMenuToggle.querySelector('svg').innerHTML = `
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                `;
+            }
+        });
     });
 }
 
