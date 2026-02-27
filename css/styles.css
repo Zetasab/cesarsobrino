@@ -314,6 +314,8 @@ html.dark-scrollbar .navbar {
 @media (max-width: 768px) {
     .mobile-menu-toggle {
         display: flex;
+        mix-blend-mode: normal;
+        color: var(--text);
     }
 
     .navbar {
