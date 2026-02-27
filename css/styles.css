@@ -601,7 +601,7 @@ html.dark-scrollbar .navbar {
 }
 
 .footer-parallax h2 {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-size: clamp(2.5rem, 3.5vw, 4.5rem);
     margin-bottom: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -609,14 +609,14 @@ html.dark-scrollbar .navbar {
 }
 
 .footer-parallax p {
-    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    font-size: clamp(1.1rem, 1vw, 1.3rem);
     color: #333333;
     margin-bottom: 3rem;
     max-width: 600px;
 }
 
 .footer-parallax .mail {
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: clamp(1.5rem, 2vw, 2.5rem);
     font-weight: 700;
     color: #000000;
     text-decoration: none;
@@ -720,7 +720,7 @@ html.dark-scrollbar .navbar {
 }
 
 .hero-title-hidden {
-    font-size: clamp(2.5rem, 7vw, 6rem);
+    font-size: clamp(2.5rem, 4.5vw, 6rem);
     font-weight: 800;
     white-space: nowrap;
     margin: 0;
@@ -731,7 +731,7 @@ html.dark-scrollbar .navbar {
     position: absolute;
     top: 0;
     left: 0;
-    font-size: clamp(2.5rem, 7vw, 6rem);
+    font-size: clamp(2.5rem, 4.5vw, 6rem);
     font-weight: 800;
     color: var(--text);
     white-space: nowrap;
@@ -757,9 +757,9 @@ html.dark-scrollbar .navbar {
 }
 
 .laptop {
-    width: 76vw;
+    width: min(76vw, 65vh);
     max-width: 880px;
-    height: 50vw;
+    height: min(50vw, 42.8vh);
     max-height: 580px;
     position: relative;
     transform-style: preserve-3d;
@@ -814,15 +814,15 @@ html.dark-scrollbar .navbar {
 }
 
 .logo {
-    width: 88px;
-    height: 88px;
+    width: clamp(50px, 4vw, 88px);
+    height: clamp(50px, 4vw, 88px);
     object-fit: contain;
     filter: brightness(1.15) saturate(0.9);
 }
 
 .brand-copy .name {
     margin: 0;
-    font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+    font-size: clamp(1.4rem, 1.8vw, 2.2rem);
     font-weight: 800;
     color: #1e293b;
 }
@@ -832,7 +832,7 @@ html.dark-scrollbar .navbar {
     color: #475569;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    font-size: clamp(0.72rem, 1.3vw, 0.95rem);
+    font-size: clamp(0.72rem, 0.8vw, 0.95rem);
 }
 
 .lid-front {
@@ -872,8 +872,8 @@ html.dark-scrollbar .navbar {
 }
 
 .avatar {
-    width: 80px;
-    height: 80px;
+    width: clamp(50px, 4vw, 80px);
+    height: clamp(50px, 4vw, 80px);
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(255, 255, 255, 0.5);
@@ -1097,15 +1097,15 @@ h2 {
 }
 
 h1 {
-    font-size: clamp(2rem, 4.3vw, 4.2rem);
+    font-size: clamp(2rem, 3.5vw, 4.2rem);
 }
 
 h2 {
-    font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+    font-size: clamp(1.5rem, 2vw, 2.5rem);
 }
 
 .greeting {
-    font-size: clamp(4rem, 10vw, 8rem);
+    font-size: clamp(4rem, 6.5vw, 8rem);
     font-weight: 800;
     color: #ffffff;
     margin-bottom: 2rem;
@@ -1127,7 +1127,7 @@ p {
 }
 
 .large-paragraph {
-    font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+    font-size: clamp(1.4rem, 1.8vw, 2.2rem);
     line-height: 1.5;
     color: #e2e8f0 !important;
     margin-bottom: 1.8rem;
@@ -1230,7 +1230,7 @@ p {
 }
 
 .languages-title {
-    font-size: 2rem;
+    font-size: clamp(2rem, 2.5vw, 2.5rem);
     color: #0f172a;
     margin: 0;
     line-height: 1.1;
@@ -1246,24 +1246,20 @@ p {
         /* GSAP se encargará de pinear toda la sección, así que quitamos el sticky de CSS */
     }
     .languages-right .eyebrow {
-        font-size: 2.5rem;
+        font-size: clamp(2rem, 2.5vw, 2.5rem);
         margin: 0 0 1rem 0;
-    }
-    .languages-title {
-        font-size: 2.5rem;
     }
 }
 
 .lang-list {
     display: flex;
     flex-direction: column;
-    gap: 2rem; /* Espacio entre categorías reducido */
+    gap: clamp(2rem, 3vw, 3rem); /* Espacio entre categorías reducido */
     padding: 1rem 0;
 }
 
 @media (min-width: 768px) {
     .lang-list {
-        gap: 3rem; /* Reducido de 5rem */
         padding: 1rem 0;
     }
 }
@@ -1271,12 +1267,12 @@ p {
 .lang-category {
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Reducido de 1.5rem */
+    gap: clamp(1rem, 1.5vw, 1.5rem); /* Reducido de 1.5rem */
 }
 
 .category-title {
     margin: 0;
-    font-size: 1rem; /* Reducido */
+    font-size: clamp(1rem, 1.2vw, 1.1rem); /* Reducido */
     color: #64748b; /* Color sutil para el título de la categoría */
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -1285,32 +1281,26 @@ p {
 }
 
 @media (min-width: 768px) {
-    .category-title {
-        font-size: 1.1rem; /* Reducido */
-    }
 }
 
 .category-items {
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Reducido */
+    gap: clamp(1rem, 1.2vw, 1.2rem); /* Reducido */
 }
 
 @media (min-width: 768px) {
-    .category-items {
-        gap: 1.2rem; /* Reducido de 2rem */
-    }
 }
 
 .lang-item {
     display: flex;
     align-items: center;
-    gap: 1rem; /* Reducido el gap en móvil */
+    gap: clamp(1rem, 1.5vw, 1.5rem); /* Reducido el gap en móvil */
 }
 
 .lang-item img {
-    width: 40px; /* Iconos más pequeños en móvil */
-    height: 40px;
+    width: clamp(40px, 3.5vw, 50px); /* Iconos más pequeños en móvil */
+    height: clamp(40px, 3.5vw, 50px);
     object-fit: contain;
     flex-shrink: 0; /* Evitar que la imagen se encoja */
     transition: transform 0.2s ease-in-out;
@@ -1329,35 +1319,26 @@ p {
 }
 
 @media (min-width: 768px) {
-    .lang-item {
-        gap: 1.5rem; /* Reducido */
-    }
-    .lang-item img {
-        width: 50px; /* Reducido de 80px */
-        height: 50px;
-    }
 }
 
 .lang-info h4 {
     margin: 0 0 0.2rem 0;
-    font-size: 1.1rem; /* Título más pequeño en móvil */
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem); /* Título más pequeño en móvil */
     color: #0f172a;
 }
 
 .lang-info p {
     margin: 0;
     color: #475569;
-    font-size: 0.85rem; /* Texto más pequeño en móvil */
+    font-size: clamp(0.85rem, 1vw, 0.95rem); /* Texto más pequeño en móvil */
     line-height: 1.4;
 }
 
 @media (min-width: 768px) {
     .lang-info h4 {
         margin: 0 0 0.3rem 0;
-        font-size: 1.3rem; /* Reducido de 1.8rem */
     }
     .lang-info p {
-        font-size: 0.95rem; /* Reducido de 1.1rem */
     }
 }
 
@@ -1482,7 +1463,7 @@ p {
 
 .timeline-container {
     position: relative;
-    width: min(100%, 80vh);
+    width: min(100%, 70vh);
     max-width: 1000px;
     aspect-ratio: 1 / 1;
     margin: 0 auto;
@@ -1690,7 +1671,7 @@ p {
     color: #ffffff;
     margin: 0;
     font-weight: 700;
-    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-size: clamp(2rem, 3vw, 3.5rem);
 }
 
 .projects-track {
@@ -1701,7 +1682,7 @@ p {
 }
 
 .project-wrapper {
-    width: 70vw;
+    width: 60vw;
     max-width: 1200px;
     flex-shrink: 0;
     display: flex;
@@ -1734,13 +1715,13 @@ p {
 }
 
 .project-info h3 {
-    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+    font-size: clamp(1.5rem, 2vw, 2.5rem);
     margin: 0 0 1rem 0;
     font-weight: 700;
 }
 
 .project-info p {
-    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    font-size: clamp(1rem, 1vw, 1.2rem);
     color: #94a3b8;
     line-height: 1.6;
     margin: 0 auto;
