@@ -41,6 +41,7 @@
     "/^node -c js/main\\.js$/": {
         "approve": true,
         "matchCommandLine": true
-    }
+    },
+    "ng": true
 }
 }

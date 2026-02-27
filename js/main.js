@@ -811,6 +811,32 @@ if (navbar) {
     });
 }
 
+// --- Navbar Progress Bar ---
+const navProgressFill = document.getElementById('navProgressFill');
+const navProgressSlider = document.getElementById('navProgressSlider');
+
+if (navProgressFill && navProgressSlider) {
+    // Update progress bar on scroll
+    lenis.on('scroll', () => {
+        const scrollY = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = maxScroll > 0 ? (scrollY / maxScroll) * 100 : 0;
+        
+        navProgressFill.style.width = `${progress}%`;
+        navProgressSlider.value = progress;
+    });
+
+    // Update scroll position on slider drag
+    navProgressSlider.addEventListener('input', (e) => {
+        const progress = parseFloat(e.target.value);
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const targetScroll = (progress / 100) * maxScroll;
+        
+        // Use window.scrollTo for immediate response during drag
+        window.scrollTo(0, targetScroll);
+    });
+}
+
 if (mobileMenuToggle && navbar) {
     mobileMenuToggle.addEventListener('click', () => {
         navbar.classList.toggle('open');
