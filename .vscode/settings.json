@@ -48,6 +48,10 @@
     "/^python -m http\\.server 8000$/": {
         "approve": true,
         "matchCommandLine": true
+    },
+    "/^python -m http\\.server 5500$/": {
+        "approve": true,
+        "matchCommandLine": true
     }
 }
 }

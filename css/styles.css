@@ -307,6 +307,8 @@ html.dark-scrollbar .navbar {
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    mix-blend-mode: normal;
+    color: var(--text);
 }
 
 @media (max-width: 768px) {
@@ -330,6 +332,7 @@ html.dark-scrollbar .navbar {
         border: 1px solid rgba(255, 255, 255, 0.3);
         opacity: 0;
         pointer-events: none;
+        mix-blend-mode: normal;
     }
 
     .navbar.scrolled {
@@ -349,6 +352,11 @@ html.dark-scrollbar .navbar {
         width: 100%;
         align-items: flex-start;
         padding-left: 20px; /* Add padding to make room for the progress bar on the left */
+    }
+
+    .nav-links a {
+        color: var(--text);
+        mix-blend-mode: normal;
     }
 
     .nav-links li {
@@ -487,6 +495,33 @@ html.dark-scrollbar .navbar {
     position: absolute;
     left: 0;
     top: 0;
+    overflow: hidden;
+}
+
+.splash-progress-bar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.3) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.3) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 10px 10px;
+    animation: progress-stripes 1s linear infinite;
+}
+
+@keyframes progress-stripes {
+    from { background-position: 10px 0; }
+    to { background-position: 0 0; }
 }
 
 .splash-progress-bar.loading-anim {
