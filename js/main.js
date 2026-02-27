@@ -239,8 +239,8 @@ const setupHeroAnimation = () => {
             lenis.scrollTo(targetScroll, {
                 duration: 3.5, // Aumentado para que tarde más
                 easing: (t) => {
-                    // Easing easeOutQuart
-                    return 1 - Math.pow(1 - t, 4);
+                    // Easing custom: rápido al principio, muy lento al final (easeOutExpo)
+                    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
                 }
             });
         }
@@ -256,8 +256,8 @@ const setupHeroAnimation = () => {
             lenis.scrollTo('.intro', {
                 duration: 3.5,
                 easing: (t) => {
-                    // Easing easeOutQuart
-                    return 1 - Math.pow(1 - t, 4);
+                    // Easing custom: rápido al principio, muy lento al final (easeOutExpo)
+                    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
                 }
             });
         });

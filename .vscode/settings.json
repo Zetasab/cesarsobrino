@@ -1,4 +1,5 @@
-{"workbench.colorCustomizations": {
+{
+    "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#4B0082",    // Morado oscuro
     "titleBar.activeForeground": "#FFFFFF",
     "titleBar.inactiveBackground": "#3A0066",  // Morado más apagado para inactivo
