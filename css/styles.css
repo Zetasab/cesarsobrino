@@ -275,23 +275,7 @@ html.dark-scrollbar .navbar {
     letter-spacing: 2px;
     display: flex;
     align-items: center;
-}
-
-.splash-loading-text .dot {
-    animation: splash-dots 1.5s infinite;
-    opacity: 0;
-}
-
-.splash-loading-text .dot:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.splash-loading-text .dot:nth-child(2) {
-    animation-delay: 0.3s;
-}
-
-.splash-loading-text .dot:nth-child(3) {
-    animation-delay: 0.6s;
+    gap: 8px;
 }
 
 .splash-progress-container {
@@ -301,6 +285,7 @@ html.dark-scrollbar .navbar {
     border-radius: 2px;
     overflow: hidden;
     margin-top: 10px;
+    position: relative;
 }
 
 .splash-progress-bar {
@@ -309,18 +294,25 @@ html.dark-scrollbar .navbar {
     background: var(--text);
     border-radius: 2px;
     transition: width 0.1s ease;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.splash-progress-bar.loading-anim {
+    width: 30%;
+    animation: splash-loading-bar 1.5s infinite ease-in-out;
+}
+
+@keyframes splash-loading-bar {
+    0% { left: -30%; }
+    100% { left: 100%; }
 }
 
 @keyframes splash-pulse {
     0% { transform: scale(0.95); opacity: 0.8; }
     50% { transform: scale(1.05); opacity: 1; }
     100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-@keyframes splash-dots {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
 }
 
 .splash-screen.loaded {

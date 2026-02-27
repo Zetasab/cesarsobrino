@@ -34,38 +34,51 @@ window.addEventListener('load', () => {
 
     const splashScreen = document.getElementById('splash-screen');
     const progressBar = document.getElementById('splashProgressBar');
+    const progressText = document.getElementById('splashProgressText');
     const heroTitle = document.querySelector('.hero-title');
 
     if (splashScreen && progressBar) {
-        // Simular progreso de carga
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-            progress += Math.random() * 15; // Incremento aleatorio
-            if (progress > 100) progress = 100;
+        // Iniciar animación de carga indeterminada
+        progressBar.classList.add('loading-anim');
+        
+        // Simular un tiempo de carga inicial antes de empezar el progreso
+        setTimeout(() => {
+            progressBar.classList.remove('loading-anim');
+            progressBar.style.left = '0';
+            
+            // Simular progreso de carga
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15; // Incremento aleatorio
+                if (progress > 100) progress = 100;
 
-            progressBar.style.width = `${progress}%`;
+                progressBar.style.width = `${progress}%`;
+                if (progressText) {
+                    progressText.textContent = `${Math.floor(progress)}%`;
+                }
 
-            if (progress === 100) {
-                clearInterval(progressInterval);
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
 
-                // Pequeño retraso después de llegar al 100% antes de abrir
-                setTimeout(() => {
-                    splashScreen.classList.add('loaded');
-
-                    // Iniciar la animación de escritura del título justo cuando empieza a abrirse el splash screen
-                    if (heroTitle) {
-                        heroTitle.classList.add('start-typing');
-                    }
-
-                    // Permitir scroll después de que termine la animación (1.2s)
+                    // Pequeño retraso después de llegar al 100% antes de abrir
                     setTimeout(() => {
-                        lenis.start();
-                        document.body.classList.remove('no-scroll');
-                        splashScreen.classList.add('hidden');
-                    }, 1200);
-                }, 400);
-            }
-        }, 100); // Actualizar cada 100ms
+                        splashScreen.classList.add('loaded');
+
+                        // Iniciar la animación de escritura del título justo cuando empieza a abrirse el splash screen
+                        if (heroTitle) {
+                            heroTitle.classList.add('start-typing');
+                        }
+
+                        // Permitir scroll después de que termine la animación (1.2s)
+                        setTimeout(() => {
+                            lenis.start();
+                            document.body.classList.remove('no-scroll');
+                            splashScreen.classList.add('hidden');
+                        }, 1200);
+                    }, 400);
+                }
+            }, 100); // Actualizar cada 100ms
+        }, 1500); // Tiempo de animación indeterminada antes de empezar a contar
 
     } else {
         lenis.start();
