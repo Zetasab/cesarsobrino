@@ -124,11 +124,6 @@ const setupHeroAnimation = () => {
     });
 
     timeline
-        // Hide scroll hint early
-        .to(scrollHint, {
-            autoAlpha: 0,
-            duration: 0.5
-        }, 0)
         // Hide title when scrolling down
         .to(heroTitleWrapper, {
             autoAlpha: 0,
@@ -807,4 +802,34 @@ if (navbar) {
             navbar.classList.remove('scrolled');
         }
     });
+}
+
+// --- Scroll Hint Logic ---
+if (scrollHint) {
+    let scrollHintTimeout;
+    
+    const resetScrollHintTimeout = () => {
+        // Limpiar el timeout anterior
+        clearTimeout(scrollHintTimeout);
+        
+        // Configurar un nuevo timeout para mostrar el scroll hint después de 5 segundos de inactividad
+        scrollHintTimeout = setTimeout(() => {
+            // Solo mostrar si no estamos al final de la página
+            if ((window.innerHeight + window.scrollY) < document.body.offsetHeight - 50) {
+                scrollHint.classList.remove('hidden');
+            }
+        }, 3500);
+    };
+
+    const handleScrollHint = () => {
+        // Ocultar el scroll hint al hacer scroll
+        scrollHint.classList.add('hidden');
+        resetScrollHintTimeout();
+    };
+
+    // Escuchar eventos de scroll
+    window.addEventListener('scroll', handleScrollHint);
+    
+    // Inicializar el timeout por si el usuario no hace scroll al cargar la página
+    resetScrollHintTimeout();
 }
