@@ -42,6 +42,12 @@
         "approve": true,
         "matchCommandLine": true
     },
-    "ng": true
+    "ng": true,
+    "npm run start": true,
+    "npx serve": true,
+    "/^python -m http\\.server 8000$/": {
+        "approve": true,
+        "matchCommandLine": true
+    }
 }
 }

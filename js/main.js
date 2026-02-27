@@ -858,15 +858,9 @@ if (navProgressFill && navProgressSlider) {
         if (window.innerWidth <= 768) {
             navProgressFill.style.height = `${progress}%`;
             navProgressFill.style.width = '100%';
-            
-            const container = document.querySelector('.nav-progress-container');
-            if (container) {
-                navProgressSlider.style.width = `${container.offsetHeight}px`;
-            }
         } else {
             navProgressFill.style.width = `${progress}%`;
             navProgressFill.style.height = '100%';
-            navProgressSlider.style.width = '100%';
         }
     });
 }

@@ -719,41 +719,41 @@ html.dark-scrollbar .navbar {
     z-index: -1; /* Detrás del portátil */
 }
 
-.hero-title-hidden {
-    font-size: clamp(2.5rem, 4.5vw, 6rem);
-    font-weight: 800;
-    white-space: nowrap;
-    margin: 0;
-    visibility: hidden;
-}
-
 .hero-title {
-    position: absolute;
-    top: 0;
-    left: 0;
     font-size: clamp(2.5rem, 4.5vw, 6rem);
     font-weight: 800;
     color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    border-right: 4px solid var(--text);
-    width: 0;
     margin: 0;
-    /* Quitamos la animación automática de CSS para controlarla con JS */
 }
 
-.hero-title.start-typing {
-    animation: typing 2s steps(16) forwards, blink 0.75s step-end infinite;
+.type {
+    display: inline-flex;
 }
 
-@keyframes typing {
-    from { width: 0; }
-    to { width: 100%; }
+.type span {
+    word-break: break-all;
+    height: 1.2em;
+    width: 0%;
+    overflow: hidden;
 }
 
-@keyframes blink {
-    from, to { border-color: transparent; }
-    50% { border-color: var(--text); }
+.hero-title.start-typing .type span {
+    animation: t 3s linear forwards, c 1s step-end infinite;
+    box-shadow: 5px 0 0 transparent;
+}
+
+.type span:before {
+    content: " ";
+    display: inline-block;
+}
+
+@keyframes t {
+    90%, 100% { width: 100%; }
+}
+
+@keyframes c {
+    0%, 100% { box-shadow: 5px 0 0 transparent; }
+    50% { box-shadow: 5px 0 0 var(--text); }
 }
 
 .laptop {
@@ -1230,7 +1230,7 @@ p {
 }
 
 .languages-title {
-    font-size: clamp(2rem, 2.5vw, 2.5rem);
+    font-size: 2rem;
     color: #0f172a;
     margin: 0;
     line-height: 1.1;
@@ -1246,20 +1246,24 @@ p {
         /* GSAP se encargará de pinear toda la sección, así que quitamos el sticky de CSS */
     }
     .languages-right .eyebrow {
-        font-size: clamp(2rem, 2.5vw, 2.5rem);
+        font-size: 2.5rem;
         margin: 0 0 1rem 0;
+    }
+    .languages-title {
+        font-size: 2.5rem;
     }
 }
 
 .lang-list {
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 3vw, 3rem); /* Espacio entre categorías reducido */
+    gap: 2rem; /* Espacio entre categorías reducido */
     padding: 1rem 0;
 }
 
 @media (min-width: 768px) {
     .lang-list {
+        gap: 3rem; /* Reducido de 5rem */
         padding: 1rem 0;
     }
 }
@@ -1267,12 +1271,12 @@ p {
 .lang-category {
     display: flex;
     flex-direction: column;
-    gap: clamp(1rem, 1.5vw, 1.5rem); /* Reducido de 1.5rem */
+    gap: 1rem; /* Reducido de 1.5rem */
 }
 
 .category-title {
     margin: 0;
-    font-size: clamp(1rem, 1.2vw, 1.1rem); /* Reducido */
+    font-size: 1rem; /* Reducido */
     color: #64748b; /* Color sutil para el título de la categoría */
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -1281,26 +1285,32 @@ p {
 }
 
 @media (min-width: 768px) {
+    .category-title {
+        font-size: 1.1rem; /* Reducido */
+    }
 }
 
 .category-items {
     display: flex;
     flex-direction: column;
-    gap: clamp(1rem, 1.2vw, 1.2rem); /* Reducido */
+    gap: 1rem; /* Reducido */
 }
 
 @media (min-width: 768px) {
+    .category-items {
+        gap: 1.2rem; /* Reducido de 2rem */
+    }
 }
 
 .lang-item {
     display: flex;
     align-items: center;
-    gap: clamp(1rem, 1.5vw, 1.5rem); /* Reducido el gap en móvil */
+    gap: 1rem; /* Reducido el gap en móvil */
 }
 
 .lang-item img {
-    width: clamp(40px, 3.5vw, 50px); /* Iconos más pequeños en móvil */
-    height: clamp(40px, 3.5vw, 50px);
+    width: 40px; /* Iconos más pequeños en móvil */
+    height: 40px;
     object-fit: contain;
     flex-shrink: 0; /* Evitar que la imagen se encoja */
     transition: transform 0.2s ease-in-out;
@@ -1319,26 +1329,35 @@ p {
 }
 
 @media (min-width: 768px) {
+    .lang-item {
+        gap: 1.5rem; /* Reducido */
+    }
+    .lang-item img {
+        width: 50px; /* Reducido de 80px */
+        height: 50px;
+    }
 }
 
 .lang-info h4 {
     margin: 0 0 0.2rem 0;
-    font-size: clamp(1.1rem, 1.5vw, 1.3rem); /* Título más pequeño en móvil */
+    font-size: 1.1rem; /* Título más pequeño en móvil */
     color: #0f172a;
 }
 
 .lang-info p {
     margin: 0;
     color: #475569;
-    font-size: clamp(0.85rem, 1vw, 0.95rem); /* Texto más pequeño en móvil */
+    font-size: 0.85rem; /* Texto más pequeño en móvil */
     line-height: 1.4;
 }
 
 @media (min-width: 768px) {
     .lang-info h4 {
         margin: 0 0 0.3rem 0;
+        font-size: 1.3rem; /* Reducido de 1.8rem */
     }
     .lang-info p {
+        font-size: 0.95rem; /* Reducido de 1.1rem */
     }
 }
 
