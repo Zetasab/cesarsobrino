@@ -790,3 +790,15 @@ document.querySelectorAll('.nav-links a').forEach(anchor => {
         }
     });
 });
+
+// --- Navbar Scroll Effect ---
+const navbar = document.querySelector('.navbar');
+if (navbar) {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 200) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+}
