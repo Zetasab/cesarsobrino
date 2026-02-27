@@ -822,7 +822,20 @@ if (navProgressFill && navProgressSlider) {
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
         const progress = maxScroll > 0 ? (scrollY / maxScroll) * 100 : 0;
         
-        navProgressFill.style.width = `${progress}%`;
+        if (window.innerWidth <= 768) {
+            navProgressFill.style.height = `${progress}%`;
+            navProgressFill.style.width = '100%';
+            
+            // Update slider width dynamically based on container height
+            const container = document.querySelector('.nav-progress-container');
+            if (container) {
+                navProgressSlider.style.width = `${container.offsetHeight}px`;
+            }
+        } else {
+            navProgressFill.style.width = `${progress}%`;
+            navProgressFill.style.height = '100%';
+            navProgressSlider.style.width = '100%';
+        }
         navProgressSlider.value = progress;
     });
 
@@ -834,6 +847,27 @@ if (navProgressFill && navProgressSlider) {
         
         // Use window.scrollTo for immediate response during drag
         window.scrollTo(0, targetScroll);
+    });
+
+    // Handle resize to reset styles
+    window.addEventListener('resize', () => {
+        const scrollY = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = maxScroll > 0 ? (scrollY / maxScroll) * 100 : 0;
+        
+        if (window.innerWidth <= 768) {
+            navProgressFill.style.height = `${progress}%`;
+            navProgressFill.style.width = '100%';
+            
+            const container = document.querySelector('.nav-progress-container');
+            if (container) {
+                navProgressSlider.style.width = `${container.offsetHeight}px`;
+            }
+        } else {
+            navProgressFill.style.width = `${progress}%`;
+            navProgressFill.style.height = '100%';
+            navProgressSlider.style.width = '100%';
+        }
     });
 }
 

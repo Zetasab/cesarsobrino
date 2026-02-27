@@ -83,6 +83,7 @@ body.no-scroll {
     -ms-overflow-style: none;
     scrollbar-width: none;
     mix-blend-mode: difference;
+    overflow: visible;
 }
 
 .navbar.scrolled {
@@ -137,20 +138,28 @@ body.no-scroll {
 /* --- Navbar Progress Bar --- */
 .nav-progress-container {
     position: absolute;
-    bottom: 4px;
-    left: 30px;
-    right: 30px;
+    bottom: 8px;
+    left: 40px;
+    right: 40px;
     height: 2px;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 2px;
-    transition: height 0.3s ease, bottom 0.3s ease, background 0.3s ease;
+    transition: height 0.3s ease, bottom 0.3s ease, background 0.3s ease, opacity 0.3s ease;
     z-index: 10;
     mix-blend-mode: difference;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.navbar.scrolled .nav-progress-container,
+.navbar.open .nav-progress-container {
+    opacity: 1;
+    pointer-events: all;
 }
 
 .navbar:hover .nav-progress-container {
     height: 4px;
-    bottom: 3px;
+    bottom: 7px;
     background: rgba(255, 255, 255, 0.3);
 }
 
@@ -198,9 +207,9 @@ body.no-scroll {
 .nav-progress-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
+    width: 16px;
+    height: 10px;
+    border-radius: 10px;
     background: #ffffff;
     cursor: pointer;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
@@ -217,9 +226,9 @@ body.no-scroll {
 }
 
 .nav-progress-slider::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
+    width: 16px;
+    height: 10px;
+    border-radius: 10px;
     background: #ffffff;
     cursor: pointer;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
@@ -281,7 +290,7 @@ html.dark-scrollbar .navbar {
     .navbar {
         width: auto;
         max-width: 80%;
-        overflow-x: hidden;
+        overflow: visible;
         padding: 20px;
         border-radius: 20px;
         top: 80px;
@@ -312,6 +321,7 @@ html.dark-scrollbar .navbar {
         gap: 20px;
         width: 100%;
         align-items: flex-start;
+        padding-left: 20px; /* Add padding to make room for the progress bar on the left */
     }
 
     .nav-links li {
@@ -325,7 +335,54 @@ html.dark-scrollbar .navbar {
     }
 
     .nav-progress-container {
-        display: none;
+        display: block;
+        bottom: 20px;
+        top: 20px;
+        left: 15px;
+        right: auto;
+        width: 2px;
+        height: auto;
+    }
+
+    .navbar:hover .nav-progress-container {
+        width: 4px;
+        left: 14px;
+        height: auto;
+        bottom: 20px;
+    }
+
+    .nav-progress-track {
+        width: 100%;
+        height: 100%;
+    }
+
+    .nav-progress-fill {
+        width: 100%;
+        height: 0%;
+        top: 0;
+        bottom: auto;
+    }
+
+    .nav-progress-slider {
+        opacity: 1;
+        height: 20px;
+        top: 0;
+        left: 50%;
+        transform-origin: 0 0;
+        transform: rotate(90deg) translateY(-50%);
+        /* Width is set dynamically in JS to match container height */
+    }
+
+    .nav-progress-slider::-webkit-slider-thumb {
+        opacity: 1;
+        width: 10px;
+        height: 16px;
+    }
+
+    .nav-progress-slider::-moz-range-thumb {
+        opacity: 1;
+        width: 10px;
+        height: 16px;
     }
 }
 
