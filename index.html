@@ -19,6 +19,25 @@
     </script>
 </head>
 <body class="no-scroll">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li>
+                <a href="#inicio" class="nav-icon" aria-label="Inicio">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </a>
+            </li>
+            <li><a href="#portfolio">Sobre mí</a></li>
+            <li><a href="#lenguajes">Lenguajes</a></li>
+            <li><a href="#timeline">Experiencia</a></li>
+            <li><a href="#projects">Proyectos</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+        </ul>
+    </nav>
+
     <!-- Splash Screen -->
     <div id="splash-screen" class="splash-screen">
         <div class="splash-hole"></div>
@@ -85,7 +104,9 @@
                                         <img src="assets/img/logo.png" alt="Avatar" class="avatar">
                                         <div class="login-action">
                                             <button class="btn-entrar">Entrar</button>
-                                            <div class="spinner"></div>
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar-fill"></div>
+                                            </div>
                                             <div class="tick">
                                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                             </div>
@@ -129,7 +150,7 @@
             </section>
 
          
-            <section class="block languages">
+            <section class="block languages" id="lenguajes">
                 <div class="languages-layout">
                     <div class="languages-left">
                         <div class="lang-list">
@@ -356,7 +377,7 @@
         <div class="footer-spacer"></div>
     </main>
 
-    <div class="footer-parallax-container">
+    <div class="footer-parallax-container" id="contacto">
         <footer class="footer-parallax">
             <!-- Parallax Layers -->
             <div class="parallax-layer layer-sky" data-speed="0"></div>

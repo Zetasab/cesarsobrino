@@ -113,6 +113,13 @@ const setupHeroAnimation = () => {
             start: "top top",
             end: "bottom bottom", // End when the bottom of .hero reaches the bottom of the viewport
             scrub: 0.5
+        },
+        onUpdate: function() {
+            if (this.time() >= 2.7) {
+                laptop.classList.add('expanded');
+            } else {
+                laptop.classList.remove('expanded');
+            }
         }
     });
 
@@ -176,18 +183,22 @@ const setupHeroAnimation = () => {
         }, 1.8)
 
         // 4. Loading sequence (after screen is fully open at 2.7s)
-        // Hide button, show spinner
+        // Hide button, show progress bar
         .to(".btn-entrar", {
             autoAlpha: 0,
             duration: 0.2
         }, 2.8)
-        .to(".spinner", {
+        .to(".progress-bar-container", {
             autoAlpha: 1,
             duration: 0.2
         }, 2.8)
+        .to(".progress-bar-fill", {
+            width: "100%",
+            duration: 1.2
+        }, 2.8)
 
-        // Hide spinner, show tick (after some scroll distance)
-        .to(".spinner", {
+        // Hide progress bar, show tick (after some scroll distance)
+        .to(".progress-bar-container", {
             autoAlpha: 0,
             duration: 0.2
         }, 4.0)
@@ -220,6 +231,8 @@ const setupHeroAnimation = () => {
 
     // Añadir evento click al portátil para hacer scroll hasta que el fondo esté full
     laptop.addEventListener('click', () => {
+        if (laptop.classList.contains('expanded')) return; // No hacer nada si ya está expandido
+
         const st = timeline.scrollTrigger;
         if (st) {
             // El momento en el que el fondo está full y cuadrado es a los 2.7s
@@ -753,3 +766,27 @@ function setupFooterParallax() {
 }
 
 setupFooterParallax();
+
+// --- Navbar Smooth Scrolling ---
+document.querySelectorAll('.nav-links a').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId && targetId.startsWith('#')) {
+            if (targetId === '#inicio') {
+                lenis.scrollTo(0, {
+                    duration: 1.5,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                });
+            } else {
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    lenis.scrollTo(targetElement, {
+                        duration: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                }
+            }
+        }
+    });
+});
