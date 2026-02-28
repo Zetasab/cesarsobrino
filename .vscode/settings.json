@@ -1,12 +1,12 @@
 {
     "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#d4d4d4",    // Morado oscuro
-    "titleBar.activeForeground": "#FFFFFF",
+    "titleBar.activeForeground": "#000000",
     "titleBar.inactiveBackground": "#d1d1d1",  // Morado más apagado para inactivo
     "titleBar.inactiveForeground": "#E0E0E0",
     
     "statusBar.background": "#dadada",         // Morado intenso en la barra de estado
-    "statusBar.foreground": "#FFFFFF",
+    "statusBar.foreground": "#1c1c1c",
     "statusBar.noFolderBackground": "#292929"
 },
 "chat.tools.terminal.autoApprove": {
