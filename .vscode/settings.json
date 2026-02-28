@@ -1,13 +1,13 @@
 {
     "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#4B0082",    // Morado oscuro
+    "titleBar.activeBackground": "#d4d4d4",    // Morado oscuro
     "titleBar.activeForeground": "#FFFFFF",
-    "titleBar.inactiveBackground": "#3A0066",  // Morado más apagado para inactivo
+    "titleBar.inactiveBackground": "#d1d1d1",  // Morado más apagado para inactivo
     "titleBar.inactiveForeground": "#E0E0E0",
     
-    "statusBar.background": "#5D00A1",         // Morado intenso en la barra de estado
+    "statusBar.background": "#dadada",         // Morado intenso en la barra de estado
     "statusBar.foreground": "#FFFFFF",
-    "statusBar.noFolderBackground": "#5D00A1"
+    "statusBar.noFolderBackground": "#292929"
 },
 "chat.tools.terminal.autoApprove": {
     "npm install": true,
