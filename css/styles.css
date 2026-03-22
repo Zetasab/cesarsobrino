@@ -162,6 +162,91 @@ body.no-scroll {
     justify-content: center;
 }
 
+.nav-stats-item {
+    position: relative;
+}
+
+.nav-stats-trigger {
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-stats-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.nav-stats-badge {
+    position: absolute;
+    top: -5px;
+    right: -9px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+}
+
+.nav-stats-tooltip {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 260px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.94);
+    color: #ffffff;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 20;
+    mix-blend-mode: normal;
+}
+
+.nav-stats-tooltip::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    right: 14px;
+    width: 10px;
+    height: 10px;
+    background: rgba(15, 23, 42, 0.94);
+    transform: rotate(45deg);
+}
+
+.nav-stats-item:hover .nav-stats-tooltip,
+.nav-stats-item:focus-within .nav-stats-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.nav-stats-trigger:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+.nav-stats-trigger:hover {
+    color: #cccccc;
+}
+
 /* --- Navbar Progress Bar --- */
 .nav-progress-container {
     position: absolute;
@@ -359,6 +444,22 @@ html.dark-scrollbar .navbar {
     .nav-links a {
         color: var(--text);
         mix-blend-mode: normal;
+    }
+
+    .nav-stats-trigger {
+        color: var(--text);
+    }
+
+    .nav-stats-tooltip {
+        right: auto;
+        left: 0;
+        width: min(260px, calc(100vw - 90px));
+        top: calc(100% + 10px);
+    }
+
+    .nav-stats-tooltip::before {
+        right: auto;
+        left: 12px;
     }
 
     .nav-links li {

@@ -52,6 +52,22 @@
             <li><a href="#timeline">Experiencia</a></li>
             <li><a href="#projects">Proyectos</a></li>
             <li><a href="#contacto">Contacto</a></li>
+            <li class="nav-stats-item">
+                <button class="nav-stats-trigger" type="button" aria-label="Informacion de estadisticas anonimas" aria-describedby="navStatsTooltip">
+                    <span class="nav-stats-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="4" y1="20" x2="20" y2="20"></line>
+                            <rect x="6" y="11" width="2.5" height="6"></rect>
+                            <rect x="10.75" y="8" width="2.5" height="9"></rect>
+                            <rect x="15.5" y="5" width="2.5" height="12"></rect>
+                        </svg>
+                        <span class="nav-stats-badge">?</span>
+                    </span>
+                </button>
+                <div class="nav-stats-tooltip" id="navStatsTooltip" role="tooltip">
+                    Esta web guarda tu visita de forma anonima para propositos estadisticos.
+                </div>
+            </li>
         </ul>
     </nav>
 
@@ -477,5 +493,6 @@
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/visits.js"></script>
 </body>
 </html>
