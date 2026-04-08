@@ -1,6 +1,6 @@
 (function () {
     console.log("v1");
-    const VISIT_ENDPOINT = "https://api.cesarsobrino.es/api/Visits/addvisit";
+    const VISIT_ENDPOINT = "https://cesarapi.up.railway.app/api/Visits/addvisit";
     // const VISIT_ENDPOINT = "http://localhost:5112/api/Visits/addvisit";
 
     function getVisitParam() {
