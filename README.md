@@ -2,6 +2,8 @@
 
 # Cesar Sobrino - Portfolio Web
 
+![Portada del portfolio](assets/img//Portada.png)
+
 Portfolio personal de **Cesar Sobrino** como desarrollador Full Stack.
 Una web enfocada en experiencia visual, animaciones avanzadas y presentacion profesional de perfil, stack y proyectos.
 
