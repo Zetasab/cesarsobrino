@@ -1478,19 +1478,13 @@ p {
     height: 32px;
     object-fit: contain;
     flex-shrink: 0; /* Evitar que la imagen se encoja */
-    transition: transform 0.2s ease-in-out;
+    transform-origin: center;
+    will-change: transform;
+    transition: filter 0.25s ease;
 }
 
-.lang-item img:hover {
-    animation: wiggle 0.4s ease-in-out;
-}
-
-@keyframes wiggle {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(-10deg); }
-    50% { transform: rotate(10deg); }
-    75% { transform: rotate(-5deg); }
-    100% { transform: rotate(0deg); }
+.lang-item:hover img {
+    filter: drop-shadow(0 8px 10px rgba(15, 23, 42, 0.18));
 }
 
 @media (min-width: 768px) {

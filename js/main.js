@@ -360,6 +360,65 @@ gsap.from(".languages-right .eyebrow, .languages-title", {
 const langCategories = gsap.utils.toArray(".lang-category");
 const langItems = gsap.utils.toArray(".lang-item");
 
+const setupLanguageIconsFollow = () => {
+    const iconMM = gsap.matchMedia();
+
+    iconMM.add("(min-width: 768px) and (hover: hover) and (pointer: fine)", () => {
+        const section = document.querySelector(".block.languages");
+        const iconNodes = gsap.utils.toArray(".lang-item img");
+        if (!section || iconNodes.length === 0) return;
+
+        const maxOffset = 18;
+        const iconFollowers = iconNodes.map((icon) => ({
+            icon,
+            moveX: gsap.quickTo(icon, "x", { duration: 0.35, ease: "power3.out" }),
+            moveY: gsap.quickTo(icon, "y", { duration: 0.35, ease: "power3.out" }),
+            rotate: gsap.quickTo(icon, "rotation", { duration: 0.35, ease: "power3.out" })
+        }));
+
+        const onMove = (event) => {
+            iconFollowers.forEach((follower) => {
+                const iconRect = follower.icon.getBoundingClientRect();
+                const iconCenterX = iconRect.left + iconRect.width / 2;
+                const iconCenterY = iconRect.top + iconRect.height / 2;
+
+                const dx = event.clientX - iconCenterX;
+                const dy = event.clientY - iconCenterY;
+                const distance = Math.hypot(dx, dy) || 1;
+
+                const strength = Math.min(1.35, 220 / (distance + 30));
+                const targetX = (dx / distance) * maxOffset * strength;
+                const targetY = (dy / distance) * maxOffset * strength;
+
+                follower.moveX(targetX);
+                follower.moveY(targetY);
+                follower.rotate((targetX / maxOffset) * 10);
+            });
+        };
+
+        const onLeave = () => {
+            iconFollowers.forEach((follower) => {
+                follower.moveX(0);
+                follower.moveY(0);
+                follower.rotate(0);
+            });
+        };
+
+        section.addEventListener("mousemove", onMove);
+        section.addEventListener("mouseleave", onLeave);
+
+        return () => {
+            section.removeEventListener("mousemove", onMove);
+            section.removeEventListener("mouseleave", onLeave);
+            iconFollowers.forEach((follower) => {
+                gsap.set(follower.icon, { x: 0, y: 0, rotation: 0 });
+            });
+        };
+    });
+};
+
+setupLanguageIconsFollow();
+
 // Usar matchMedia para aplicar diferentes configuraciones según el tamaño de pantalla
 let mm = gsap.matchMedia();
 
