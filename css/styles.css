@@ -1921,7 +1921,8 @@ p {
     background-color: #000; /* Fondo negro para los espacios vacíos si la imagen no llena el contenedor */
 }
 
-.project-item video {
+.project-item video,
+.project-item .project-gif {
     position: absolute;
     top: 0;
     left: 0;
@@ -1935,13 +1936,19 @@ p {
     background-color: #000; /* Fondo negro para los espacios vacíos si el video no llena el contenedor */
 }
 
-.project-wrapper:hover .project-item img,
-.project-link:hover .project-item img {
+.project-item img:not(.project-gif) {
+    transition: transform 0.5s ease;
+}
+
+.project-wrapper:hover .project-item img:not(.project-gif),
+.project-link:hover .project-item img:not(.project-gif) {
     transform: scale(1.05);
 }
 
 .project-wrapper:hover .project-item video,
-.project-link:hover .project-item video {
+.project-link:hover .project-item video,
+.project-wrapper:hover .project-item .project-gif,
+.project-link:hover .project-item .project-gif {
     opacity: 1;
     transform: scale(1.05);
 }
