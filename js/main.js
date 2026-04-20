@@ -271,8 +271,8 @@ const setupHeroAnimation = () => {
             lenis.scrollTo('.intro', {
                 duration: 3.5,
                 easing: (t) => {
-                    // Easing custom: rápido al principio, muy lento al final (easeOutExpo)
-                    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+                    // Easing custom: arranca algo más rápido y acelera al final (easeInCubic)
+                    return t * t * t;
                 }
             });
         });
