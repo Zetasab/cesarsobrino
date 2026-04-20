@@ -1869,12 +1869,23 @@ p {
 }
 
 .project-link {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 50%;
+    --lift: 0px;
+    --card-scale: 1;
+    --shine-opacity: 0;
+    --glow-opacity: 0;
     text-decoration: none;
     color: inherit;
     display: flex;
     flex-direction: column;
     gap: 2rem;
     cursor: pointer;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-style: preserve-3d;
+    transform: translateY(var(--lift));
 }
 
 .project-item {
@@ -1885,17 +1896,47 @@ p {
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.22s linear, box-shadow 0.35s ease, border-color 0.35s ease;
+    transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--card-scale));
+}
+
+.project-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(280px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08) 32%, rgba(255, 255, 255, 0) 62%),
+        linear-gradient(130deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 42%, rgba(255, 255, 255, 0) 60%);
+    opacity: var(--shine-opacity);
+    transition: opacity 0.25s ease;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.project-item::after {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    border-radius: 36px;
+    background: radial-gradient(circle at var(--mx) calc(var(--my) + 35%), rgba(14, 165, 233, 0.45), rgba(14, 165, 233, 0));
+    opacity: var(--glow-opacity);
+    transition: opacity 0.35s ease;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .project-info {
     text-align: center;
     color: #ffffff;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-info h3 {
     font-size: clamp(1.5rem, 2vw, 2.5rem);
     margin: 0 0 1rem 0;
     font-weight: 700;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), text-shadow 0.45s ease;
 }
 
 .project-info p {
@@ -1904,6 +1945,7 @@ p {
     line-height: 1.6;
     margin: 0 auto;
     max-width: 800px;
+    transition: color 0.45s ease;
 }
 
 .project-item img {
@@ -1934,17 +1976,73 @@ p {
     transition: transform 0.5s ease;
 }
 
-.project-wrapper:hover .project-item img:not(.project-gif),
-.project-link:hover .project-item img:not(.project-gif) {
-    transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+    .project-wrapper:hover .project-link,
+    .project-link:hover {
+        --lift: -8px;
+        --card-scale: 1.02;
+        --shine-opacity: 1;
+        --glow-opacity: 1;
+    }
+
+    .project-wrapper:hover .project-item,
+    .project-link:hover .project-item {
+        box-shadow: 0 32px 60px rgba(0, 0, 0, 0.55), 0 0 40px rgba(14, 165, 233, 0.22);
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .project-wrapper:hover .project-item img:not(.project-gif),
+    .project-link:hover .project-item img:not(.project-gif) {
+        transform: scale(1.07);
+    }
+
+    .project-wrapper:hover .project-item video,
+    .project-link:hover .project-item video,
+    .project-wrapper:hover .project-item .project-gif,
+    .project-link:hover .project-item .project-gif {
+        opacity: 1;
+        transform: scale(1.07);
+    }
+
+    .project-wrapper:hover .project-info,
+    .project-link:hover .project-info {
+        transform: translateY(-4px);
+    }
+
+    .project-wrapper:hover .project-info h3,
+    .project-link:hover .project-info h3 {
+        transform: translateY(-2px);
+        text-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
+    }
+
+    .project-wrapper:hover .project-info p,
+    .project-link:hover .project-info p {
+        color: #cbd5e1;
+    }
+
+    .project-link.is-interactive {
+        --lift: -10px;
+        --card-scale: 1.025;
+        --shine-opacity: 1;
+        --glow-opacity: 1;
+    }
 }
 
-.project-wrapper:hover .project-item video,
-.project-link:hover .project-item video,
-.project-wrapper:hover .project-item .project-gif,
-.project-link:hover .project-item .project-gif {
+.project-link:focus-visible .project-item {
+    --rx: 2deg;
+    --ry: -1deg;
+    --card-scale: 1.015;
+    --shine-opacity: 1;
+    --glow-opacity: 1;
+    box-shadow: 0 26px 50px rgba(0, 0, 0, 0.5), 0 0 26px rgba(14, 165, 233, 0.2);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.project-link:focus-visible .project-item::before,
+.project-link:focus-visible .project-item::after,
+.project-link:focus-visible .project-item .project-gif {
     opacity: 1;
-    transform: scale(1.05);
+    transform: scale(1.04);
 }
 
 @media (max-width: 768px) {

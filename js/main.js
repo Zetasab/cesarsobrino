@@ -756,6 +756,88 @@ const setupProjectsGallery = () => {
 
 setupProjectsGallery();
 
+const setupProjectCardsPointerReaction = () => {
+    const cardsMM = gsap.matchMedia();
+
+    cardsMM.add("(min-width: 769px) and (hover: hover) and (pointer: fine)", () => {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return;
+        }
+
+        const projectLinks = gsap.utils.toArray(".project-link");
+        if (projectLinks.length === 0) return;
+
+        const rafIds = new WeakMap();
+        const listeners = [];
+
+        projectLinks.forEach((link) => {
+            const card = link.querySelector(".project-item");
+            if (!card) return;
+
+            const maxTilt = 8;
+
+            const onMouseMove = (event) => {
+                if (rafIds.get(link)) {
+                    cancelAnimationFrame(rafIds.get(link));
+                }
+
+                const rafId = requestAnimationFrame(() => {
+                    const rect = card.getBoundingClientRect();
+                    if (!rect.width || !rect.height) return;
+
+                    const px = gsap.utils.clamp(0, 1, (event.clientX - rect.left) / rect.width);
+                    const py = gsap.utils.clamp(0, 1, (event.clientY - rect.top) / rect.height);
+
+                    const rotateY = (px - 0.5) * maxTilt;
+                    const rotateX = (0.5 - py) * maxTilt;
+
+                    link.classList.add("is-interactive");
+                    link.style.setProperty("--mx", `${(px * 100).toFixed(2)}%`);
+                    link.style.setProperty("--my", `${(py * 100).toFixed(2)}%`);
+                    link.style.setProperty("--rx", `${rotateX.toFixed(2)}deg`);
+                    link.style.setProperty("--ry", `${rotateY.toFixed(2)}deg`);
+                });
+
+                rafIds.set(link, rafId);
+            };
+
+            const resetCardState = () => {
+                link.classList.remove("is-interactive");
+                link.style.setProperty("--mx", "50%");
+                link.style.setProperty("--my", "50%");
+                link.style.setProperty("--rx", "0deg");
+                link.style.setProperty("--ry", "0deg");
+            };
+
+            const onMouseEnter = () => {
+                link.classList.add("is-interactive");
+            };
+
+            link.addEventListener("mouseenter", onMouseEnter);
+            link.addEventListener("mousemove", onMouseMove);
+            link.addEventListener("mouseleave", resetCardState);
+
+            listeners.push(() => {
+                link.removeEventListener("mouseenter", onMouseEnter);
+                link.removeEventListener("mousemove", onMouseMove);
+                link.removeEventListener("mouseleave", resetCardState);
+
+                if (rafIds.get(link)) {
+                    cancelAnimationFrame(rafIds.get(link));
+                }
+
+                resetCardState();
+            });
+        });
+
+        return () => {
+            listeners.forEach((teardown) => teardown());
+        };
+    });
+};
+
+setupProjectCardsPointerReaction();
+
 // --- Ocultar Hero Stage en la sección de proyectos ---
 // Lo ocultamos cuando el segundo proyecto (ZetaMovies) entra en pantalla
 const projectWrappers = document.querySelectorAll(".project-wrapper");
