@@ -1082,6 +1082,29 @@ if (customCursorDot) {
     let mouseY = 0;
     let cursorX = 0;
     let cursorY = 0;
+    let cursorOffsetX = 0;
+    let cursorOffsetY = 0;
+    let clearCursorTextTimeout;
+
+    const setCursorText = (text) => {
+        if (!text) return;
+        window.clearTimeout(clearCursorTextTimeout);
+        const estimatedWidth = Math.max(168, Math.min(window.innerWidth * 0.55, Math.ceil(text.length * 8.4 + 42)));
+        customCursorDot.style.setProperty('--cursor-text-width', `${estimatedWidth}px`);
+        customCursorDot.setAttribute('data-text', text);
+        customCursorDot.classList.add('is-text');
+    };
+
+    const clearCursorText = () => {
+        customCursorDot.classList.remove('is-text');
+        window.clearTimeout(clearCursorTextTimeout);
+        clearCursorTextTimeout = window.setTimeout(() => {
+            if (!customCursorDot.classList.contains('is-text')) {
+                customCursorDot.removeAttribute('data-text');
+                customCursorDot.style.removeProperty('--cursor-text-width');
+            }
+        }, 320);
+    };
 
     // Update mouse coordinates
     document.addEventListener('mousemove', (e) => {
@@ -1094,8 +1117,12 @@ if (customCursorDot) {
         // Ease the cursor position towards the mouse position (lower value = smoother/more delay)
         cursorX += (mouseX - cursorX) * 0.08;
         cursorY += (mouseY - cursorY) * 0.08;
+        const targetOffsetX = customCursorDot.classList.contains('is-text') ? 28 : 0;
+        const targetOffsetY = customCursorDot.classList.contains('is-text') ? 28 : 0;
+        cursorOffsetX += (targetOffsetX - cursorOffsetX) * 0.16;
+        cursorOffsetY += (targetOffsetY - cursorOffsetY) * 0.16;
         
-        customCursorDot.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+        customCursorDot.style.transform = `translate(${cursorX + cursorOffsetX}px, ${cursorY + cursorOffsetY}px) translate(-50%, -50%)`;
         
         requestAnimationFrame(animateCursor);
     };
@@ -1108,5 +1135,47 @@ if (customCursorDot) {
     
     document.addEventListener('mouseenter', () => {
         customCursorDot.style.opacity = '1';
+    });
+
+    const cursorTextTargets = document.querySelectorAll('[data-cursor-text]');
+    cursorTextTargets.forEach((target) => {
+        const updateCursorTextState = () => {
+            const text = target.getAttribute('data-cursor-text');
+            if (!text) {
+                clearCursorText();
+                return;
+            }
+
+            // En el portatil solo mostramos el texto cuando aun no esta expandido.
+            if (target === laptop && laptop && laptop.classList.contains('expanded')) {
+                clearCursorText();
+                return;
+            }
+
+            setCursorText(text);
+        };
+
+        target.addEventListener('mouseenter', updateCursorTextState);
+        target.addEventListener('mousemove', updateCursorTextState);
+        target.addEventListener('mouseleave', clearCursorText);
+    });
+
+    if (laptop) {
+        const laptopStateObserver = new MutationObserver(() => {
+            if (laptop.classList.contains('expanded')) {
+                clearCursorText();
+            }
+        });
+
+        laptopStateObserver.observe(laptop, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+
+    lenis.on('scroll', () => {
+        if (laptop && laptop.classList.contains('expanded') && customCursorDot.classList.contains('is-text')) {
+            clearCursorText();
+        }
     });
 }
