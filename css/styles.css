@@ -1827,6 +1827,68 @@ p {
 }
 
 /* --- Projects Gallery (Horizontal Scroll) --- */
+/* --- PayPal Support Button --- */
+@keyframes paypal-float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-7px); }
+}
+
+.paypal-btn-wrapper {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 1000;
+}
+
+.paypal-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(0, 48, 135, 0.22);
+    color: #003087;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    flex-shrink: 0;
+    animation: paypal-float 3.6s ease-in-out infinite;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                background 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+.paypal-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 156, 222, 0);
+    transition: inset 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.4s ease,
+                opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.paypal-btn:hover {
+    transform: scale(1.18) translateY(-3px);
+    background: rgba(0, 156, 222, 0.2);
+    border-color: rgba(0, 156, 222, 0.55);
+    box-shadow: 0 10px 36px rgba(0, 156, 222, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.paypal-btn:hover::after {
+    inset: -9px;
+    border-color: rgba(0, 156, 222, 0.45);
+}
+
 .projects-gallery {
     width: 100%;
     position: relative;

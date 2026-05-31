@@ -1086,17 +1086,19 @@ if (customCursorDot) {
     let cursorOffsetY = 0;
     let clearCursorTextTimeout;
 
-    const setCursorText = (text) => {
+    const setCursorText = (text, dir) => {
         if (!text) return;
         window.clearTimeout(clearCursorTextTimeout);
         const estimatedWidth = Math.max(168, Math.min(window.innerWidth * 0.55, Math.ceil(text.length * 8.4 + 42)));
         customCursorDot.style.setProperty('--cursor-text-width', `${estimatedWidth}px`);
         customCursorDot.setAttribute('data-text', text);
+        customCursorDot.dataset.offsetDir = dir || 'default';
         customCursorDot.classList.add('is-text');
     };
 
     const clearCursorText = () => {
         customCursorDot.classList.remove('is-text');
+        delete customCursorDot.dataset.offsetDir;
         window.clearTimeout(clearCursorTextTimeout);
         clearCursorTextTimeout = window.setTimeout(() => {
             if (!customCursorDot.classList.contains('is-text')) {
@@ -1117,8 +1119,10 @@ if (customCursorDot) {
         // Ease the cursor position towards the mouse position (lower value = smoother/more delay)
         cursorX += (mouseX - cursorX) * 0.08;
         cursorY += (mouseY - cursorY) * 0.08;
-        const targetOffsetX = customCursorDot.classList.contains('is-text') ? 28 : 0;
-        const targetOffsetY = customCursorDot.classList.contains('is-text') ? 28 : 0;
+        const isText = customCursorDot.classList.contains('is-text');
+        const isRightUp = isText && customCursorDot.dataset.offsetDir === 'right-up';
+        const targetOffsetX = isText ? (isRightUp ? 60 : 28) : 0;
+        const targetOffsetY = isText ? (isRightUp ? -18 : 28) : 0;
         cursorOffsetX += (targetOffsetX - cursorOffsetX) * 0.16;
         cursorOffsetY += (targetOffsetY - cursorOffsetY) * 0.16;
         
@@ -1152,7 +1156,7 @@ if (customCursorDot) {
                 return;
             }
 
-            setCursorText(text);
+            setCursorText(text, target.getAttribute('data-cursor-offset'));
         };
 
         target.addEventListener('mouseenter', updateCursorTextState);
