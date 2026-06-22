@@ -1,43 +1,62 @@
 (function () {
-    const GROQ_API_KEY = "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";
-    const GROQ_CHAT_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
-    const GROQ_MODEL = "llama-3.1-8b-instant";
+    // Asistente local muy sencillo: no llama a ninguna API externa.
+    // Busca coincidencias de palabras clave en la pregunta y devuelve
+    // una respuesta predefinida sobre el portfolio de César.
+    const TOPICS = [
+        {
+            keywords: ["formacion", "titulo", "titulacion", "estudios", "estudio", "grado", "academic", "carrera"],
+            answer: "César tiene formación en:\n- Grado Medio en Sistemas Microinformáticos en Red (2019)\n- Grado Superior en Programación de Aplicaciones Multiplataforma, DAM (2021)\n- Grado Superior en Programación de Aplicaciones Web, DAW (2022)"
+        },
+        {
+            keywords: ["experiencia", "trabajo", "empresa", "laboral", "empleo", "trayectoria"],
+            answer: "Experiencia profesional de César:\n- Oct 2021 - Mar 2022: Desarrollador .NET Core con Angular en VisibleSoft.\n- Dic 2022 - actualidad: Desarrollador .NET Core con Angular/Blazor en Excem Technologies.\nEn total, más de 3 años de experiencia como desarrollador Full Stack."
+        },
+        {
+            keywords: ["tecnologia", "tecnologias", "conocimiento", "conocimientos", "lenguaje", "lenguajes", "stack", "skill", "skills", "sabe", "sabes", "dominas", "manejas"],
+            answer: "Tecnologías que utiliza César:\n- Base: HTML5, CSS3, JavaScript\n- Profesional: C# & .NET, Angular, Blazor\n- Hobby: React, Vue.js, Node.js"
+        },
+        {
+            keywords: ["proyecto", "proyectos", "portfolio", "templates", "games", "movies"],
+            answer: "Proyectos personales de César:\n- Templates: plantillas gratuitas para descargar (templates.cesarsobrino.es)\n- Games: gestor de videojuegos con React.js y la API de RAWG (games.cesarsobrino.es)\n- Movies: gestor de películas con Vue.js y la API de TheMovieDatabase (movies.cesarsobrino.es)\n- Portfolio en Angular con animaciones de scroll (portfoliong.cesarsobrino.es)"
+        },
+        {
+            keywords: ["contacto", "contactar", "email", "correo", "linkedin", "github", "instagram", "cv", "curriculum"],
+            answer: "Puedes contactar con César a través de los iconos de GitHub, LinkedIn e Instagram del portfolio, o descargar su CV directamente desde la web."
+        },
+        {
+            keywords: ["paypal", "donar", "donacion", "apoyar", "apoyo"],
+            answer: "Si quieres apoyar el trabajo de César, puedes hacerlo con el botón de PayPal flotante en la web."
+        },
+        {
+            keywords: ["quien", "sobre ti", "sobre el", "presentate", "presentacion", "hola", "buenas", "eres"],
+            answer: "Soy el asistente del portfolio de César Sobrino, desarrollador Full Stack con más de 3 años de experiencia, especializado en Angular, Blazor, C# y .NET. Pregúntame sobre su formación, experiencia, tecnologías o proyectos."
+        }
+    ];
 
-    const SYSTEM_PROMPT = `Eres el asistente virtual del portfolio web de César Sobrino Arribas. Tu único propósito es responder preguntas relacionadas con César y su portfolio: su experiencia profesional, sus conocimientos técnicos, su titulación/formación académica, sus proyectos personales y cómo contactarle.
+    const FALLBACK = "Solo puedo responder preguntas sobre el portfolio de César: su formación, experiencia, tecnologías, proyectos o cómo contactarle. ¿Quieres preguntarme sobre alguno de esos temas?";
 
-Si te preguntan cualquier cosa que no esté relacionada con César, su perfil profesional o su portfolio (por ejemplo: cultura general, noticias, otras personas, tareas ajenas, código no relacionado, etc.), responde amablemente que solo puedes responder preguntas sobre el portfolio de César y rediriges la conversación.
+    function normalize(text) {
+        return text
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[̀-ͯ]/g, "");
+    }
 
-Responde siempre en el mismo idioma en el que te pregunten, de forma breve, cercana y profesional.
+    function getAnswer(userText) {
+        const normalized = normalize(userText);
 
-Información sobre César:
+        for (const topic of TOPICS) {
+            const match = topic.keywords.some(function (keyword) {
+                return normalized.indexOf(keyword) !== -1;
+            });
+            if (match) {
+                return topic.answer;
+            }
+        }
 
-SOBRE MÍ:
-César Sobrino es desarrollador Full Stack con más de tres años de experiencia construyendo aplicaciones web y multiplataforma. Trabaja principalmente con Blazor y Angular en el frontend, centrándose en interfaces limpias, eficientes y centradas en la experiencia de usuario. En el backend desarrolla APIs con .NET y C#, priorizando escalabilidad, rendimiento y una arquitectura bien estructurada. Le gusta entender el problema antes de escribir código, busca soluciones mantenibles y claras, y disfruta optimizando procesos y mejorando la calidad del software.
+        return FALLBACK;
+    }
 
-FORMACIÓN ACADÉMICA (titulación):
-- 2019: Graduado en Grado Medio de Sistemas Microinformáticos en Red.
-- 2021: Graduado en el Grado Superior de Programación de Aplicaciones Multiplataforma (DAM).
-- 2022: Graduado en el Grado Superior de Programación de Aplicaciones Web (DAW).
-
-EXPERIENCIA PROFESIONAL:
-- Octubre 2021 – marzo 2022: Desarrollador de Software de Aplicaciones .NET Core con Angular en VisibleSoft.
-- Diciembre 2022 – actualidad: Desarrollador de Software de Aplicaciones .NET Core con Angular/Blazor en Excem Technologies.
-
-CONOCIMIENTOS / TECNOLOGÍAS:
-- Base: HTML5, CSS3, JavaScript.
-- Profesional: C# & .NET (backend, APIs, arquitectura empresarial), Angular (aplicaciones escalables), Blazor (desarrollo full-stack con C#).
-- Hobby/personales: React, Vue.js, Node.js.
-
-PROYECTOS PERSONALES:
-- Templates (templates.cesarsobrino.es): proyecto donde guarda plantillas creadas para uso y descarga gratuita.
-- Games (games.cesarsobrino.es): gestor de videojuegos jugados o pendientes, hecho con React.js, consume la API de RAWG.
-- Movies (movies.cesarsobrino.es): gestor de películas vistas o pendientes, hecho con Vue.js, consume la API de TheMovieDatabase.
-- Portfolio de Angular (portfoliong.cesarsobrino.es): portfolio web hecho con Angular y librerías de animaciones de scroll para una experiencia moderna.
-
-CONTACTO:
-Puede contactarse a través de los enlaces de GitHub, LinkedIn e Instagram del portfolio, o descargar su CV desde la propia web. También puede apoyar su trabajo a través del botón de PayPal del portfolio.`;
-
-    let chatHistory = [];
     let isOpen = false;
     let isSending = false;
 
@@ -108,43 +127,14 @@ Puede contactarse a través de los enlaces de GitHub, LinkedIn e Instagram del p
 
     closeBtn.addEventListener("click", closeChat);
 
-    async function sendMessage(userText) {
-        chatHistory.push({ role: "user", content: userText });
-
+    function sendMessage(userText) {
         const typingBubble = appendTypingIndicator();
 
-        try {
-            const response = await fetch(GROQ_CHAT_ENDPOINT, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + GROQ_API_KEY
-                },
-                body: JSON.stringify({
-                    model: GROQ_MODEL,
-                    messages: [{ role: "system", content: SYSTEM_PROMPT }].concat(chatHistory),
-                    temperature: 0.4,
-                    max_tokens: 400
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error("groq_error");
-            }
-
-            const data = await response.json();
-            const reply = data && data.choices && data.choices[0] && data.choices[0].message
-                ? data.choices[0].message.content.trim()
-                : "Lo siento, no he podido generar una respuesta ahora mismo.";
-
+        window.setTimeout(function () {
             typingBubble.remove();
-            appendMessage(reply, "bot");
-            chatHistory.push({ role: "assistant", content: reply });
-        } catch (error) {
-            typingBubble.remove();
-            appendMessage("Ha ocurrido un error al contactar con el asistente. Inténtalo de nuevo en unos segundos.", "bot");
-            console.warn("Error en el chat de IA:", error);
-        }
+            appendMessage(getAnswer(userText), "bot");
+            isSending = false;
+        }, 350 + Math.random() * 250);
     }
 
     form.addEventListener("submit", function (event) {
@@ -163,8 +153,6 @@ Puede contactarse a través de los enlaces de GitHub, LinkedIn e Instagram del p
         input.value = "";
         isSending = true;
 
-        sendMessage(text).finally(function () {
-            isSending = false;
-        });
+        sendMessage(text);
     });
 })();
