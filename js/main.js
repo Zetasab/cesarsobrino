@@ -143,6 +143,16 @@ const heroScene = (() => {
     ground.receiveShadow = true;
     scene.add(ground);
 
+    // Grupo con los modelos: se inclina levemente siguiendo el mouse para dar sensacion de vida
+    const objectsGroup = new THREE.Group();
+    scene.add(objectsGroup);
+
+    const mouseParallax = { targetX: 0, targetY: 0, curX: 0, curY: 0 };
+    window.addEventListener("pointermove", (e) => {
+        mouseParallax.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseParallax.targetY = (e.clientY / window.innerHeight) * 2 - 1;
+    });
+
     // Recorrido de camara: plano general -> pegado a la pantalla del monitor
     const camStart = new THREE.Vector3(0, 1.95, 7.2);
     const lookStart = new THREE.Vector3(0, 1.35, 0);
@@ -154,6 +164,11 @@ const heroScene = (() => {
     const tmpLook = new THREE.Vector3();
 
     const loader = new THREE.GLTFLoader();
+
+    // Referencia al brazo izquierdo para animar el saludo (se rellena cuando termina de cargar)
+    let waveArm = null;
+    const waveAxis = new THREE.Vector3(0, 0, 1);
+    const waveQuat = new THREE.Quaternion();
 
     // Normaliza el modelo: altura objetivo, apoyado en el suelo y centrado en su grupo
     const prepareModel = (gltf, targetHeight) => {
@@ -184,7 +199,7 @@ const heroScene = (() => {
         group.position.x = -0.9;
         group.position.z = 0.5;
         group.rotation.y = 0.35;
-        scene.add(group);
+        objectsGroup.add(group);
 
         // El modelo no trae brazo izquierdo: usamos brazo.glb, reflejando en X la pose del brazo derecho
         loader.load("brazo.glb", (armGltf) => {
@@ -201,7 +216,9 @@ const heroScene = (() => {
             arm.scale.x = -1; // Refleja la geometria del brazo (era el derecho) para usarla como izquierdo
             arm.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), armDir);
             arm.position.copy(shoulderPoint);
+            arm.userData.baseQuaternion = arm.quaternion.clone();
             personaModel.add(arm);
+            waveArm = arm; // A partir de aqui el ticker anima el saludo pivotando sobre el hombro
         });
     });
 
@@ -211,7 +228,7 @@ const heroScene = (() => {
         group.add(prepareModel(gltf, 2.0));
         group.position.x = 0.9;
         group.rotation.y = -0.35;
-        scene.add(group);
+        objectsGroup.add(group);
 
         // Punto de la pantalla del monitor: hacia el se hace el zoom
         const box = new THREE.Box3().setFromObject(group);
@@ -244,10 +261,25 @@ const heroScene = (() => {
         tmpLook.lerpVectors(lookStart, lookEnd, p);
         camera.position.copy(tmpCam);
         camera.lookAt(tmpLook);
+
+        // Los modelos siguen el mouse con una rotacion leve; se apaga al hacer zoom en la pantalla
+        mouseParallax.curX += (mouseParallax.targetX - mouseParallax.curX) * 0.05;
+        mouseParallax.curY += (mouseParallax.targetY - mouseParallax.curY) * 0.05;
+        const parallaxFade = 1 - p;
+        objectsGroup.rotation.y = mouseParallax.curX * 0.05 * parallaxFade;
+        objectsGroup.rotation.x = mouseParallax.curY * 0.03 * parallaxFade;
+
+        // El brazo izquierdo saluda: pivota sobre el hombro (posicion fija), solo se mueve la mano
+        if (waveArm) {
+            const waveAngle = Math.sin(time * 3) * 0.26;
+            waveQuat.setFromAxisAngle(waveAxis, waveAngle);
+            waveArm.quaternion.copy(waveArm.userData.baseQuaternion).multiply(waveQuat);
+        }
+
         renderer.render(scene, camera);
     });
 
-    return { zoom, renderer, scene, camera };
+    return { zoom, renderer, scene, camera, objectsGroup, mouseParallax };
 })();
 
 window.__heroScene = heroScene;
