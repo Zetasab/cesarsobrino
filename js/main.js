@@ -91,11 +91,10 @@ window.addEventListener('load', () => {
     }
 });
 
-const laptop = document.getElementById("laptop");
-const laptopLid = document.getElementById("laptopLid");
-const screenWrap = document.getElementById("screenWrap");
-const screen = document.getElementById("screen");
-const laptopBase = document.getElementById("laptopBase");
+const hero3d = document.getElementById("hero3d");
+const heroCanvas = document.getElementById("heroCanvas");
+const screenOverlay = document.getElementById("screenOverlay");
+const heroStage = document.querySelector(".hero-stage");
 const scrollHint = document.querySelector(".scroll-hint");
 const heroTitleWrapper = document.getElementById("heroTitleWrapper");
 
@@ -107,19 +106,158 @@ const debounce = (fn, delay = 120) => {
     };
 };
 
-const setupHeroAnimation = () => {
-    // Initial Closed State (Image 1)
-    gsap.set(laptop, {
-        rotateX: 60, // Tilted back so we see the top (logo)
-        rotateY: 0,
-        rotateZ: 0,
-        scale: 0.8,
-        y: 180, // Bajado un poco más por debajo del centro
-        transformOrigin: "center center"
+// --- Escena 3D del hero (persona sentada + escritorio) ---
+const heroScene = (() => {
+    if (typeof THREE === "undefined" || typeof THREE.GLTFLoader === "undefined" || !heroCanvas) {
+        return null;
+    }
+
+    const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 100);
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x9aa3b2, 1.0);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.15);
+    dirLight.position.set(4, 7, 5);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(1024, 1024);
+    dirLight.shadow.camera.left = -6;
+    dirLight.shadow.camera.right = 6;
+    dirLight.shadow.camera.top = 6;
+    dirLight.shadow.camera.bottom = -6;
+    scene.add(dirLight);
+
+    // Suelo que solo recibe sombras
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(40, 40),
+        new THREE.ShadowMaterial({ opacity: 0.2 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Recorrido de camara: plano general -> pegado a la pantalla del monitor
+    const camStart = new THREE.Vector3(0, 1.95, 7.2);
+    const lookStart = new THREE.Vector3(0, 1.35, 0);
+    const camEnd = new THREE.Vector3(1.7, 1.35, 1.2);
+    const lookEnd = new THREE.Vector3(1.7, 1.35, 0);
+    const zoom = { progress: 0 };
+
+    const tmpCam = new THREE.Vector3();
+    const tmpLook = new THREE.Vector3();
+
+    const loader = new THREE.GLTFLoader();
+
+    // Normaliza el modelo: altura objetivo, apoyado en el suelo y centrado en su grupo
+    const prepareModel = (gltf, targetHeight) => {
+        const model = gltf.scene;
+        model.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const scale = targetHeight / (size.y || 1);
+        model.scale.setScalar(scale);
+        const scaledBox = new THREE.Box3().setFromObject(model);
+        const center = scaledBox.getCenter(new THREE.Vector3());
+        model.position.x -= center.x;
+        model.position.z -= center.z;
+        model.position.y -= scaledBox.min.y;
+        return model;
+    };
+
+    // Persona sentada a la izquierda, mirando hacia el escritorio
+    loader.load("persona-sentada.glb", (gltf) => {
+        const group = new THREE.Group();
+        const personaModel = prepareModel(gltf, 2.0);
+        group.add(personaModel);
+        group.position.x = -0.9;
+        group.position.z = 0.5;
+        group.rotation.y = 0.35;
+        scene.add(group);
+
+        // El modelo no trae brazo izquierdo: usamos brazo.glb, reflejando en X la pose del brazo derecho
+        loader.load("brazo.glb", (armGltf) => {
+            const arm = armGltf.scene;
+            arm.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            // El brazo sale del hombro izquierdo y apunta hacia arriba y un poco hacia fuera, como saludando
+            const shoulderPoint = new THREE.Vector3(-0.18, 0.833, 0.025);
+            const armDir = new THREE.Vector3(0.02, 1, 0.1).normalize();
+            arm.scale.x = -1; // Refleja la geometria del brazo (era el derecho) para usarla como izquierdo
+            arm.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), armDir);
+            arm.position.copy(shoulderPoint);
+            personaModel.add(arm);
+        });
     });
-    gsap.set(laptopLid, { rotateX: 0 }); // Closed flat on base
-    gsap.set(laptopBase, { autoAlpha: 1 });
-    gsap.set(screenWrap, { borderRadius: "20px", padding: "6px" });
+
+    // Escritorio con ordenador a la derecha
+    loader.load("escritorio-informatico.glb", (gltf) => {
+        const group = new THREE.Group();
+        group.add(prepareModel(gltf, 2.0));
+        group.position.x = 0.9;
+        group.rotation.y = -0.35;
+        scene.add(group);
+
+        // Punto de la pantalla del monitor: hacia el se hace el zoom
+        const box = new THREE.Box3().setFromObject(group);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const screenPoint = new THREE.Vector3(center.x, box.min.y + size.y * 0.72, center.z);
+        const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(group.quaternion);
+        lookEnd.copy(screenPoint);
+        camEnd.copy(screenPoint).addScaledVector(forward, 0.85);
+    });
+
+    const resize = () => {
+        const width = heroCanvas.clientWidth || window.innerWidth;
+        const height = heroCanvas.clientHeight || window.innerHeight;
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    gsap.ticker.add((time) => {
+        if (heroStage && heroStage.style.display === "none") return;
+        const p = zoom.progress;
+        // Balanceo suave de camara en reposo que desaparece al hacer zoom
+        const sway = (1 - p) * 0.12;
+        tmpCam.lerpVectors(camStart, camEnd, p);
+        tmpCam.x += Math.sin(time * 0.4) * sway;
+        tmpCam.y += Math.sin(time * 0.7) * sway * 0.4;
+        tmpLook.lerpVectors(lookStart, lookEnd, p);
+        camera.position.copy(tmpCam);
+        camera.lookAt(tmpLook);
+        renderer.render(scene, camera);
+    });
+
+    return { zoom, renderer, scene, camera };
+})();
+
+window.__heroScene = heroScene;
+
+const setupHeroAnimation = () => {
+    const zoomProxy = heroScene ? heroScene.zoom : { progress: 0 };
+
+    // Estado inicial: overlay de la pantalla oculto y pequeño (como si fuera el monitor)
+    gsap.set(screenOverlay, { autoAlpha: 0, scale: 0.22, transformOrigin: "50% 50%" });
+    gsap.set(".laptop-screen", { borderRadius: "22px" });
 
     const timeline = gsap.timeline({
         defaults: { ease: "power2.inOut" },
@@ -130,11 +268,9 @@ const setupHeroAnimation = () => {
             scrub: 0.5
         },
         onUpdate: function () {
-            if (this.time() >= 2.7) {
-                laptop.classList.add('expanded');
-            } else {
-                laptop.classList.remove('expanded');
-            }
+            const expanded = this.time() >= 2.7;
+            hero3d.classList.toggle("expanded", expanded);
+            screenOverlay.classList.toggle("expanded", expanded);
         }
     });
 
@@ -145,54 +281,28 @@ const setupHeroAnimation = () => {
             y: -50,
             duration: 0.8
         }, 0)
-        // 1. Open the lid (Image 2)
-        .to(laptopLid, {
-            rotateX: 105, // Open past 90deg
-            duration: 1
-        }, 0)
-        .to(laptop, {
-            rotateX: 65, // Tilt base slightly more to see keyboard
-            scale: 0.9,
-            y: 140, // Mantiene la posición un poco más baja al abrirse
-            duration: 1
+
+        // 1. Zoom de camara hacia la pantalla del monitor
+        .to(zoomProxy, {
+            progress: 1,
+            duration: 2.7
         }, 0)
 
-        // 2. Face the camera and expand to 100vw/100vh
-        .to(laptop, {
-            rotateX: 0, // Flatten the laptop base
-            scale: 1, // Reset scale so width/height take full effect
-            width: "100vw",
-            height: "100vh",
-            maxWidth: "100vw",
-            maxHeight: "100vh",
-            y: () => window.innerHeight, // Push base down so the flipped-up lid centers on screen
-            duration: 1.5
-        }, 1.2)
-        .to(laptopLid, {
-            rotateX: 180, // Open fully flat (180deg). Since lid-front is 180deg, total is 360deg (facing camera)
-            duration: 1.5
-        }, 1.2)
-
-        // 3. Square off screen and hide everything else
-        .to(screenWrap, {
-            borderRadius: 0,
-            padding: 0,
-            duration: 0.5
-        }, 2.2)
+        // 2. La pantalla de login crece desde el centro hasta ocupar todo el viewport
+        .to(screenOverlay, {
+            autoAlpha: 1,
+            duration: 0.7
+        }, 1.9)
+        .to(screenOverlay, {
+            scale: 1,
+            duration: 0.8
+        }, 1.9)
         .to(".laptop-screen", {
             borderRadius: 0,
             duration: 0.5
         }, 2.2)
-        .to(laptopBase, {
-            autoAlpha: 0,
-            duration: 0.3
-        }, 1.8)
-        .to(".lid-back", {
-            autoAlpha: 0,
-            duration: 0.3
-        }, 1.8)
 
-        // 4. Loading sequence (after screen is fully open at 2.7s)
+        // 3. Loading sequence (after screen is fully open at 2.7s)
         // Hide button, show progress bar
         .to(".btn-entrar", {
             autoAlpha: 0,
@@ -239,13 +349,13 @@ const setupHeroAnimation = () => {
             duration: 0.5
         }, 5.2);
 
-    // Añadir evento click al portátil para hacer scroll hasta que el fondo esté full
-    laptop.addEventListener('click', () => {
-        if (laptop.classList.contains('expanded')) return; // No hacer nada si ya está expandido
+    // Añadir evento click a la escena 3D para hacer scroll hasta que la pantalla esté full
+    hero3d.addEventListener('click', () => {
+        if (hero3d.classList.contains('expanded')) return; // No hacer nada si ya está expandido
 
         const st = timeline.scrollTrigger;
         if (st) {
-            // El momento en el que el fondo está full y cuadrado es a los 2.7s
+            // El momento en el que la pantalla está full y cuadrada es a los 2.7s
             // La duración total de la línea de tiempo es 5.7s
             const targetProgress = 2.7 / timeline.duration();
             const targetScroll = st.start + (st.end - st.start) * targetProgress;
@@ -1150,8 +1260,8 @@ if (customCursorDot) {
                 return;
             }
 
-            // En el portatil solo mostramos el texto cuando aun no esta expandido.
-            if (target === laptop && laptop && laptop.classList.contains('expanded')) {
+            // En la escena 3D solo mostramos el texto cuando aun no esta expandida.
+            if (target === hero3d && hero3d && hero3d.classList.contains('expanded')) {
                 clearCursorText();
                 return;
             }
@@ -1164,21 +1274,21 @@ if (customCursorDot) {
         target.addEventListener('mouseleave', clearCursorText);
     });
 
-    if (laptop) {
-        const laptopStateObserver = new MutationObserver(() => {
-            if (laptop.classList.contains('expanded')) {
+    if (hero3d) {
+        const heroStateObserver = new MutationObserver(() => {
+            if (hero3d.classList.contains('expanded')) {
                 clearCursorText();
             }
         });
 
-        laptopStateObserver.observe(laptop, {
+        heroStateObserver.observe(hero3d, {
             attributes: true,
             attributeFilter: ['class']
         });
     }
 
     lenis.on('scroll', () => {
-        if (laptop && laptop.classList.contains('expanded') && customCursorDot.classList.contains('is-text')) {
+        if (hero3d && hero3d.classList.contains('expanded') && customCursorDot.classList.contains('is-text')) {
             clearCursorText();
         }
     });

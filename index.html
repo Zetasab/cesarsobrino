@@ -133,63 +133,28 @@
                 <div class="hero-title-wrapper" id="heroTitleWrapper">
                     <h1 class="hero-title"><span class="type"><span>César Sobrino — Portfolio</span></span></h1>
                 </div>
-                <article class="laptop" id="laptop" data-cursor-text="Abrir portatil y ver">
-                    <div class="laptop-base" id="laptopBase">
-                        <div class="keyboard" aria-hidden="true">
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key"></span>
-                            <span class="key wide"></span>
-                            <span class="key wide"></span>
-                            <span class="key wide"></span>
-                            <span class="key wide"></span>
-                        </div>
-                        <div class="trackpad" aria-hidden="true"></div>
-                    </div>
+                <div class="hero-3d" id="hero3d" data-cursor-text="Hacer zoom a la pantalla">
+                    <canvas id="heroCanvas"></canvas>
+                </div>
 
-                    <div class="laptop-lid" id="laptopLid">
-                        <div class="lid-back">
-                            <div class="lid-brand">
-                                <img src="assets/img/logo.png" alt="Logo de Cesar Sobrino" class="logo">
-                                <div class="brand-copy">
-                                    <p class="name">Cesar Sobrino</p>
-                                    <p class="role">Developer</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="lid-front" id="screenWrap">
-                            <div class="laptop-screen" id="screen">
-                                <div class="screen-wallpaper">
-                                    <div class="login-container">
-                                        <img src="assets/img/logo.png" alt="César Sobrino Arribas, desarrollador Full Stack" class="avatar">
-                                        <div class="login-action">
-                                            <button class="btn-entrar">Entrar</button>
-                                            <div class="progress-bar-container">
-                                                <div class="progress-bar-fill"></div>
-                                            </div>
-                                            <div class="tick">
-                                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                            </div>
-                                        </div>
+                <div class="screen-overlay" id="screenOverlay">
+                    <div class="laptop-screen" id="screen">
+                        <div class="screen-wallpaper">
+                            <div class="login-container">
+                                <img src="assets/img/logo.png" alt="César Sobrino Arribas, desarrollador Full Stack" class="avatar">
+                                <div class="login-action">
+                                    <button class="btn-entrar">Entrar</button>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill"></div>
+                                    </div>
+                                    <div class="tick">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </article>
+                </div>
             </div>
             <div class="scroll-hint">
                 <div class="mouse-icon">
@@ -594,6 +559,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
     <script src="https://unpkg.com/split-type"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="js/main.js"></script>
