@@ -155,6 +155,7 @@ const heroScene = (() => {
 
     // Recorrido de camara: plano general -> pegado a la pantalla del monitor
     const camStart = new THREE.Vector3(0, 1.95, 7.2);
+    const baseCamStartZ = camStart.z; // distancia de referencia en pantallas anchas
     const lookStart = new THREE.Vector3(0, 1.35, 0);
     const camEnd = new THREE.Vector3(1.7, 1.35, 1.2);
     const lookEnd = new THREE.Vector3(1.7, 1.35, 0);
@@ -169,6 +170,30 @@ const heroScene = (() => {
     let waveArm = null;
     const waveAxis = new THREE.Vector3(0, 0, 1);
     const waveQuat = new THREE.Quaternion();
+
+    // Referencia a la pantalla del monitor: solo un click sobre ella activa el zoom
+    let screenMesh = null;
+    const raycaster = new THREE.Raycaster();
+    const pointerNDC = new THREE.Vector2();
+    const isScreenHit = (clientX, clientY) => {
+        if (!screenMesh) return false;
+        const rect = heroCanvas.getBoundingClientRect();
+        pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+        return raycaster.intersectObject(screenMesh, true).length > 0;
+    };
+
+    // Referencia al pato del escritorio: al hacer click sobre el, suena un "quak"
+    let duckMeshes = [];
+    const isDuckHit = (clientX, clientY) => {
+        if (!duckMeshes.length) return false;
+        const rect = heroCanvas.getBoundingClientRect();
+        pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+        return raycaster.intersectObjects(duckMeshes, true).length > 0;
+    };
 
     // Normaliza el modelo: altura objetivo, apoyado en el suelo y centrado en su grupo
     const prepareModel = (gltf, targetHeight) => {
@@ -192,7 +217,7 @@ const heroScene = (() => {
     };
 
     // Persona sentada a la izquierda, mirando hacia el escritorio
-    loader.load("persona-sentada.glb", (gltf) => {
+    loader.load("assets/objects/persona-sentada.glb", (gltf) => {
         const group = new THREE.Group();
         const personaModel = prepareModel(gltf, 2.0);
         group.add(personaModel);
@@ -202,7 +227,7 @@ const heroScene = (() => {
         objectsGroup.add(group);
 
         // El modelo no trae brazo izquierdo: usamos brazo.glb, reflejando en X la pose del brazo derecho
-        loader.load("brazo.glb", (armGltf) => {
+        loader.load("assets/objects/brazo.glb", (armGltf) => {
             const arm = armGltf.scene;
             arm.traverse((child) => {
                 if (child.isMesh) {
@@ -223,29 +248,54 @@ const heroScene = (() => {
     });
 
     // Escritorio con ordenador a la derecha
-    loader.load("escritorio-informatico.glb", (gltf) => {
+    loader.load("assets/objects/escritorio-informatico.glb", (gltf) => {
         const group = new THREE.Group();
         group.add(prepareModel(gltf, 2.0));
         group.position.x = 0.9;
         group.rotation.y = -0.35;
         objectsGroup.add(group);
 
-        // Punto de la pantalla del monitor: hacia el se hace el zoom
-        const box = new THREE.Box3().setFromObject(group);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        const screenPoint = new THREE.Vector3(center.x, box.min.y + size.y * 0.72, center.z);
-        const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(group.quaternion);
-        lookEnd.copy(screenPoint);
-        camEnd.copy(screenPoint).addScaledVector(forward, 0.85);
+        screenMesh = group.getObjectByName("pantalla_cristal");
+
+        // Punto de la pantalla del monitor: hacia el se hace el zoom (centro real del cristal, no una estimacion).
+        // Se mide con el parallax del mouse neutralizado, para que el objetivo no quede desviado
+        // segun donde estuviera el mouse justo cuando termino de cargar el modelo.
+        if (screenMesh) {
+            const prevRotX = objectsGroup.rotation.x;
+            const prevRotY = objectsGroup.rotation.y;
+            objectsGroup.rotation.set(0, 0, 0);
+            objectsGroup.updateMatrixWorld(true);
+
+            const screenBox = new THREE.Box3().setFromObject(screenMesh);
+            const screenCenter = screenBox.getCenter(new THREE.Vector3());
+            const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(group.quaternion);
+            lookEnd.copy(screenCenter);
+            camEnd.copy(screenCenter).addScaledVector(forward, 0.85);
+
+            objectsGroup.rotation.set(prevRotX, prevRotY, 0);
+            objectsGroup.updateMatrixWorld(true);
+        }
+
+        // Piezas del pato, para detectar el click sobre el
+        duckMeshes = ["pato_cuerpo", "pato_cola", "pato_cabeza", "pato_pico", "pato_ojo_izq", "pato_ojo_der"]
+            .map((name) => group.getObjectByName(name))
+            .filter(Boolean);
     });
 
     const resize = () => {
         const width = heroCanvas.clientWidth || window.innerWidth;
         const height = heroCanvas.clientHeight || window.innerHeight;
         renderer.setSize(width, height, false);
-        camera.aspect = width / height;
+        const aspect = width / height;
+        camera.aspect = aspect;
         camera.updateProjectionMatrix();
+
+        // En pantallas estrechas (movil) alejamos la camara de partida para que la persona
+        // y el escritorio entren enteros en el encuadre, sin tocar el FOV ni el resto de la animacion.
+        const referenceAspect = 1.3; // por debajo de esto empezamos a compensar (moviles/tablets en vertical)
+        const maxDistanceScale = 2.3; // limite para no alejar demasiado en pantallas muy estrechas
+        const distanceScale = THREE.MathUtils.clamp(referenceAspect / aspect, 1, maxDistanceScale);
+        camStart.z = baseCamStartZ * distanceScale;
     };
     resize();
     window.addEventListener("resize", resize);
@@ -265,7 +315,8 @@ const heroScene = (() => {
         // Los modelos siguen el mouse con una rotacion leve; se apaga al hacer zoom en la pantalla
         mouseParallax.curX += (mouseParallax.targetX - mouseParallax.curX) * 0.05;
         mouseParallax.curY += (mouseParallax.targetY - mouseParallax.curY) * 0.05;
-        const parallaxFade = 1 - p;
+        // Se apaga muy rapido en cuanto empieza el scroll, para no desviar la puntería del zoom hacia la pantalla
+        const parallaxFade = Math.max(0, 1 - p * 8);
         objectsGroup.rotation.y = mouseParallax.curX * 0.05 * parallaxFade;
         objectsGroup.rotation.x = mouseParallax.curY * 0.03 * parallaxFade;
 
@@ -279,7 +330,7 @@ const heroScene = (() => {
         renderer.render(scene, camera);
     });
 
-    return { zoom, renderer, scene, camera, objectsGroup, mouseParallax };
+    return { zoom, renderer, scene, camera, objectsGroup, mouseParallax, isScreenHit, isDuckHit };
 })();
 
 window.__heroScene = heroScene;
@@ -381,15 +432,17 @@ const setupHeroAnimation = () => {
             duration: 0.5
         }, 5.2);
 
-    // Añadir evento click a la escena 3D para hacer scroll hasta que la pantalla esté full
-    hero3d.addEventListener('click', () => {
+    // Añadir evento click SOLO sobre la pantalla del monitor para hacer scroll hasta que esté full
+    hero3d.addEventListener('click', (e) => {
         if (hero3d.classList.contains('expanded')) return; // No hacer nada si ya está expandido
+        if (!heroScene || !heroScene.isScreenHit(e.clientX, e.clientY)) return; // Solo si el click cae en la pantalla
 
         const st = timeline.scrollTrigger;
         if (st) {
-            // El momento en el que la pantalla está full y cuadrada es a los 2.7s
-            // La duración total de la línea de tiempo es 5.7s
-            const targetProgress = 2.7 / timeline.duration();
+            // El momento en el que la pantalla está full y cuadrada es a los 2.7s (el boton empieza a
+            // desvanecerse en el 2.8s). Apuntamos un poco mas alla del 2.7 para asegurar que el scroll
+            // no se quede unos pixeles corto y el boton "Entrar" quede clicable.
+            const targetProgress = 2.75 / timeline.duration();
             const targetScroll = st.start + (st.end - st.start) * targetProgress;
 
             // Usar lenis para hacer scroll suave hasta esa posición
@@ -401,6 +454,26 @@ const setupHeroAnimation = () => {
                 }
             });
         }
+    });
+
+    // Mostrar cursor de "pointer" cuando el mouse esta sobre la pantalla del monitor o sobre el pato
+    hero3d.addEventListener('mousemove', (e) => {
+        if (hero3d.classList.contains('expanded') || !heroScene) return;
+        const hover = heroScene.isScreenHit(e.clientX, e.clientY) || heroScene.isDuckHit(e.clientX, e.clientY);
+        hero3d.classList.toggle('hero-3d--pointer', hover);
+    });
+    hero3d.addEventListener('mouseleave', () => {
+        hero3d.classList.remove('hero-3d--pointer');
+    });
+
+    // Añadir evento click sobre el pato del escritorio: reproduce un "quak"
+    const duckQuak = new Audio('assets/objects/quak.mp3');
+    hero3d.addEventListener('click', (e) => {
+        if (hero3d.classList.contains('expanded') || !heroScene) return;
+        if (!heroScene.isDuckHit(e.clientX, e.clientY)) return;
+
+        duckQuak.currentTime = 0;
+        duckQuak.play().catch(() => {});
     });
 
     // Añadir evento click al botón "Entrar" para hacer scroll hasta la sección "Sobre mí"
@@ -1292,36 +1365,11 @@ if (customCursorDot) {
                 return;
             }
 
-            // En la escena 3D solo mostramos el texto cuando aun no esta expandida.
-            if (target === hero3d && hero3d && hero3d.classList.contains('expanded')) {
-                clearCursorText();
-                return;
-            }
-
             setCursorText(text, target.getAttribute('data-cursor-offset'));
         };
 
         target.addEventListener('mouseenter', updateCursorTextState);
         target.addEventListener('mousemove', updateCursorTextState);
         target.addEventListener('mouseleave', clearCursorText);
-    });
-
-    if (hero3d) {
-        const heroStateObserver = new MutationObserver(() => {
-            if (hero3d.classList.contains('expanded')) {
-                clearCursorText();
-            }
-        });
-
-        heroStateObserver.observe(hero3d, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-    }
-
-    lenis.on('scroll', () => {
-        if (hero3d && hero3d.classList.contains('expanded') && customCursorDot.classList.contains('is-text')) {
-            clearCursorText();
-        }
     });
 }

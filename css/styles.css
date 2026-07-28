@@ -929,12 +929,19 @@ html.dark-scrollbar .navbar {
     margin: 0;
 }
 
+@media (max-width: 600px) {
+    /* En movil el suelo de 2.5rem no cabe en una linea y el efecto de "escritura" corta el texto */
+    .hero-title {
+        font-size: clamp(1.5rem, 6.5vw, 2.4rem);
+    }
+}
+
 .type {
     display: inline-flex;
 }
 
 .type span {
-    word-break: break-all;
+    white-space: nowrap;
     height: 1.2em;
     width: 0%;
     overflow: hidden;
@@ -962,6 +969,10 @@ html.dark-scrollbar .navbar {
 .hero-3d {
     position: absolute;
     inset: 0;
+    cursor: default;
+}
+
+.hero-3d.hero-3d--pointer {
     cursor: pointer;
 }
 
