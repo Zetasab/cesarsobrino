@@ -1,8 +1,14 @@
 # Exported by three-d-stage
-newmtl madera
-Kd 0.5841 0.3564 0.1683
+newmtl cojin
+Kd 0.0331 0.0369 0.0467
 Ks 0.2000 0.2000 0.2000
-Ns 80
+Ns 20
+d 1.0000
+
+newmtl plastico_negro
+Kd 0.0116 0.0116 0.0130
+Ks 0.2000 0.2000 0.2000
+Ns 90
 d 1.0000
 
 newmtl pantalon
@@ -19,6 +25,12 @@ d 1.0000
 
 newmtl polo_negro
 Kd 0.0168 0.0168 0.0203
+Ks 0.2000 0.2000 0.2000
+Ns 36
+d 1.0000
+
+newmtl logo
+Kd 1.0000 1.0000 1.0000
 Ks 0.2000 0.2000 0.2000
 Ns 36
 d 1.0000

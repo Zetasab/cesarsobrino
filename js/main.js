@@ -223,6 +223,7 @@ const heroScene = (() => {
         const personaModel = prepareModel(gltf, 2.0);
         group.add(personaModel);
         group.position.x = -0.9;
+        group.position.y = 0.15;
         group.position.z = 0.5;
         group.rotation.y = 0.35;
         objectsGroup.add(group);
