@@ -140,6 +140,7 @@ const heroScene = (() => {
         new THREE.ShadowMaterial({ opacity: 0.2 })
     );
     ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.02; // ligeramente por debajo del suelo real de la habitacion, evita z-fighting
     ground.receiveShadow = true;
     scene.add(ground);
 
@@ -277,9 +278,30 @@ const heroScene = (() => {
         }
 
         // Piezas del pato, para detectar el click sobre el
-        duckMeshes = ["pato_cuerpo", "pato_cola", "pato_cabeza", "pato_pico", "pato_ojo_izq", "pato_ojo_der"]
+        const deskDuckMeshes = ["pato_cuerpo", "pato_cola", "pato_cabeza", "pato_pico", "pato_ojo_izq", "pato_ojo_der"]
             .map((name) => group.getObjectByName(name))
             .filter(Boolean);
+        duckMeshes = duckMeshes.concat(deskDuckMeshes);
+    });
+
+    // Habitacion de fondo, detras de la persona y el escritorio
+    loader.load("assets/objects/habitacion-programador.glb", (gltf) => {
+        const group = new THREE.Group();
+        const roomModel = prepareModel(gltf, 4.16); // escala el cuarto (2.6 de alto original) para que englobe a los dos modelos
+        roomModel.traverse((child) => {
+            if (child.isMesh) child.castShadow = false; // que no proyecte sombras raras de las paredes sobre el suelo
+        });
+        group.add(roomModel);
+        group.position.x = 0.3;
+        group.position.z = 0.1;
+        group.rotation.y = -0.5;
+        objectsGroup.add(group);
+
+        // Pato de la estanteria: se suma a los del escritorio para que tambien suene al clickarlo
+        const shelfDuckMeshes = ["pato_cuerpo", "pato_cabeza", "pato_pico"]
+            .map((name) => roomModel.getObjectByName(name))
+            .filter(Boolean);
+        duckMeshes = duckMeshes.concat(shelfDuckMeshes);
     });
 
     const resize = () => {

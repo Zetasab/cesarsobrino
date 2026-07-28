@@ -1,0 +1,115 @@
+# Exported by three-d-stage
+newmtl suelo_madera
+Kd 0.3050 0.1384 0.0497
+Ks 0.2000 0.2000 0.2000
+Ns 60
+d 1.0000
+
+newmtl pared
+Kd 0.8148 0.7758 0.6867
+Ks 0.2000 0.2000 0.2000
+Ns 10
+d 1.0000
+
+newmtl blanco_ceramica
+Kd 0.8879 0.8632 0.7913
+Ks 0.2000 0.2000 0.2000
+Ns 100
+d 1.0000
+
+newmtl lana_alfombra
+Kd 0.6240 0.5271 0.3916
+Ks 0.2000 0.2000 0.2000
+Ns 0
+d 1.0000
+
+newmtl madera_nogal
+Kd 0.0887 0.0409 0.0242
+Ks 0.2000 0.2000 0.2000
+Ns 70
+d 1.0000
+
+newmtl libro_rojo
+Kd 0.3916 0.0648 0.0452
+Ks 0.2000 0.2000 0.2000
+Ns 30
+d 1.0000
+
+newmtl libro_azul
+Kd 0.0307 0.0908 0.1559
+Ks 0.2000 0.2000 0.2000
+Ns 30
+d 1.0000
+
+newmtl libro_crema
+Kd 0.7231 0.6654 0.5395
+Ks 0.2000 0.2000 0.2000
+Ns 30
+d 1.0000
+
+newmtl libro_verde
+Kd 0.0685 0.1470 0.0762
+Ks 0.2000 0.2000 0.2000
+Ns 30
+d 1.0000
+
+newmtl libro_mostaza
+Kd 0.5711 0.3231 0.0482
+Ks 0.2000 0.2000 0.2000
+Ns 30
+d 1.0000
+
+newmtl metal_oscuro
+Kd 0.0452 0.0452 0.0578
+Ks 0.2000 0.2000 0.2000
+Ns 120
+d 1.0000
+
+newmtl placa_pcb
+Kd 0.0086 0.1301 0.0284
+Ks 0.2000 0.2000 0.2000
+Ns 80
+d 1.0000
+
+newmtl goma_amarilla
+Kd 0.8879 0.5333 0.0296
+Ks 0.2000 0.2000 0.2000
+Ns 90
+d 1.0000
+
+newmtl naranja_pico
+Kd 0.7454 0.1746 0.0252
+Ks 0.2000 0.2000 0.2000
+Ns 90
+d 1.0000
+
+newmtl carton
+Kd 0.4342 0.2664 0.1144
+Ks 0.2000 0.2000 0.2000
+Ns 20
+d 1.0000
+
+newmtl terracota
+Kd 0.4342 0.1144 0.0452
+Ks 0.2000 0.2000 0.2000
+Ns 20
+d 1.0000
+
+newmtl tierra
+Kd 0.0331 0.0176 0.0103
+Ks 0.2000 0.2000 0.2000
+Ns 0
+d 1.0000
+
+newmtl tronco
+Kd 0.1470 0.0666 0.0296
+Ks 0.2000 0.2000 0.2000
+Ns 20
+d 1.0000
+
+newmtl verde_hoja
+Kd 0.0497 0.2051 0.0423
+Ks 0.2000 0.2000 0.2000
+Ns 0
+d 1.0000
+

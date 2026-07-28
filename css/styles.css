@@ -919,7 +919,8 @@ html.dark-scrollbar .navbar {
     position: absolute;
     top: 8%;
     display: inline-block;
-    z-index: -1; /* Detrás del portátil */
+    z-index: 2; /* Por encima de la escena 3D */
+    pointer-events: none; /* Que no bloquee el click/hover sobre la pantalla o el pato */
 }
 
 .hero-title {
