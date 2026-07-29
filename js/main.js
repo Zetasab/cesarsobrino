@@ -134,6 +134,60 @@ const heroScene = (() => {
     dirLight.shadow.camera.bottom = -6;
     scene.add(dirLight);
 
+    // --- Presets de iluminación: día / tarde / noche ---
+    // Cada preset define el color y la intensidad de las luces de three.js,
+    // más la clase CSS que cambia el fondo del hero y el color/glow del título.
+    const LIGHT_PRESETS = {
+        day: {
+            hemiSky: 0xffffff,
+            hemiGround: 0x9aa3b2,
+            hemiIntensity: 0.7,
+            dirColor: 0xffffff,
+            dirIntensity: 0.8,
+            bodyClass: "lighting-day"
+        },
+        afternoon: {
+            hemiSky: 0xffb37b,
+            hemiGround: 0x4a3a2a,
+            hemiIntensity: 0.6,
+            dirColor: 0xff9d5c,
+            dirIntensity: 0.95,
+            bodyClass: "lighting-afternoon"
+        },
+        night: {
+            hemiSky: 0x3b4d8f,
+            hemiGround: 0x0a0a12,
+            hemiIntensity: 0.35,
+            dirColor: 0xaec6ff,
+            dirIntensity: 0.45,
+            bodyClass: "lighting-night"
+        }
+    };
+    const LIGHTING_CLASSES = Object.values(LIGHT_PRESETS).map((p) => p.bodyClass);
+    let currentLightingMode = "day";
+
+    const setLightingMode = (mode) => {
+        const preset = LIGHT_PRESETS[mode];
+        if (!preset) return;
+
+        hemiLight.color.setHex(preset.hemiSky);
+        hemiLight.groundColor.setHex(preset.hemiGround);
+        hemiLight.intensity = preset.hemiIntensity;
+
+        dirLight.color.setHex(preset.dirColor);
+        dirLight.intensity = preset.dirIntensity;
+
+        if (heroStage) {
+            heroStage.classList.remove(...LIGHTING_CLASSES);
+            heroStage.classList.add(preset.bodyClass);
+        }
+
+        currentLightingMode = mode;
+    };
+
+    // Modo por defecto (se puede cambiar luego con window.heroLighting.setMode("day"|"afternoon"|"night"))
+    setLightingMode("day");
+
     // Suelo que solo recibe sombras
     const ground = new THREE.Mesh(
         new THREE.PlaneGeometry(40, 40),
@@ -194,6 +248,29 @@ const heroScene = (() => {
         pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(pointerNDC, camera);
         return raycaster.intersectObjects(duckMeshes, true).length > 0;
+    };
+
+    // Referencia a las tazas (escritorio y estanteria): al hacer click, suena un "sorbo"
+    let cupMeshes = [];
+    const isCupHit = (clientX, clientY) => {
+        if (!cupMeshes.length) return false;
+        const rect = heroCanvas.getBoundingClientRect();
+        pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+        return raycaster.intersectObjects(cupMeshes, true).length > 0;
+    };
+
+    // Interruptores de luz en la pared de la derecha: uno por modo (dia/tarde/noche)
+    let switchMeshes = [];
+    const isSwitchHit = (clientX, clientY) => {
+        if (!switchMeshes.length) return null;
+        const rect = heroCanvas.getBoundingClientRect();
+        pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+        const hit = raycaster.intersectObjects(switchMeshes, true)[0];
+        return hit ? hit.object.userData.lightingMode || null : null;
     };
 
     // Normaliza el modelo: altura objetivo, apoyado en el suelo y centrado en su grupo
@@ -283,6 +360,12 @@ const heroScene = (() => {
             .map((name) => group.getObjectByName(name))
             .filter(Boolean);
         duckMeshes = duckMeshes.concat(deskDuckMeshes);
+
+        // Piezas de la taza de cafe del escritorio, para detectar el click sobre ella
+        const deskCupMeshes = ["taza_cafe", "taza", "cafe", "asa"]
+            .map((name) => group.getObjectByName(name))
+            .filter(Boolean);
+        cupMeshes = cupMeshes.concat(deskCupMeshes);
     });
 
     // Habitacion de fondo, detras de la persona y el escritorio
@@ -303,6 +386,66 @@ const heroScene = (() => {
             .map((name) => roomModel.getObjectByName(name))
             .filter(Boolean);
         duckMeshes = duckMeshes.concat(shelfDuckMeshes);
+
+        // Taza de la estanteria: se suma a la del escritorio para que tambien suene al clickarla
+        const shelfCupMeshes = ["taza", "taza_asa"]
+            .map((name) => roomModel.getObjectByName(name))
+            .filter(Boolean);
+        cupMeshes = cupMeshes.concat(shelfCupMeshes);
+    });
+
+    // Interruptores de luz en la pared de la derecha (dia / tarde / noche).
+    // Todo lo que puedas necesitar ajustar esta aqui: posicion, rotacion (en grados) y tamaño.
+    const SWITCH_WALL_X = 2.6;  // Distancia hacia la derecha (mas alla del escritorio, pegado a la pared)
+    const SWITCH_WALL_Y = 1.8;   // Altura del interruptor (igual para los 3, pegados a la pared)
+    const SWITCH_WALL_Z = -1.2;    // Posicion a lo largo de la pared (adelante/atras), punto central de la fila
+    const SWITCH_SPACING = 0.33; // Separacion entre los 3 interruptores
+    const SWITCH_SIZE = 0.06;    // Tamaño (altura objetivo en unidades de la escena)
+    const SWITCH_ROTATION_DEG = { x: 90, y: 0, z: 40 }; // Rotacion en grados sobre cada eje
+    // Angulo de la fila de interruptores respecto al eje Z (en grados). La pared esta en angulo
+    // (misma rotacion que la habitacion, -0.5 rad), asi que la fila sigue esa misma direccion
+    // para que los 3 queden a la misma distancia de la pared en vez de ir "adelantandose" uno a otro.
+    const SWITCH_ROW_ANGLE_DEG = -28.65;
+
+    const SWITCH_MODELS = [
+        { file: "interruptor-de-pared-dia.glb", mode: "day" },
+        { file: "interruptor-de-pared-tarde.glb", mode: "afternoon" },
+        { file: "interruptor-de-pared-noche.glb", mode: "night" }
+    ];
+
+    const degToRad = (deg) => (deg * Math.PI) / 180;
+    // Vector "a lo largo de la pared" (lado a lado). Si siguen sin quedar en fila, prueba a sumar/restar
+    // 90 a SWITCH_ROW_ANGLE_DEG en vez de tocar este vector.
+    const switchRowDir = new THREE.Vector3(1, 0, 0).applyAxisAngle(
+        new THREE.Vector3(0, 1, 0),
+        degToRad(SWITCH_ROW_ANGLE_DEG)
+    );
+
+    SWITCH_MODELS.forEach(({ file, mode }, index) => {
+        loader.load(`assets/objects/${file}`, (gltf) => {
+            const group = new THREE.Group();
+            const switchModel = prepareModel(gltf, SWITCH_SIZE);
+            switchModel.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = false;
+                    child.userData.lightingMode = mode;
+                    switchMeshes.push(child);
+                }
+            });
+            group.add(switchModel);
+            const offset = (index - 1) * SWITCH_SPACING;
+            group.position.set(
+                SWITCH_WALL_X + switchRowDir.x * offset,
+                SWITCH_WALL_Y,
+                SWITCH_WALL_Z + switchRowDir.z * offset
+            );
+            group.rotation.set(
+                degToRad(SWITCH_ROTATION_DEG.x),
+                degToRad(SWITCH_ROTATION_DEG.y),
+                degToRad(SWITCH_ROTATION_DEG.z)
+            );
+            objectsGroup.add(group);
+        });
     });
 
     const resize = () => {
@@ -353,10 +496,24 @@ const heroScene = (() => {
         renderer.render(scene, camera);
     });
 
-    return { zoom, renderer, scene, camera, objectsGroup, mouseParallax, isScreenHit, isDuckHit };
+    return {
+        zoom, renderer, scene, camera, objectsGroup, mouseParallax, isScreenHit, isDuckHit, isCupHit, isSwitchHit,
+        setLightingMode,
+        getLightingMode: () => currentLightingMode,
+        lightingModes: Object.keys(LIGHT_PRESETS)
+    };
 })();
 
 window.__heroScene = heroScene;
+
+// API pública para el futuro botón de día/tarde/noche:
+// window.heroLighting.setMode("day" | "afternoon" | "night")
+// window.heroLighting.getMode() / window.heroLighting.modes
+window.heroLighting = {
+    setMode: (mode) => heroScene && heroScene.setLightingMode(mode),
+    getMode: () => (heroScene ? heroScene.getLightingMode() : "day"),
+    modes: heroScene ? heroScene.lightingModes : ["day", "afternoon", "night"]
+};
 
 const setupHeroAnimation = () => {
     const zoomProxy = heroScene ? heroScene.zoom : { progress: 0 };
@@ -479,10 +636,13 @@ const setupHeroAnimation = () => {
         }
     });
 
-    // Mostrar cursor de "pointer" cuando el mouse esta sobre la pantalla del monitor o sobre el pato
+    // Mostrar cursor de "pointer" cuando el mouse esta sobre la pantalla, el pato, una taza o un interruptor de luz
     hero3d.addEventListener('mousemove', (e) => {
         if (hero3d.classList.contains('expanded') || !heroScene) return;
-        const hover = heroScene.isScreenHit(e.clientX, e.clientY) || heroScene.isDuckHit(e.clientX, e.clientY);
+        const hover = heroScene.isScreenHit(e.clientX, e.clientY)
+            || heroScene.isDuckHit(e.clientX, e.clientY)
+            || heroScene.isCupHit(e.clientX, e.clientY)
+            || !!heroScene.isSwitchHit(e.clientX, e.clientY);
         hero3d.classList.toggle('hero-3d--pointer', hover);
     });
     hero3d.addEventListener('mouseleave', () => {
@@ -499,11 +659,66 @@ const setupHeroAnimation = () => {
         duckQuak.play().catch(() => {});
     });
 
+    // Añadir evento click sobre las tazas (escritorio y estanteria): reproduce un "sorbo"
+    const cupSip = new Audio('assets/objects/sorbo.mp3');
+    hero3d.addEventListener('click', (e) => {
+        if (hero3d.classList.contains('expanded') || !heroScene) return;
+        if (!heroScene.isCupHit(e.clientX, e.clientY)) return;
+
+        cupSip.currentTime = 0;
+        cupSip.play().catch(() => {});
+    });
+
+    // Añadir evento click sobre los interruptores de la pared: cambian la iluminación (día/tarde/noche)
+    const switchSound = new Audio('assets/objects/interruptor.mp3');
+    hero3d.addEventListener('click', (e) => {
+        if (hero3d.classList.contains('expanded') || !heroScene) return;
+        const mode = heroScene.isSwitchHit(e.clientX, e.clientY);
+        if (!mode) return;
+
+        switchSound.currentTime = 0;
+        switchSound.play().catch(() => {});
+
+        window.heroLighting.setMode(mode);
+    });
+
     // Añadir evento click al botón "Entrar" para hacer scroll hasta la sección "Sobre mí"
     const btnEntrar = document.querySelector('.btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', (e) => {
             e.stopPropagation(); // Evitar que el click se propague al portátil
+
+            // Si ya está en marcha el scroll (o ya hicimos click antes), ignoramos clicks repetidos:
+            // cada llamada a lenis.scrollTo() cancela la animación anterior y empieza de cero,
+            // por eso varios clicks seguidos hacían que solo "funcionara" el último.
+            if (btnEntrar.disabled) return;
+
+            btnEntrar.disabled = true;
+            btnEntrar.classList.add('is-loading');
+
+            let settled = false;
+            let safetyTimer = null;
+
+            // onComplete solo salta si el scroll termina de forma natural: si el usuario lo
+            // interrumpe (rueda del ratón, touch, u otro scroll manual) o si por lo que sea
+            // nunca llega a completarse, el botón se quedaba bloqueado para siempre.
+            // Por eso lo reactivamos también ante cualquier señal de scroll manual o, como
+            // último recurso, con un temporizador de seguridad.
+            const reenableBtn = () => {
+                if (settled) return;
+                settled = true;
+                btnEntrar.disabled = false;
+                btnEntrar.classList.remove('is-loading');
+                clearTimeout(safetyTimer);
+                window.removeEventListener('wheel', reenableBtn);
+                window.removeEventListener('touchstart', reenableBtn);
+                window.removeEventListener('keydown', reenableBtn);
+            };
+
+            window.addEventListener('wheel', reenableBtn, { passive: true, once: true });
+            window.addEventListener('touchstart', reenableBtn, { passive: true, once: true });
+            window.addEventListener('keydown', reenableBtn, { once: true });
+            safetyTimer = setTimeout(reenableBtn, 4000); // Red de seguridad (duracion + margen)
 
             // Hacer scroll hasta la sección "Sobre mí" (id="portfolio" o clase ".intro")
             lenis.scrollTo('.intro', {
@@ -511,7 +726,8 @@ const setupHeroAnimation = () => {
                 easing: (t) => {
                     // Easing custom: arranca algo más rápido y acelera al final (easeInCubic)
                     return t * t * t;
-                }
+                },
+                onComplete: reenableBtn
             });
         });
     }

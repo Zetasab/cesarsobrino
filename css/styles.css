@@ -912,7 +912,20 @@ html.dark-scrollbar .navbar {
     overflow: hidden;
     perspective: 2400px;
     z-index: 0;
+    transition: background 0.6s ease;
+}
+
+/* --- Presets de iluminación: día / tarde / noche (ver window.heroLighting en main.js) --- */
+.hero-stage.lighting-day {
     background: linear-gradient(135deg, #f5f7fb 0%, #cbd5e1 100%);
+}
+
+.hero-stage.lighting-afternoon {
+    background: linear-gradient(150deg, #ffedd5 0%, #fdba74 45%, #c2410c 100%);
+}
+
+.hero-stage.lighting-night {
+    background: linear-gradient(160deg, #05070f 0%, #10152b 45%, #232a4d 100%);
 }
 
 .hero-title-wrapper {
@@ -926,12 +939,35 @@ html.dark-scrollbar .navbar {
 .hero-title {
     font-size: clamp(2.5rem, 4.5vw, 6rem);
     font-weight: 800;
-    color: var(--text);
     margin: 0;
+    transition: color 0.6s ease, text-shadow 0.6s ease;
+}
+
+/* Día: texto oscuro con halo blanco (fondo claro) */
+.hero-stage.lighting-day .hero-title {
+    color: var(--text);
     text-shadow:
         0 0 18px rgba(255, 255, 255, 0.85),
         0 0 36px rgba(255, 255, 255, 0.6),
         0 2px 6px rgba(15, 23, 42, 0.35);
+}
+
+/* Tarde: texto claro con halo cálido (fondo atardecer) */
+.hero-stage.lighting-afternoon .hero-title {
+    color: #fff7ed;
+    text-shadow:
+        0 0 18px rgba(255, 186, 116, 0.7),
+        0 0 40px rgba(194, 65, 12, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Noche: texto claro con halo azul-violeta (fondo nocturno) */
+.hero-stage.lighting-night .hero-title {
+    color: #f8fafc;
+    text-shadow:
+        0 0 18px rgba(148, 163, 253, 0.55),
+        0 0 40px rgba(99, 102, 241, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 600px) {
@@ -1056,6 +1092,18 @@ html.dark-scrollbar .navbar {
 .btn-entrar:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
+}
+
+.btn-entrar:disabled,
+.btn-entrar.is-loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-entrar:disabled:hover,
+.btn-entrar.is-loading:hover {
+    transform: none;
 }
 
 .login-action {

@@ -1,0 +1,25 @@
+# Exported by three-d-stage
+newmtl carcasa-blanca
+Kd 0.9047 0.8879 0.8469
+Ks 0.2000 0.2000 0.2000
+Ns 116
+d 1.0000
+
+newmtl mecanismo-oscuro
+Kd 0.0176 0.0168 0.0137
+Ks 0.2000 0.2000 0.2000
+Ns 30
+d 1.0000
+
+newmtl tecla-blanca
+Kd 0.9734 0.9647 0.9387
+Ks 0.2000 0.2000 0.2000
+Ns 140
+d 1.0000
+
+newmtl luna-azul
+Kd 0.1046 0.1590 0.3663
+Ks 0.2000 0.2000 0.2000
+Ns 110
+d 1.0000
+
