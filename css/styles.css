@@ -1188,13 +1188,8 @@ html.dark-scrollbar .navbar {
     height: 100%; /* Asegura que la columna ocupe toda la altura del grid */
 }
 
-/* Hacer que el "Sobre mí" se quede fijo en el medio de la pantalla */
+/* El pineado de "Sobre mí" se controla vía GSAP ScrollTrigger (ver main.js) */
 @media (min-width: 768px) {
-    .sticky-wrapper {
-        position: sticky;
-        top: 50vh; /* Lo sitúa en el 50% del alto de la pantalla (el medio) */
-        transform: translateY(-50%); /* Lo centra exactamente en su eje Y */
-    }
     .intro-left .eyebrow {
         font-size: 2.5rem; /* Aún más grande */
         letter-spacing: 0.1em;

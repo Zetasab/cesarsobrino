@@ -532,19 +532,6 @@ ScrollTrigger.create({
 const debouncedRefresh = debounce(() => ScrollTrigger.refresh(), 180);
 window.addEventListener("resize", debouncedRefresh);
 
-// Animación para el título "Sobre mí"
-gsap.from(".intro .eyebrow", {
-    x: -100,
-    autoAlpha: 0,
-    duration: 0.8,
-    ease: "power2.out",
-    scrollTrigger: {
-        trigger: ".intro",
-        start: "top 80%", // Empieza a mostrarse cuando la sección entra en el viewport
-        toggleActions: "play none none reverse"
-    }
-});
-
 // Animación para el saludo "Buenas,"
 gsap.from(".greeting", {
     y: 60,
@@ -656,6 +643,35 @@ const setupLanguageIconsFollow = () => {
 };
 
 setupLanguageIconsFollow();
+
+// Pinear el título de "Sobre mí" solo a partir de la mitad del scroll de la sección
+const introMM = gsap.matchMedia();
+
+introMM.add("(min-width: 768px)", () => {
+    const introSection = document.querySelector(".block.intro");
+    const introTitle = document.querySelector(".intro-left .sticky-wrapper");
+    if (!introSection || !introTitle) return;
+
+    const introTrigger = ScrollTrigger.create({
+        trigger: introSection,
+        start: () => {
+            // Mitad del recorrido de la sección a través del viewport
+            // (desde que empieza a entrar por abajo hasta que sale por abajo),
+            // así el rango siempre es positivo aunque la sección sea más baja que la pantalla.
+            const top = introSection.getBoundingClientRect().top + window.scrollY;
+            const height = introSection.offsetHeight;
+            return top - window.innerHeight + height / 2;
+        },
+        end: "bottom+=200 bottom", // Se libera un poco más tarde del final de la sección
+        pin: introTitle,
+        pinSpacing: false,
+        invalidateOnRefresh: true
+    });
+
+    return () => {
+        introTrigger.kill();
+    };
+});
 
 // Usar matchMedia para aplicar diferentes configuraciones según el tamaño de pantalla
 let mm = gsap.matchMedia();
