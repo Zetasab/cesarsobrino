@@ -805,6 +805,30 @@ introMM.add("(min-width: 768px)", () => {
     };
 });
 
+// Subrayado que se rellena según el progreso de scroll del propio contenedor (reutilizable)
+const setupContainerUnderline = (sectionSelector, fillId, earlyFinish = 1) => {
+    const section = document.querySelector(sectionSelector);
+    const underlineFill = document.getElementById(fillId);
+    if (!section || !underlineFill) return;
+
+    ScrollTrigger.create({
+        trigger: section,
+        start: "top bottom", // La sección empieza a entrar por abajo
+        end: "bottom top",   // La sección termina de salir por arriba
+        scrub: true,
+        onUpdate: (self) => {
+            const adjusted = Math.min(1, self.progress / earlyFinish);
+            underlineFill.style.width = `${adjusted * 100}%`;
+        }
+    });
+};
+
+// Línea bajo "Sobre mí": se completa al llegar al 75% del recorrido
+setupContainerUnderline(".block.intro", "introUnderlineFill", 0.75);
+
+// Línea bajo "Lenguajes utilizados" en escritorio se controla desde el propio pin (langTl, más abajo),
+// ya que su scroll real es mucho más largo que la sección en sí.
+
 // Usar matchMedia para aplicar diferentes configuraciones según el tamaño de pantalla
 let mm = gsap.matchMedia();
 
@@ -814,13 +838,21 @@ mm.add("(min-width: 768px)", () => {
     gsap.set(".languages-left", { y: 0 });
 
     // Configuración para Desktop
+    const languagesUnderlineFill = document.getElementById("languagesUnderlineFill");
+
     const langTl = gsap.timeline({
         scrollTrigger: {
             trigger: ".block.languages",
             start: "center center", // Pinear cuando el centro de la sección llega al centro de la pantalla
             end: "+=3000", // Aumentado el tiempo de pin para dar cabida a las categorías
             pin: ".languages-layout",
-            scrub: 1
+            scrub: 1,
+            onUpdate: (self) => {
+                // El subrayado sigue el progreso real del scroll pineado (mucho más largo que la sección en sí)
+                if (languagesUnderlineFill) {
+                    languagesUnderlineFill.style.width = `${self.progress * 100}%`;
+                }
+            }
         }
     });
 
@@ -875,6 +907,9 @@ mm.add("(min-width: 768px)", () => {
 });
 
 mm.add("(max-width: 767px)", () => {
+    // En móvil no hay pin, así que el subrayado sigue el progreso geométrico normal de la sección
+    setupContainerUnderline(".block.languages", "languagesUnderlineFill");
+
     // En móvil, nos aseguramos de que estén visibles y en su posición original
     // para evitar problemas si el ScrollTrigger no se dispara correctamente
     gsap.set(langCategories, { autoAlpha: 1, y: 0 });
@@ -956,97 +991,122 @@ scrollToTopBtn.addEventListener("click", () => {
 // --- Timeline Animation ---
 const setupTimelineAnimation = () => {
     const path = document.getElementById("timeline-path");
+    const glowPath = document.getElementById("timeline-path-glow");
+    const trackPath = document.querySelector(".timeline-path-track");
     const logo = document.getElementById("timeline-logo");
     const nodes = gsap.utils.toArray(".timeline-node");
     const svg = document.querySelector(".timeline-svg");
+    const progressFill = document.getElementById("timelineProgressFill");
 
     if (!path || !logo || nodes.length === 0 || !svg) return;
 
+    // Entrada del cabecero (eyebrow + título + barra de progreso), independiente del pin
+    gsap.from(".timeline-header .eyebrow, .timeline-header h2, .timeline-progress", {
+        y: 30,
+        autoAlpha: 0,
+        stagger: 0.12,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: {
+            trigger: ".timeline-section",
+            start: "top 75%",
+            toggleActions: "play none none reverse"
+        }
+    });
+
     let mm = gsap.matchMedia();
 
-    mm.add("(min-width: 769px)", () => {
-        // Desktop Setup
-        svg.setAttribute("viewBox", "0 0 1000 1000");
-        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-        path.setAttribute("d", "M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800");
+    const buildTimeline = (desktop) => {
+        const d = desktop
+            ? "M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800"
+            : "M 50 100 L 50 900";
 
-        gsap.set(nodes[0], { left: "75%", top: "10%" });
-        gsap.set(nodes[1], { left: "74%", top: "34%" });
-        gsap.set(nodes[2], { left: "26%", top: "36%" });
-        gsap.set(nodes[3], { left: "26%", top: "79%" });
-        gsap.set(nodes[4], { left: "75%", top: "80%" });
+        if (desktop) {
+            svg.setAttribute("viewBox", "0 0 1000 1000");
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            gsap.set(nodes[0], { left: "75%", top: "10%" });
+            gsap.set(nodes[1], { left: "74%", top: "34%" });
+            gsap.set(nodes[2], { left: "26%", top: "36%" });
+            gsap.set(nodes[3], { left: "26%", top: "79%" });
+            gsap.set(nodes[4], { left: "75%", top: "80%" });
+        } else {
+            svg.setAttribute("viewBox", "0 0 100 1000");
+            svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+            gsap.set(nodes[0], { left: "50px", top: "10%" });
+            gsap.set(nodes[1], { left: "50px", top: "30%" });
+            gsap.set(nodes[2], { left: "50px", top: "50%" });
+            gsap.set(nodes[3], { left: "50px", top: "70%" });
+            gsap.set(nodes[4], { left: "50px", top: "90%" });
+        }
+
+        [path, glowPath, trackPath].forEach((p) => p && p.setAttribute("d", d));
 
         const pathLength = path.getTotalLength();
-        gsap.set(path, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
+        gsap.set([path, glowPath], { strokeDasharray: pathLength, strokeDashoffset: pathLength });
         gsap.set(logo, { opacity: 0 });
+        gsap.set(progressFill, { width: "0%" });
+
+        const timelineSection = document.querySelector(".timeline-section");
+        const addPinnedClass = () => timelineSection && timelineSection.classList.add("is-pinned");
+        const removePinnedClass = () => timelineSection && timelineSection.classList.remove("is-pinned");
 
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: ".timeline-section",
                 start: "top top",
-                end: "+=2000",
+                end: desktop ? "+=2000" : "+=1000",
                 scrub: 1,
                 pin: true,
-                anticipatePin: 1
+                anticipatePin: 1,
+                onUpdate: (self) => {
+                    if (progressFill) progressFill.style.width = `${self.progress * 100}%`;
+                },
+                // El gradiente morado/verde solo debe verse mientras la sección está fijada (pin activo)
+                onEnter: addPinnedClass,
+                onEnterBack: addPinnedClass,
+                onLeave: removePinnedClass,
+                onLeaveBack: removePinnedClass
             }
         });
 
         tl.to(logo, { opacity: 1, duration: 0.05 });
-        tl.to(path, { strokeDashoffset: 0, duration: 1, ease: "none" }, 0);
+        tl.to([path, glowPath], { strokeDashoffset: 0, duration: 1, ease: "none" }, 0);
         tl.to(logo, {
             motionPath: { path: path, align: path, alignOrigin: [0.5, 0.5], autoRotate: false },
             duration: 1, ease: "none"
         }, 0);
 
-        const nodeProgress = [0, 0.15, 0.45, 0.72, 1];
+        const nodeProgress = desktop ? [0, 0.15, 0.45, 0.72, 1] : [0, 0.25, 0.5, 0.75, 1];
         nodes.forEach((node, index) => {
-            gsap.set(node, { xPercent: -50, yPercent: -50, y: 20, opacity: 0 });
-            tl.to(node, { opacity: 1, y: 0, duration: 0.05, ease: "power1.out" }, nodeProgress[index]);
+            const point = node.querySelector(".node-point");
+            gsap.set(node, {
+                xPercent: -50, yPercent: -50,
+                y: 34, opacity: 0, scale: 0.82, rotate: -3,
+                filter: "blur(6px)"
+            });
+            if (point) gsap.set(point, { scale: 0 });
+
+            const t = nodeProgress[index];
+            tl.to(node, {
+                opacity: 1, y: 0, scale: 1, rotate: 0,
+                filter: "blur(0px)",
+                duration: 0.09, ease: "power2.out"
+            }, t);
+            if (point) {
+                tl.to(point, { scale: 1, duration: 0.06, ease: "back.out(3)" }, t);
+            }
         });
 
+        return tl;
+    };
+
+    mm.add("(min-width: 769px)", () => {
+        const tl = buildTimeline(true);
         return () => { tl.kill(); };
     });
 
     mm.add("(max-width: 768px)", () => {
-        // Mobile Setup
-        svg.setAttribute("viewBox", "0 0 100 1000");
-        svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
-        path.setAttribute("d", "M 50 100 L 50 900");
-
-        gsap.set(nodes[0], { left: "50px", top: "10%" });
-        gsap.set(nodes[1], { left: "50px", top: "30%" });
-        gsap.set(nodes[2], { left: "50px", top: "50%" });
-        gsap.set(nodes[3], { left: "50px", top: "70%" });
-        gsap.set(nodes[4], { left: "50px", top: "90%" });
-
-        const pathLength = path.getTotalLength();
-        gsap.set(path, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
-        gsap.set(logo, { opacity: 0 });
-
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: ".timeline-section",
-                start: "top top",
-                end: "+=1000", // Reducido para que el scroll sea más corto en móvil
-                scrub: 1,
-                pin: true,
-                anticipatePin: 1
-            }
-        });
-
-        tl.to(logo, { opacity: 1, duration: 0.05 });
-        tl.to(path, { strokeDashoffset: 0, duration: 1, ease: "none" }, 0);
-        tl.to(logo, {
-            motionPath: { path: path, align: path, alignOrigin: [0.5, 0.5], autoRotate: false },
-            duration: 1, ease: "none"
-        }, 0);
-
-        const nodeProgress = [0, 0.25, 0.5, 0.75, 1];
-        nodes.forEach((node, index) => {
-            gsap.set(node, { xPercent: -50, yPercent: -50, y: 20, opacity: 0 });
-            tl.to(node, { opacity: 1, y: 0, duration: 0.05, ease: "power1.out" }, nodeProgress[index]);
-        });
-
+        const tl = buildTimeline(false);
         return () => { tl.kill(); };
     });
 };
@@ -1058,8 +1118,19 @@ setupTimelineAnimation();
 const setupProjectsGallery = () => {
     const track = document.querySelector(".projects-track");
     const gallery = document.querySelector(".projects-gallery");
+    const underlineFill = document.getElementById("projectsUnderlineFill");
 
     if (!track || !gallery) return;
+
+    // Un color de subrayado por proyecto, en el mismo orden que aparecen en el track
+    const PROJECT_COLORS = ["#a855f7", "#f97316", "#38bdf8", "#ffffff"];
+
+    const setUnderlineColor = (index) => {
+        if (!underlineFill) return;
+        const color = PROJECT_COLORS[index] || PROJECT_COLORS[0];
+        underlineFill.style.background = color;
+        underlineFill.style.boxShadow = `0 0 12px ${color}99`;
+    };
 
     // Calculate the total scroll distance
     // It's the track width plus the viewport width to allow full entry and exit
@@ -1086,7 +1157,10 @@ const setupProjectsGallery = () => {
         scrub: 1,
         invalidateOnRefresh: true,
         // Añadimos un pequeño margen de seguridad para que no se solape con la sección anterior
-        fastScrollEnd: true
+        fastScrollEnd: true,
+        onUpdate: (self) => {
+            if (underlineFill) underlineFill.style.width = `${self.progress * 100}%`;
+        }
     });
 
     // Background change logic
@@ -1122,6 +1196,7 @@ const setupProjectsGallery = () => {
                 overwrite: "auto"
             });
         });
+        if (index >= 0) setUnderlineColor(index);
     }
 
     // Video hover logic
