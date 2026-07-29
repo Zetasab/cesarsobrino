@@ -928,6 +928,10 @@ html.dark-scrollbar .navbar {
     font-weight: 800;
     color: var(--text);
     margin: 0;
+    text-shadow:
+        0 0 18px rgba(255, 255, 255, 0.85),
+        0 0 36px rgba(255, 255, 255, 0.6),
+        0 2px 6px rgba(15, 23, 42, 0.35);
 }
 
 @media (max-width: 600px) {
@@ -1106,6 +1110,9 @@ html.dark-scrollbar .navbar {
     gap: 0.5rem;
     transition: opacity 0.3s ease;
     mix-blend-mode: difference;
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.5),
+        0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .scroll-hint.hidden {
@@ -1121,6 +1128,7 @@ html.dark-scrollbar .navbar {
     position: relative;
     display: flex;
     justify-content: center;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .wheel {

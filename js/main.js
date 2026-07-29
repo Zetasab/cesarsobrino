@@ -548,9 +548,9 @@ gsap.from(".greeting", {
 
 // Animación para los párrafos grandes (se revelan línea por línea con el scroll)
 const introParagraphs = gsap.utils.toArray(".intro-p");
-introParagraphs.forEach((p) => {
-    // Dividimos el texto en líneas usando SplitType
-    const splitText = new SplitType(p, { types: 'lines' });
+const introParagraphSplits = introParagraphs.map((p) => {
+    // Dividimos el texto en líneas y letras usando SplitType (una sola pasada)
+    const splitText = new SplitType(p, { types: 'lines, chars' });
 
     // Animamos cada línea individualmente
     gsap.from(splitText.lines, {
@@ -565,7 +565,139 @@ introParagraphs.forEach((p) => {
             scrub: 1          // Hace que la animación esté vinculada al scroll
         }
     });
+
+    return { p, splitText };
 });
+
+// Efecto "lupa al revés": las letras del texto de "Sobre mí" se repelen del cursor al pasar por encima
+const setupIntroRepelEffect = () => {
+    const repelMM = gsap.matchMedia();
+
+    repelMM.add("(hover: hover) and (pointer: fine)", () => {
+        const container = document.querySelector(".intro-right");
+        if (!container || introParagraphSplits.length === 0) return;
+
+        const RADIUS = 200; // Radio de influencia del cursor en px
+        const RADIUS_SQ = RADIUS * RADIUS;
+        const MAX_PUSH = 110; // Desplazamiento máximo de cada letra en px
+
+        // Agrupamos las letras por línea para poder descartar de golpe (broad-phase)
+        // las líneas que están lejos del cursor, en vez de comprobar las ~500 letras siempre.
+        let lines = [];
+        let activeChars = new Set();
+
+        const buildChars = () => {
+            lines = [];
+            activeChars = new Set();
+            introParagraphSplits.forEach(({ splitText }) => {
+                splitText.lines.forEach((lineEl) => {
+                    const lineChars = lineEl.querySelectorAll(".char");
+                    if (!lineChars.length) return;
+
+                    const charsData = Array.from(lineChars).map((char) => {
+                        gsap.set(char, { x: 0, y: 0 });
+                        const rect = char.getBoundingClientRect();
+                        return {
+                            cx: rect.left + window.scrollX + rect.width / 2,
+                            cy: rect.top + window.scrollY + rect.height / 2,
+                            moveX: gsap.quickTo(char, "x", { duration: 0.5, ease: "power3.out" }),
+                            moveY: gsap.quickTo(char, "y", { duration: 0.5, ease: "power3.out" })
+                        };
+                    });
+
+                    const lineRect = lineEl.getBoundingClientRect();
+                    lines.push({
+                        top: lineRect.top + window.scrollY - RADIUS,
+                        bottom: lineRect.bottom + window.scrollY + RADIUS,
+                        chars: charsData
+                    });
+                });
+            });
+        };
+
+        buildChars();
+
+        let pendingEvent = null;
+        let rafId = null;
+
+        const processMove = () => {
+            rafId = null;
+            if (!pendingEvent) return;
+
+            const pointerX = pendingEvent.clientX + window.scrollX;
+            const pointerY = pendingEvent.clientY + window.scrollY;
+            pendingEvent = null;
+
+            const nextActive = new Set();
+
+            lines.forEach((line) => {
+                // Descarte rápido: si el cursor no está cerca verticalmente de esta línea, saltamos todas sus letras
+                if (pointerY < line.top || pointerY > line.bottom) return;
+
+                line.chars.forEach((char) => {
+                    const dx = char.cx - pointerX;
+                    const dy = char.cy - pointerY;
+                    const distSq = dx * dx + dy * dy;
+
+                    if (distSq < RADIUS_SQ) {
+                        const distance = Math.sqrt(distSq) || 1;
+                        const strength = 1 - distance / RADIUS;
+                        char.moveX((dx / distance) * strength * MAX_PUSH);
+                        char.moveY((dy / distance) * strength * MAX_PUSH);
+                        nextActive.add(char);
+                    }
+                });
+            });
+
+            // Solo reseteamos las letras que dejan de estar activas (no todas cada frame)
+            activeChars.forEach((char) => {
+                if (!nextActive.has(char)) {
+                    char.moveX(0);
+                    char.moveY(0);
+                }
+            });
+            activeChars = nextActive;
+        };
+
+        const onMove = (event) => {
+            pendingEvent = event;
+            if (rafId === null) {
+                rafId = requestAnimationFrame(processMove);
+            }
+        };
+
+        const onLeave = () => {
+            pendingEvent = null;
+            if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+            activeChars.forEach((char) => {
+                char.moveX(0);
+                char.moveY(0);
+            });
+            activeChars = new Set();
+        };
+
+        const debouncedRemeasure = debounce(buildChars, 200);
+
+        container.addEventListener("mousemove", onMove, { passive: true });
+        container.addEventListener("mouseleave", onLeave);
+        window.addEventListener("resize", debouncedRemeasure);
+
+        return () => {
+            container.removeEventListener("mousemove", onMove);
+            container.removeEventListener("mouseleave", onLeave);
+            window.removeEventListener("resize", debouncedRemeasure);
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            introParagraphSplits.forEach(({ splitText }) => {
+                gsap.set(splitText.chars, { x: 0, y: 0 });
+            });
+        };
+    });
+};
+
+setupIntroRepelEffect();
 
 // Animación para el título de lenguajes (aparece antes de pinear)
 gsap.from(".languages-right .eyebrow, .languages-title", {

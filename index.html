@@ -567,11 +567,9 @@
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/visits.js"></script>
-    <script src="js/ai-chat.js"></script>
-    <script src="js/languages-matter.js"></script>
     <script>
+        // Se ejecuta ANTES que main.js para que, al dividir el párrafo en letras (SplitType),
+        // ya se cuente con el texto final y no se pierda esa división al reemplazar el contenido.
         (function () {
             var el = document.getElementById('experience-time');
             if (!el) return;
@@ -609,5 +607,9 @@
             el.textContent = text;
         })();
     </script>
+    <script src="js/main.js"></script>
+    <script src="js/visits.js"></script>
+    <script src="js/ai-chat.js"></script>
+    <script src="js/languages-matter.js"></script>
 </body>
 </html>
