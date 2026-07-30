@@ -1,17 +1,75 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const compare = document.getElementById('langCompare');
     const langList = document.getElementById('langList');
     const matterContainer = document.getElementById('langMatterContainer');
-    const matterClose = document.getElementById('langMatterClose');
+    const divider = document.getElementById('langDivider');
     const canvas = document.getElementById('langMatterCanvas');
 
-    if (!langList || !matterContainer || !matterClose || !canvas || typeof Matter === 'undefined') {
+    if (!compare || !langList || !matterContainer || !divider || !canvas || typeof Matter === 'undefined') {
         return;
     }
 
     const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint, Events } = Matter;
 
-    const CANVAS_HEIGHT = 600;
+    // El panel de texto puede ser más alto que el mínimo del playground (600px);
+    // ajustamos la altura del comparador al contenido real para que no se corte.
+    const MIN_COMPARE_HEIGHT = 600;
+    function syncCompareHeight() {
+        compare.style.height = Math.max(MIN_COMPARE_HEIGHT, langList.scrollHeight) + 'px';
+    }
+    syncCompareHeight();
 
+    // --- Slider: arrastrar el divisor revela la lista de texto (izquierda) o el modo interactivo (derecha) ---
+    let dividerPercent = 90;
+
+    function setDivider(percent) {
+        dividerPercent = Math.min(100, Math.max(0, percent));
+        compare.style.setProperty('--divider', dividerPercent + '%');
+        divider.setAttribute('aria-valuenow', String(Math.round(dividerPercent)));
+    }
+    setDivider(90);
+
+    function percentFromClientX(clientX) {
+        const rect = compare.getBoundingClientRect();
+        return ((clientX - rect.left) / rect.width) * 100;
+    }
+
+    let dragging = false;
+
+    function onDragStart(clientX, pointerId) {
+        dragging = true;
+        compare.classList.add('dragging', 'interacted');
+        if (pointerId !== undefined) {
+            divider.setPointerCapture(pointerId);
+        }
+        setDivider(percentFromClientX(clientX));
+    }
+
+    divider.addEventListener('pointerdown', (event) => {
+        onDragStart(event.clientX, event.pointerId);
+    });
+
+    window.addEventListener('pointermove', (event) => {
+        if (!dragging) return;
+        setDivider(percentFromClientX(event.clientX));
+    });
+
+    window.addEventListener('pointerup', () => {
+        dragging = false;
+        compare.classList.remove('dragging');
+    });
+
+    divider.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+            compare.classList.add('interacted');
+            setDivider(dividerPercent - 5);
+        } else if (event.key === 'ArrowRight') {
+            compare.classList.add('interacted');
+            setDivider(dividerPercent + 5);
+        }
+    });
+
+    // --- Matter.js: arranca una vez y se mantiene corriendo, pausándose fuera de vista ---
     const items = Array.from(langList.querySelectorAll('.lang-item'))
         .map((item) => ({
             src: item.querySelector('img')?.getAttribute('src') || '',
@@ -36,11 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const imagesReady = Promise.all(items.map(loadImageSize));
-
-    let engine = null;
-    let render = null;
-    let runner = null;
-    let running = false;
 
     function wrapText(ctx, text, maxWidth) {
         const words = text.split(' ');
@@ -106,15 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return body;
     }
 
+    let engine = null;
+    let render = null;
+    let runner = null;
+    let started = false;
+
     function startMatter() {
-        if (running) return;
-        running = true;
+        if (started) return;
+        started = true;
 
-        const wrapper = matterContainer.parentElement;
-        const width = wrapper.getBoundingClientRect().width || 320;
-        const height = CANVAS_HEIGHT;
+        const rect = compare.getBoundingClientRect();
+        const width = rect.width || 320;
+        const height = rect.height || 600;
 
-        matterContainer.style.height = height + 'px';
         canvas.width = width;
         canvas.height = height;
 
@@ -209,44 +266,50 @@ document.addEventListener('DOMContentLoaded', () => {
         Render.run(render);
     }
 
-    function stopMatter() {
-        if (!running) return;
-        running = false;
-
-        if (render) {
-            Render.stop(render);
-            render.canvas = null;
-            render.context = null;
-            render.textures = {};
-        }
-        if (runner) {
-            Runner.stop(runner);
-        }
-        if (engine) {
-            Composite.clear(engine.world, false);
-            Engine.clear(engine);
-        }
-
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        engine = null;
-        render = null;
-        runner = null;
+    function pauseMatter() {
+        if (!started) return;
+        if (runner) Runner.stop(runner);
+        if (render) Render.stop(render);
     }
 
-    langList.addEventListener('click', () => {
-        imagesReady.then(() => {
-            langList.style.display = 'none';
-            matterContainer.style.display = 'block';
-            startMatter();
-        });
-    });
+    function resumeMatter() {
+        if (!started || !runner || !render) return;
+        Runner.run(runner, engine);
+        Render.run(render);
+    }
 
-    matterClose.addEventListener('click', (event) => {
-        event.stopPropagation();
-        stopMatter();
-        matterContainer.style.display = 'none';
-        langList.style.display = 'flex';
+    // Arranca cuando la sección entra en el viewport, y pausa el motor cuando sale
+    // (sigue corriendo constantemente mientras es visible, ya no depende de un click).
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                imagesReady.then(() => {
+                    if (!started) {
+                        startMatter();
+                    } else {
+                        resumeMatter();
+                    }
+                });
+            } else {
+                pauseMatter();
+            }
+        });
+    }, { threshold: 0.05 });
+
+    observer.observe(compare);
+
+    let resizeTimeout = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            syncCompareHeight();
+            if (!started || !render) return;
+            const rect = compare.getBoundingClientRect();
+            render.canvas.width = rect.width;
+            render.canvas.height = rect.height;
+            render.options.width = rect.width;
+            render.options.height = rect.height;
+            Render.setPixelRatio(render, window.devicePixelRatio || 1);
+        }, 200);
     });
 });

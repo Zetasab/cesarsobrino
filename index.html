@@ -191,7 +191,8 @@
             <section class="block languages" id="lenguajes">
                 <div class="languages-layout">
                     <div class="languages-left">
-                        <div class="lang-list" id="langList" title="Haz clic para convertir esto en Matter.js">
+                        <div class="lang-compare" id="langCompare">
+                        <div class="lang-list" id="langList">
 
                             <!-- Categoría: Base -->
                             <div class="lang-category">
@@ -279,8 +280,21 @@
 
                         </div>
                         <div class="lang-matter-container" id="langMatterContainer">
-                            <button type="button" class="lang-matter-close" id="langMatterClose" aria-label="Volver a la lista">✕</button>
+                            <span class="lang-compare-badge">Arrastra para jugar</span>
                             <canvas id="langMatterCanvas"></canvas>
+                        </div>
+                        <div class="lang-compare-divider" id="langDivider" role="slider" tabindex="0"
+                             aria-label="Deslizar entre lista y modo interactivo"
+                             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                            <span class="lang-compare-divider-handle">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="15 6 9 12 15 18"></polyline>
+                                </svg>
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="9 6 15 12 9 18"></polyline>
+                                </svg>
+                            </span>
+                        </div>
                         </div>
                     </div>
                     <div class="languages-right">
