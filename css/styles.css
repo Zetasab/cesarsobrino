@@ -200,6 +200,22 @@ body.no-scroll {
     justify-content: center;
 }
 
+.nav-home-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    /* El json trae trazos en negro puro: con mix-blend-mode: difference
+       el negro no invierte nada y el icono queda invisible. Se fuerza a
+       blanco para que se comporte igual que el resto de iconos del nav.
+       El filtro navHomeThicken engruesa los trazos con feMorphology. */
+    filter: url(#navHomeThicken) invert(1);
+}
+
+.nav-home-icon svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .nav-stats-item {
     position: relative;
 }
@@ -222,6 +238,18 @@ body.no-scroll {
     justify-content: center;
     width: 24px;
     height: 24px;
+}
+
+.nav-stats-lottie-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    filter: url(#navHomeThicken) invert(1);
+}
+
+.nav-stats-lottie-icon svg {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .nav-stats-badge {
@@ -864,6 +892,32 @@ html.dark-scrollbar .navbar {
 
 .social-icon:hover {
     transform: translateY(-5px);
+}
+
+.social-icon-lottie {
+    display: block;
+    width: 32px;
+    height: 32px;
+}
+
+.social-icon-lottie svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.social-icon-lottie-lg {
+    width: 46px;
+    height: 46px;
+}
+
+.social-icon-lottie-lg-plus {
+    width: 50px;
+    height: 50px;
+}
+
+.social-icon-lottie-xl {
+    width: 58px;
+    height: 58px;
 }
 
 /* Colores originales al hacer hover */
@@ -1614,12 +1668,24 @@ p {
 }
 
 /* --- Scroll to Top Button --- */
+.scroll-to-top-icon {
+    display: block;
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+}
+
+.scroll-to-top-icon svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .scroll-to-top {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background-color: #ffffff;
     color: #000000;
@@ -2005,6 +2071,18 @@ p {
                 box-shadow 0.3s ease;
 }
 
+.paypal-btn-icon {
+    display: block;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.paypal-btn-icon svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .paypal-btn::after {
     content: "";
     position: absolute;
@@ -2052,6 +2130,17 @@ p {
                 background 0.3s ease,
                 border-color 0.3s ease,
                 box-shadow 0.3s ease;
+}
+
+.chat-btn-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+.chat-btn-icon svg {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .ai-chat-btn::after {
@@ -2140,6 +2229,24 @@ p {
 .ai-chat-close:hover {
     color: #fff;
     background: rgba(255, 255, 255, 0.1);
+}
+
+.ai-chat-icon-lottie {
+    display: block;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    filter: invert(1);
+}
+
+.ai-chat-icon-lottie svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.ai-chat-icon-lottie-lg {
+    width: 24px;
+    height: 24px;
 }
 
 .ai-chat-messages {

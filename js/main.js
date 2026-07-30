@@ -1196,11 +1196,13 @@ window.addEventListener("scroll", () => {
     }
 });
 
-// Hacer scroll hacia arriba suavemente al hacer clic
+// Hacer scroll hacia arriba suavemente al hacer clic.
+// La web usa Lenis para el scroll suave: Lenis controla la posición real
+// en su propio rAF, así que un window.scrollTo() nativo se pisa en cuanto
+// hay inercia o scroll en curso. Hay que pedírselo a Lenis directamente.
 scrollToTopBtn.addEventListener("click", () => {
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+    lenis.scrollTo(0, {
+        duration: 1.2,
     });
 });
 
@@ -1835,3 +1837,95 @@ if (customCursorDot) {
         target.addEventListener('mouseleave', clearCursorText);
     });
 }
+
+// Iconos animados (Lottie) del nav: estáticos en reposo, se animan al hacer hover.
+// Se pilotan manualmente frame a frame con un ease-out (rápido al empezar, lento al
+// acabar) para que el efecto se note nada más pasar el ratón por encima.
+function setupHoverLottieIcon(containerId, jsonPath, hoverTargetSelector, options = {}) {
+    const container = document.getElementById(containerId);
+    if (!container || typeof lottie === 'undefined') return;
+
+    const anim = lottie.loadAnimation({
+        container,
+        renderer: 'svg',
+        loop: false,
+        autoplay: false,
+        path: jsonPath,
+    });
+
+    const hoverTarget = hoverTargetSelector ? container.closest(hoverTargetSelector) : container.closest('a, button');
+    if (!hoverTarget) return;
+
+    const HOVER_DURATION = options.duration || 900;
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+    let totalFrames = 0;
+    let rafId = null;
+    let startTime = null;
+
+    anim.addEventListener('DOMLoaded', () => {
+        totalFrames = anim.totalFrames;
+    });
+
+    const stepAnim = (timestamp) => {
+        if (startTime === null) startTime = timestamp;
+        const t = Math.min((timestamp - startTime) / HOVER_DURATION, 1);
+        anim.goToAndStop(easeOutCubic(t) * (totalFrames - 1), true);
+        rafId = t < 1 ? requestAnimationFrame(stepAnim) : null;
+    };
+
+    hoverTarget.addEventListener('mouseenter', () => {
+        if (!totalFrames) return;
+        if (rafId) cancelAnimationFrame(rafId);
+        startTime = null;
+        rafId = requestAnimationFrame(stepAnim);
+    });
+
+    hoverTarget.addEventListener('mouseleave', () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+        startTime = null;
+        anim.goToAndStop(0, true);
+    });
+}
+
+setupHoverLottieIcon('navHomeIcon', 'assets/icons/home-button.json', 'a');
+setupHoverLottieIcon('navStatsIcon', 'assets/icons/pie-chart.json', 'button');
+setupHoverLottieIcon('paypalIcon', 'assets/icons/paypal-logo.json', 'a');
+setupHoverLottieIcon('chatIcon', 'assets/icons/chat.json', 'button');
+setupHoverLottieIcon('githubIcon', 'assets/icons/github.json', 'a');
+setupHoverLottieIcon('linkedinIcon', 'assets/icons/linkedin.json', 'a');
+setupHoverLottieIcon('cvIcon', 'assets/icons/file.json', 'a');
+setupHoverLottieIcon('aiChatSendIcon', 'assets/icons/email.json', 'button', { duration: 1400 });
+setupHoverLottieIcon('aiChatCloseIcon', 'assets/icons/close.json', 'button', { duration: 1400 });
+setupHoverLottieIcon('scrollToTopIcon', 'assets/icons/up-arrow.json', 'button');
+
+// Efecto "máquina de escribir" en los enlaces de texto del nav al hacer hover:
+// se parte el texto en letras y se revelan en cascada, como si se tecleasen.
+document.querySelectorAll('.nav-links > li > a:not(.nav-icon)').forEach((link) => {
+    const chars = Array.from(link.textContent).map((ch) => {
+        const span = document.createElement('span');
+        span.textContent = ch === ' ' ? ' ' : ch;
+        span.style.display = 'inline-block';
+        return span;
+    });
+
+    link.textContent = '';
+    chars.forEach((span) => link.appendChild(span));
+
+    let tween = null;
+
+    link.addEventListener('mouseenter', () => {
+        if (tween) tween.kill();
+        tween = gsap.fromTo(
+            chars,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.02, stagger: 0.035, ease: 'none' }
+        );
+    });
+
+    link.addEventListener('mouseleave', () => {
+        if (tween) tween.kill();
+        gsap.set(chars, { opacity: 1 });
+    });
+});
