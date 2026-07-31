@@ -1109,7 +1109,7 @@ html.dark-scrollbar .navbar {
 
 .screen-wallpaper {
     position: relative;
-    background: url('../assets/img/windowBg.png') no-repeat center center;
+    background: url('../assets/img/windowBg.webp') no-repeat center center;
     background-size: cover;
     display: grid;
     place-items: center;
