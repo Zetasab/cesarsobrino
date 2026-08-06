@@ -310,78 +310,75 @@
             </section>
 
             <section class="block timeline-section" id="timeline">
-                <div class="timeline-header">
+                <div class="timeline-zoom-stage" id="timelineZoomStage">
                     <p class="eyebrow">Trayectoria</p>
-                    <h2>Mi experiencia</h2>
-                    <div class="timeline-progress" aria-hidden="true">
-                        <div class="timeline-progress-fill" id="timelineProgressFill"></div>
-                    </div>
+                    <h2 class="timeline-zoom-title" id="timelineZoomTitle">
+                        Mi Ex<span class="hero-p" id="timelineHeroP">p</span>eriencia
+                    </h2>
                 </div>
-                <div class="timeline-container">
-                    <svg class="timeline-svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+
+                <div class="timeline-scene-stage" id="timelineSceneStage">
+                    <svg class="timeline-road" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                         <defs>
-                            <clipPath id="logo-clip">
-                                <circle cx="0" cy="0" r="16" />
-                            </clipPath>
-                            <linearGradient id="timeline-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#818cf8" />
-                                <stop offset="50%" stop-color="#38bdf8" />
-                                <stop offset="100%" stop-color="#34d399" />
+                            <linearGradient id="timeline-road-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85" />
+                                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
                             </linearGradient>
                         </defs>
-                        <!-- Traza de fondo (guía sutil, siempre visible) -->
-                        <path class="timeline-path-track" d="M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
-                        <!-- Traza animada (glow, se dibuja detrás de la nítida) -->
-                        <path id="timeline-path-glow" class="timeline-path-glow" d="M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800" fill="none" stroke="url(#timeline-gradient)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
-                        <path id="timeline-path" class="timeline-path" d="M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800" fill="none" stroke="url(#timeline-gradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-
-                        <!-- Logo inside SVG to scale perfectly with the path -->
-                        <g id="timeline-logo" opacity="0">
-                            <circle cx="0" cy="0" r="22" fill="#000" stroke="url(#timeline-gradient)" stroke-width="3" />
-                            <image href="assets/img/logo.png" x="-16" y="-16" width="32" height="32" clip-path="url(#logo-clip)" preserveAspectRatio="xMidYMid slice" />
-                        </g>
+                        <line x1="47" y1="38" x2="35" y2="120" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
+                        <line x1="53" y1="38" x2="65" y2="120" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
                     </svg>
-
-                    <div class="timeline-node type-edu" data-node="1" style="left: 75%; top: 10%;">
-                        <div class="node-point"></div>
-                        <div class="node-content right-align">
+                    <div class="timeline-horizon"></div>
+                    <div class="timeline-scene" id="timelineScene">
+                        <article class="scene-event type-edu">
                             <span class="node-date">2019</span>
                             <p>Graduado en Grado medio de sistemas microinformáticos en red</p>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="timeline-node type-edu" data-node="2" style="left: 74%; top: 34%;">
-                        <div class="node-point"></div>
-                        <div class="node-content right-align">
+                        <article class="scene-event type-edu">
                             <span class="node-date">2021</span>
                             <p>Graduado en el Grado Superior de Programación de Aplicaciones Multiplataforma (DAM)</p>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="timeline-node type-edu" data-node="3" style="left: 26%; top: 36%;">
-                        <div class="node-point"></div>
-                        <div class="node-content left-align">
+                        <article class="scene-event type-edu">
                             <span class="node-date">2022</span>
                             <p>Graduado en el Grado Superior de Programación de Aplicaciones Web (DAW)</p>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="timeline-node type-job" data-node="4" style="left: 26%; top: 79%;">
-                        <div class="node-point"></div>
-                        <div class="node-content bottom-align">
+                        <article class="scene-event type-job">
                             <span class="node-date">Octubre 2021 – marzo 2022</span>
                             <p>Desarrollador de Software de Aplicaciones .NET Core con Angular en <a href="https://www.visiblesoft.com/index.html" target="_blank" rel="noopener noreferrer" class="timeline-link">VisibleSoft</a>.</p>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="timeline-node type-job" data-node="5" style="left: 75%; top: 80%;">
-                        <div class="node-point"></div>
-                        <div class="node-content bottom-align">
+                        <article class="scene-event type-job">
                             <span class="node-date">Diciembre 2022 – actualmente</span>
                             <p>Desarrollador de Software de Aplicaciones .NET Core con Angular/Blazor en <a href="https://excemtech.com/" target="_blank" rel="noopener noreferrer" class="timeline-link">Excem Technologies</a>.</p>
-                        </div>
+                        </article>
                     </div>
                 </div>
+
+                <ul class="timeline-fallback-list">
+                    <li>
+                        <span class="node-date">2019</span>
+                        <p>Graduado en Grado medio de sistemas microinformáticos en red</p>
+                    </li>
+                    <li>
+                        <span class="node-date">2021</span>
+                        <p>Graduado en el Grado Superior de Programación de Aplicaciones Multiplataforma (DAM)</p>
+                    </li>
+                    <li>
+                        <span class="node-date">2022</span>
+                        <p>Graduado en el Grado Superior de Programación de Aplicaciones Web (DAW)</p>
+                    </li>
+                    <li>
+                        <span class="node-date">Octubre 2021 – marzo 2022</span>
+                        <p>Desarrollador de Software de Aplicaciones .NET Core con Angular en <a href="https://www.visiblesoft.com/index.html" target="_blank" rel="noopener noreferrer" class="timeline-link">VisibleSoft</a>.</p>
+                    </li>
+                    <li>
+                        <span class="node-date">Diciembre 2022 – actualmente</span>
+                        <p>Desarrollador de Software de Aplicaciones .NET Core con Angular/Blazor en <a href="https://excemtech.com/" target="_blank" rel="noopener noreferrer" class="timeline-link">Excem Technologies</a>.</p>
+                    </li>
+                </ul>
             </section>
         </section> <!-- End of content -->
 

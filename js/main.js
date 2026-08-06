@@ -1207,79 +1207,89 @@ scrollToTopBtn.addEventListener("click", () => {
 });
 
 // --- Timeline Animation ---
+// Fase 1: scroll que hace zoom sobre la "p" de "Experiencia" hasta "entrar" por ella.
+// Fase 2: timeline 3D tumbado que se recorre en el eje Z (dolly de cámara) mientras
+// cada evento aparece y desaparece al cruzar el punto de enfoque.
 const setupTimelineAnimation = () => {
-    const path = document.getElementById("timeline-path");
-    const glowPath = document.getElementById("timeline-path-glow");
-    const trackPath = document.querySelector(".timeline-path-track");
-    const logo = document.getElementById("timeline-logo");
-    const nodes = gsap.utils.toArray(".timeline-node");
-    const svg = document.querySelector(".timeline-svg");
-    const progressFill = document.getElementById("timelineProgressFill");
+    const heroP = document.getElementById("timelineHeroP");
+    const zoomStage = document.getElementById("timelineZoomStage");
+    const zoomTitle = document.getElementById("timelineZoomTitle");
+    const sceneStage = document.getElementById("timelineSceneStage");
+    const scene = document.getElementById("timelineScene");
+    const events = gsap.utils.toArray(".scene-event");
+    const timelineSection = document.querySelector(".timeline-section");
 
-    if (!path || !logo || nodes.length === 0 || !svg) return;
+    if (!heroP || !zoomStage || !zoomTitle || !sceneStage || !scene || events.length === 0 || !timelineSection) return;
 
-    // Entrada del cabecero (eyebrow + título + barra de progreso), independiente del pin
-    gsap.from(".timeline-header .eyebrow, .timeline-header h2, .timeline-progress", {
-        y: 30,
-        autoAlpha: 0,
-        stagger: 0.12,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: {
-            trigger: ".timeline-section",
-            start: "top 75%",
-            toggleActions: "play none none reverse"
-        }
-    });
+    const ZOOM_UNITS = 30;
+    // EVENT_UNITS: duración total de la animación de cada card (entrada + acercamiento + salida), lenta.
+    // STAGGER_UNITS: separación real entre el inicio de una card y la siguiente (menor que
+    // EVENT_UNITS a propósito, para que se solapen y no tarden tanto en salir una tras otra).
+    const EVENT_UNITS = 130;
+    const STAGGER_UNITS = 65;
 
     let mm = gsap.matchMedia();
 
     const buildTimeline = (desktop) => {
-        const d = desktop
-            ? "M 750 100 L 750 310 Q 750 350 710 350 L 290 350 Q 250 350 250 390 L 250 760 Q 250 800 290 800 L 750 800"
-            : "M 50 100 L 50 900";
+        const eventDepth = desktop ? 2400 : 1500;
 
-        if (desktop) {
-            svg.setAttribute("viewBox", "0 0 1000 1000");
-            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-            gsap.set(nodes[0], { left: "75%", top: "10%" });
-            gsap.set(nodes[1], { left: "74%", top: "34%" });
-            gsap.set(nodes[2], { left: "26%", top: "36%" });
-            gsap.set(nodes[3], { left: "26%", top: "79%" });
-            gsap.set(nodes[4], { left: "75%", top: "80%" });
-        } else {
-            svg.setAttribute("viewBox", "0 0 100 1000");
-            svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
-            gsap.set(nodes[0], { left: "50px", top: "10%" });
-            gsap.set(nodes[1], { left: "50px", top: "30%" });
-            gsap.set(nodes[2], { left: "50px", top: "50%" });
-            gsap.set(nodes[3], { left: "50px", top: "70%" });
-            gsap.set(nodes[4], { left: "50px", top: "90%" });
+        // La palabra entera hace zoom convergiendo hacia el "ojo" (contraforma) de la "p".
+        // Usamos la línea base real del texto + las métricas tight del glifo (canvas
+        // measureText) en vez de un porcentaje fijo del bounding box, que varía según
+        // el line-height y no coincide con el centro real del agujero de la letra.
+        gsap.set(zoomTitle, { transformOrigin: "50% 50%" });
+        const titleRect = zoomTitle.getBoundingClientRect();
+        const pRect = heroP.getBoundingClientRect();
+
+        const baselineMarker = document.createElement("span");
+        baselineMarker.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline;";
+        heroP.appendChild(baselineMarker);
+        const baselineY = baselineMarker.getBoundingClientRect().top;
+        baselineMarker.remove();
+
+        const heroStyle = getComputedStyle(heroP);
+        const measureCanvas = document.createElement("canvas");
+        const ctx = measureCanvas.getContext("2d");
+        ctx.font = `${heroStyle.fontStyle} ${heroStyle.fontWeight} ${heroStyle.fontSize} ${heroStyle.fontFamily}`;
+        const metrics = ctx.measureText("p");
+        const bowlHeight = metrics.actualBoundingBoxAscent || parseFloat(heroStyle.fontSize) * 0.5;
+        const holeCenterY = baselineY - bowlHeight * 0.5;
+
+        if (titleRect.width && titleRect.height) {
+            const originX = ((pRect.left + pRect.width / 2 - titleRect.left) / titleRect.width) * 100;
+            const originY = ((holeCenterY - titleRect.top) / titleRect.height) * 100;
+            gsap.set(zoomTitle, { transformOrigin: `${originX}% ${originY}%` });
         }
 
-        [path, glowPath, trackPath].forEach((p) => p && p.setAttribute("d", d));
+        gsap.set(sceneStage, { autoAlpha: 0 });
+        gsap.set(scene, { z: 0 });
 
-        const pathLength = path.getTotalLength();
-        gsap.set([path, glowPath], { strokeDasharray: pathLength, strokeDashoffset: pathLength });
-        gsap.set(logo, { opacity: 0 });
-        gsap.set(progressFill, { width: "0%" });
+        events.forEach((el, index) => {
+            const side = index % 2 === 0 ? -1 : 1;
+            const restX = desktop ? side * 130 : 0;
+            const restY = (index % 3) * 24 - 24;
+            gsap.set(el, {
+                z: -index * eventDepth,
+                x: restX,
+                y: restY - (desktop ? 160 : 100),
+                autoAlpha: 0,
+                scale: 0.08
+            });
+        });
 
-        const timelineSection = document.querySelector(".timeline-section");
-        const addPinnedClass = () => timelineSection && timelineSection.classList.add("is-pinned");
-        const removePinnedClass = () => timelineSection && timelineSection.classList.remove("is-pinned");
+        const totalUnits = ZOOM_UNITS + (events.length - 1) * STAGGER_UNITS + EVENT_UNITS;
+        const addPinnedClass = () => timelineSection.classList.add("is-pinned");
+        const removePinnedClass = () => timelineSection.classList.remove("is-pinned");
 
         const tl = gsap.timeline({
+            defaults: { ease: "none" },
             scrollTrigger: {
-                trigger: ".timeline-section",
+                trigger: timelineSection,
                 start: "top top",
-                end: desktop ? "+=2000" : "+=1000",
-                scrub: 1,
+                end: `+=${totalUnits * 45}`,
+                scrub: 0.6,
                 pin: true,
                 anticipatePin: 1,
-                onUpdate: (self) => {
-                    if (progressFill) progressFill.style.width = `${self.progress * 100}%`;
-                },
-                // El gradiente morado/verde solo debe verse mientras la sección está fijada (pin activo)
                 onEnter: addPinnedClass,
                 onEnterBack: addPinnedClass,
                 onLeave: removePinnedClass,
@@ -1287,32 +1297,31 @@ const setupTimelineAnimation = () => {
             }
         });
 
-        tl.to(logo, { opacity: 1, duration: 0.05 });
-        tl.to([path, glowPath], { strokeDashoffset: 0, duration: 1, ease: "none" }, 0);
-        tl.to(logo, {
-            motionPath: { path: path, align: path, alignOrigin: [0.5, 0.5], autoRotate: false },
-            duration: 1, ease: "none"
-        }, 0);
+        // Fase 1: zoom sobre toda la palabra, convergiendo hacia la "p"
+        tl.to(zoomTitle, { scale: 130, duration: ZOOM_UNITS * 0.75, ease: "power1.in" }, 0)
+            .to(zoomStage.querySelector(".eyebrow"), { autoAlpha: 0, duration: ZOOM_UNITS * 0.5 }, 0)
+            .to(zoomStage, { autoAlpha: 0, duration: ZOOM_UNITS * 0.25 }, ZOOM_UNITS * 0.75)
+            .to(sceneStage, { autoAlpha: 1, duration: ZOOM_UNITS * 0.25 }, ZOOM_UNITS * 0.75);
 
-        const nodeProgress = desktop ? [0, 0.15, 0.45, 0.72, 1] : [0, 0.25, 0.5, 0.75, 1];
-        nodes.forEach((node, index) => {
-            const point = node.querySelector(".node-point");
-            gsap.set(node, {
-                xPercent: -50, yPercent: -50,
-                y: 34, opacity: 0, scale: 0.82, rotate: -3,
-                filter: "blur(6px)"
-            });
-            if (point) gsap.set(point, { scale: 0 });
+        // Fase 2: dolly de cámara por el timeline 3D
+        events.forEach((el, index) => {
+            const start = ZOOM_UNITS + index * STAGGER_UNITS;
+            const restY = (index % 3) * 24 - 24;
+            const enterY = restY - (desktop ? 160 : 100);
 
-            const t = nodeProgress[index];
-            tl.to(node, {
-                opacity: 1, y: 0, scale: 1, rotate: 0,
-                filter: "blur(0px)",
-                duration: 0.09, ease: "power2.out"
-            }, t);
-            if (point) {
-                tl.to(point, { scale: 1, duration: 0.06, ease: "back.out(3)" }, t);
-            }
+            tl.to(scene, { z: (index + 1) * eventDepth, duration: STAGGER_UNITS }, start);
+
+            // La opacidad entra muy pronto (casi al empezar el segmento) y el crecimiento
+            // (escala+bajada) ocupa casi todo el segmento, muy lento y gradual, para dar
+            // sensación real de que la card viene acercándose desde muy lejos.
+            tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: EVENT_UNITS * 0.15, ease: "power1.out" }, start)
+                .fromTo(
+                    el,
+                    { scale: 0.08, y: enterY },
+                    { scale: 1, y: restY, duration: EVENT_UNITS * 0.82, ease: "power1.out" },
+                    start
+                )
+                .to(el, { autoAlpha: 0, scale: 1.15, duration: EVENT_UNITS * 0.18 }, start + EVENT_UNITS * 0.82);
         });
 
         return tl;

@@ -3,6 +3,13 @@
     const VISIT_ENDPOINT = "https://cesarsobapigateway.up.railway.app/api/Visits/addvisit";
     // const VISIT_ENDPOINT = "http://localhost:5112/api/Visits/addvisit";
     const BOT_UA_PATTERN = /(bot|crawler|spider|slurp|curl|wget|python-requests|headless|phantom|scrapy|httpclient|monitor|uptime)/i;
+    const DEV_HOSTNAME_PATTERN = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/i;
+
+    function isDevEnvironment() {
+        return window.location.protocol === "file:" ||
+            DEV_HOSTNAME_PATTERN.test(window.location.hostname) ||
+            window.location.hostname.endsWith(".local");
+    }
 
     let hasRegisteredVisit = false;
     let hasInteraction = false;
@@ -110,6 +117,11 @@
     }
 
     function scheduleRegisterVisit() {
+        if (isDevEnvironment()) {
+            console.log("Visits: entorno de desarrollo detectado, no se registrará la visita.");
+            return;
+        }
+
         document.addEventListener("visibilitychange", onVisibilityChange);
         window.addEventListener("pointerdown", markInteraction, { passive: true });
         window.addEventListener("keydown", markInteraction, { passive: true });
