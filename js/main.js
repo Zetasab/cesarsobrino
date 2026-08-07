@@ -1266,11 +1266,11 @@ const setupTimelineAnimation = () => {
 
         events.forEach((el, index) => {
             const side = index % 2 === 0 ? -1 : 1;
-            const restX = desktop ? side * 130 : 0;
+            const restX = desktop ? side * 50 : 0;
             // Corrección manual: la card de "Julio 2026" quedaba visualmente más abajo que
             // el resto por el efecto de perspectiva (la distancia cámara-card en ese punto
             // del scroll no coincide exactamente con la del resto), así que se sube un poco.
-            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -80 : -24;
+            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -30 : 30;
             gsap.set(el, {
                 z: -index * eventDepth,
                 x: restX,
@@ -1309,7 +1309,7 @@ const setupTimelineAnimation = () => {
         // Fase 2: dolly de cámara por el timeline 3D
         events.forEach((el, index) => {
             const start = ZOOM_UNITS + index * STAGGER_UNITS;
-            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -80 : -24;
+            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -30 : 30;
             const enterY = restY - (desktop ? 160 : 100);
 
             tl.to(scene, { z: (index + 1) * eventDepth, duration: STAGGER_UNITS }, start);
@@ -1567,8 +1567,6 @@ const setupTimelineCardsPointerReaction = () => {
                     const rotateX = (0.5 - py) * maxTilt;
 
                     card.classList.add("is-interactive");
-                    card.style.setProperty("--mx", `${(px * 100).toFixed(2)}%`);
-                    card.style.setProperty("--my", `${(py * 100).toFixed(2)}%`);
                     card.style.setProperty("--rx", `${rotateX.toFixed(2)}deg`);
                     card.style.setProperty("--ry", `${rotateY.toFixed(2)}deg`);
                 });
@@ -1578,8 +1576,6 @@ const setupTimelineCardsPointerReaction = () => {
 
             const resetCardState = () => {
                 card.classList.remove("is-interactive");
-                card.style.setProperty("--mx", "50%");
-                card.style.setProperty("--my", "50%");
                 card.style.setProperty("--rx", "0deg");
                 card.style.setProperty("--ry", "0deg");
             };
