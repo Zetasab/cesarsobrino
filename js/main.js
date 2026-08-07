@@ -1280,7 +1280,11 @@ const setupTimelineAnimation = () => {
             });
         });
 
-        const totalUnits = ZOOM_UNITS + (events.length - 1) * STAGGER_UNITS + EVENT_UNITS;
+        // La última card no se solapa con ninguna siguiente, así que con EVENT_UNITS
+        // completo se quedaba con un tramo de scroll "muerto" tras desaparecer, antes de
+        // soltar el pin. Se usa una duración propia más corta solo para ella.
+        const LAST_EVENT_UNITS = EVENT_UNITS * 0.55;
+        const totalUnits = ZOOM_UNITS + (events.length - 1) * STAGGER_UNITS + LAST_EVENT_UNITS;
         const addPinnedClass = () => timelineSection.classList.add("is-pinned");
         const removePinnedClass = () => timelineSection.classList.remove("is-pinned");
 
@@ -1308,6 +1312,8 @@ const setupTimelineAnimation = () => {
 
         // Fase 2: dolly de cámara por el timeline 3D
         events.forEach((el, index) => {
+            const isLast = index === events.length - 1;
+            const cardUnits = isLast ? LAST_EVENT_UNITS : EVENT_UNITS;
             const start = ZOOM_UNITS + index * STAGGER_UNITS;
             const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -30 : 30;
             const enterY = restY - (desktop ? 160 : 100);
@@ -1317,14 +1323,14 @@ const setupTimelineAnimation = () => {
             // La opacidad entra muy pronto (casi al empezar el segmento) y el crecimiento
             // (escala+bajada) ocupa casi todo el segmento, muy lento y gradual, para dar
             // sensación real de que la card viene acercándose desde muy lejos.
-            tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: EVENT_UNITS * 0.15, ease: "power1.out" }, start)
+            tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: cardUnits * 0.15, ease: "power1.out" }, start)
                 .fromTo(
                     el,
                     { scale: 0.08, y: enterY },
-                    { scale: 1, y: restY, duration: EVENT_UNITS * 0.82, ease: "power1.out" },
+                    { scale: 1, y: restY, duration: cardUnits * 0.82, ease: "power1.out" },
                     start
                 )
-                .to(el, { autoAlpha: 0, scale: 1.15, duration: EVENT_UNITS * 0.18 }, start + EVENT_UNITS * 0.82);
+                .to(el, { autoAlpha: 0, scale: 1.15, duration: cardUnits * 0.18 }, start + cardUnits * 0.82);
         });
 
         return tl;
