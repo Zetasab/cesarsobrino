@@ -2142,6 +2142,19 @@ p {
     .scene-event p {
         font-size: 0.95rem;
     }
+
+    /* En móvil no se hace la animación de zoom/3D: se muestra un timeline normal */
+    .timeline-section {
+        height: auto;
+        overflow: visible;
+    }
+    .timeline-zoom-stage,
+    .timeline-scene-stage {
+        display: none;
+    }
+    .timeline-fallback-list {
+        display: block;
+    }
 }
 
 /* --- Projects Gallery (Horizontal Scroll) --- */

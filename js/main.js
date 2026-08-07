@@ -1374,13 +1374,10 @@ const setupTimelineAnimation = () => {
         return tl;
     };
 
+    // En móvil no se construye la animación de zoom/3D: se muestra el timeline
+    // estático normal (.timeline-fallback-list), ya visible por CSS en ese breakpoint.
     mm.add("(min-width: 769px)", () => {
         const tl = buildTimeline(true);
-        return () => { tl.kill(); };
-    });
-
-    mm.add("(max-width: 768px)", () => {
-        const tl = buildTimeline(false);
         return () => { tl.kill(); };
     });
 };
