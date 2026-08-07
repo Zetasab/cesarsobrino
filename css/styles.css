@@ -2087,8 +2087,8 @@ p {
     perspective: 1400px;
     perspective-origin: 50% 38%;
     background:
-        radial-gradient(ellipse at 50% 100%, rgba(56, 189, 248, 0.08) 0%, transparent 70%),
-        linear-gradient(180deg, #05010f 0%, #170a2e 20%, #3a1249 34%, #05010f 38%, #000000 60%, #000000 100%);
+        radial-gradient(ellipse at 50% 100%, rgba(56, 189, 248, 0.06) 0%, transparent 70%),
+        linear-gradient(180deg, #030109 0%, #0e0620 20%, #21092e 34%, #030109 38%, #000000 60%, #000000 100%);
 }
 
 /* ---------- Decoracion "retrowave": sol, montañas y estrellas detras del carril ---------- */
@@ -2099,6 +2099,10 @@ p {
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
+    /* Corta todo lo decorativo (sol incluido) justo en la linea del horizonte,
+       para que no se vea el degradado azul/verde de la parte baja del sol sobre el suelo. */
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 38%, transparent 38%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 38%, transparent 38%);
 }
 
 .timeline-stars {
@@ -2128,8 +2132,8 @@ p {
     height: min(46vw, 460px);
     transform: translateX(-50%);
     border-radius: 50%;
-    background: linear-gradient(180deg, #fca5f1 0%, #f472b6 22%, #fb923c 46%, #facc15 68%, #38bdf8 100%);
-    box-shadow: 0 0 90px rgba(244, 114, 182, 0.45), 0 0 160px rgba(56, 189, 248, 0.25);
+    background: linear-gradient(180deg, #7c3a78 0%, #a33d72 22%, #b8542c 46%, #a37a16 68%, #1c6f8c 100%);
+    box-shadow: 0 0 60px rgba(163, 61, 114, 0.35), 0 0 110px rgba(28, 111, 140, 0.18);
     /* Franjas horizontales estilo synthwave, mas separadas hacia arriba y mas juntas abajo */
     -webkit-mask-image: repeating-linear-gradient(
         180deg,
