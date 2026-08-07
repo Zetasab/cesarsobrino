@@ -1535,8 +1535,7 @@ const setupProjectCardsPointerReaction = () => {
 
 setupProjectCardsPointerReaction();
 
-// --- Interacción de ratón (tilt 3D + luz) en las cards del timeline de experiencia ---
-// Mismo patrón que setupProjectCardsPointerReaction, aplicado a .scene-event.
+// --- Interacción de ratón (solo tilt 3D, sin brillo/glow) en las cards del timeline ---
 const setupTimelineCardsPointerReaction = () => {
     const cardsMM = gsap.matchMedia();
 
