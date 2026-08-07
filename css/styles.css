@@ -1917,10 +1917,38 @@ p {
 }
 
 .scene-event {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 50%;
+    --card-scale: 1;
+    --shine-opacity: 0;
+    --glow-opacity: 0;
     position: absolute;
     top: 50%;
     left: 50%;
     width: min(46vw, 380px);
+    opacity: 0;
+    transform: translate(-50%, -50%) rotateX(0deg);
+    transform-style: preserve-3d;
+}
+
+/* Glow exterior que sigue al ratón, igual que en las cards de proyectos */
+.scene-event::after {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    border-radius: 36px;
+    background: radial-gradient(circle at var(--mx) calc(var(--my) + 35%), rgba(56, 189, 248, 0.45), rgba(56, 189, 248, 0));
+    opacity: var(--glow-opacity);
+    transition: opacity 0.35s ease;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.scene-event-inner {
+    position: relative;
+    width: 100%;
     padding: 1.4rem 1.6rem;
     display: flex;
     flex-direction: column;
@@ -1931,9 +1959,35 @@ p {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-    opacity: 0;
-    transform: translate(-50%, -50%) rotateX(0deg);
-    transform-style: preserve-3d;
+    overflow: hidden;
+    z-index: 1;
+    transition: transform 0.22s linear, box-shadow 0.35s ease, border-color 0.35s ease;
+    transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--card-scale));
+}
+
+/* Brillo interior que sigue al ratón */
+.scene-event-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(280px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08) 32%, rgba(255, 255, 255, 0) 62%),
+        linear-gradient(130deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 42%, rgba(255, 255, 255, 0) 60%);
+    opacity: var(--shine-opacity);
+    transition: opacity 0.25s ease;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.scene-event.is-interactive {
+    --shine-opacity: 1;
+    --glow-opacity: 1;
+    --card-scale: 1.02;
+}
+
+.scene-event-inner > * {
+    position: relative;
+    z-index: 1;
 }
 
 .node-date {
@@ -1956,6 +2010,11 @@ p {
 .type-job .node-date {
     color: #a7f3d0;
     background: rgba(52, 211, 153, 0.16);
+}
+
+.type-cert .node-date {
+    color: #fde68a;
+    background: rgba(251, 191, 36, 0.16);
 }
 
 .scene-event p {

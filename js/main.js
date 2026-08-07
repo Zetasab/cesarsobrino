@@ -1267,7 +1267,10 @@ const setupTimelineAnimation = () => {
         events.forEach((el, index) => {
             const side = index % 2 === 0 ? -1 : 1;
             const restX = desktop ? side * 130 : 0;
-            const restY = (index % 3) * 24 - 24;
+            // Corrección manual: la card de "Julio 2026" quedaba visualmente más abajo que
+            // el resto por el efecto de perspectiva (la distancia cámara-card en ese punto
+            // del scroll no coincide exactamente con la del resto), así que se sube un poco.
+            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -80 : -24;
             gsap.set(el, {
                 z: -index * eventDepth,
                 x: restX,
@@ -1306,7 +1309,7 @@ const setupTimelineAnimation = () => {
         // Fase 2: dolly de cámara por el timeline 3D
         events.forEach((el, index) => {
             const start = ZOOM_UNITS + index * STAGGER_UNITS;
-            const restY = (index % 3) * 24 - 24;
+            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -80 : -24;
             const enterY = restY - (desktop ? 160 : 100);
 
             tl.to(scene, { z: (index + 1) * eventDepth, duration: STAGGER_UNITS }, start);
@@ -1525,6 +1528,90 @@ const setupProjectCardsPointerReaction = () => {
 };
 
 setupProjectCardsPointerReaction();
+
+// --- Interacción de ratón (tilt 3D + luz) en las cards del timeline de experiencia ---
+// Mismo patrón que setupProjectCardsPointerReaction, aplicado a .scene-event.
+const setupTimelineCardsPointerReaction = () => {
+    const cardsMM = gsap.matchMedia();
+
+    cardsMM.add("(min-width: 769px) and (hover: hover) and (pointer: fine)", () => {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return;
+        }
+
+        const cards = gsap.utils.toArray(".scene-event");
+        if (cards.length === 0) return;
+
+        const rafIds = new WeakMap();
+        const listeners = [];
+
+        cards.forEach((card) => {
+            const inner = card.querySelector(".scene-event-inner");
+            if (!inner) return;
+
+            const maxTilt = 8;
+
+            const onMouseMove = (event) => {
+                if (rafIds.get(card)) {
+                    cancelAnimationFrame(rafIds.get(card));
+                }
+
+                const rafId = requestAnimationFrame(() => {
+                    const rect = inner.getBoundingClientRect();
+                    if (!rect.width || !rect.height) return;
+
+                    const px = gsap.utils.clamp(0, 1, (event.clientX - rect.left) / rect.width);
+                    const py = gsap.utils.clamp(0, 1, (event.clientY - rect.top) / rect.height);
+
+                    const rotateY = (px - 0.5) * maxTilt;
+                    const rotateX = (0.5 - py) * maxTilt;
+
+                    card.classList.add("is-interactive");
+                    card.style.setProperty("--mx", `${(px * 100).toFixed(2)}%`);
+                    card.style.setProperty("--my", `${(py * 100).toFixed(2)}%`);
+                    card.style.setProperty("--rx", `${rotateX.toFixed(2)}deg`);
+                    card.style.setProperty("--ry", `${rotateY.toFixed(2)}deg`);
+                });
+
+                rafIds.set(card, rafId);
+            };
+
+            const resetCardState = () => {
+                card.classList.remove("is-interactive");
+                card.style.setProperty("--mx", "50%");
+                card.style.setProperty("--my", "50%");
+                card.style.setProperty("--rx", "0deg");
+                card.style.setProperty("--ry", "0deg");
+            };
+
+            const onMouseEnter = () => {
+                card.classList.add("is-interactive");
+            };
+
+            card.addEventListener("mouseenter", onMouseEnter);
+            card.addEventListener("mousemove", onMouseMove);
+            card.addEventListener("mouseleave", resetCardState);
+
+            listeners.push(() => {
+                card.removeEventListener("mouseenter", onMouseEnter);
+                card.removeEventListener("mousemove", onMouseMove);
+                card.removeEventListener("mouseleave", resetCardState);
+
+                if (rafIds.get(card)) {
+                    cancelAnimationFrame(rafIds.get(card));
+                }
+
+                resetCardState();
+            });
+        });
+
+        return () => {
+            listeners.forEach((teardown) => teardown());
+        };
+    });
+};
+
+setupTimelineCardsPointerReaction();
 
 // --- Ocultar Hero Stage en la sección de proyectos ---
 // Lo ocultamos cuando el segundo proyecto (ZetaMovies) entra en pantalla
