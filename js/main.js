@@ -1216,6 +1216,7 @@ const setupTimelineAnimation = () => {
     const zoomTitle = document.getElementById("timelineZoomTitle");
     const sceneStage = document.getElementById("timelineSceneStage");
     const scene = document.getElementById("timelineScene");
+    const underlineFill = document.getElementById("timelineUnderlineFill");
     const events = gsap.utils.toArray(".scene-event");
     const timelineSection = document.querySelector(".timeline-section");
 
@@ -1300,7 +1301,18 @@ const setupTimelineAnimation = () => {
                 onEnter: addPinnedClass,
                 onEnterBack: addPinnedClass,
                 onLeave: removePinnedClass,
-                onLeaveBack: removePinnedClass
+                onLeaveBack: removePinnedClass,
+                onUpdate: (self) => {
+                    if (!underlineFill) return;
+                    // El subrayado solo avanza durante la fase 2 (escena 3D), una vez
+                    // termina el zoom sobre la "p" y el div de la escena queda fijo.
+                    const sceneProgress = gsap.utils.clamp(
+                        0,
+                        1,
+                        (self.progress * totalUnits - ZOOM_UNITS) / (totalUnits - ZOOM_UNITS)
+                    );
+                    underlineFill.style.width = `${sceneProgress * 100}%`;
+                }
             }
         });
 
