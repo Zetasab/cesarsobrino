@@ -1947,6 +1947,14 @@ p {
     filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5));
 }
 
+/* Rayas centrales del "carril": pocos segmentos grandes, más largos cuanto más cerca
+   de la cámara (abajo), que se estiran aún más al avanzar el scroll para reforzar la
+   sensación de acercamiento por el eje Z. */
+.timeline-road-dash {
+    stroke-width: 2;
+    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.6));
+}
+
 .timeline-horizon {
     position: absolute;
     left: 0;

@@ -1217,6 +1217,9 @@ const setupTimelineAnimation = () => {
     const sceneStage = document.getElementById("timelineSceneStage");
     const scene = document.getElementById("timelineScene");
     const underlineFill = document.getElementById("timelineUnderlineFill");
+    const roadDashes = gsap.utils.toArray(".timeline-road-dash");
+    const ROAD_TOP = 38;
+    const ROAD_BOTTOM = 120;
     const events = gsap.utils.toArray(".scene-event");
     const timelineSection = document.querySelector(".timeline-section");
 
@@ -1265,6 +1268,22 @@ const setupTimelineAnimation = () => {
         gsap.set(sceneStage, { autoAlpha: 0 });
         gsap.set(scene, { z: 0 });
 
+        const ROAD_SPAN = ROAD_BOTTOM - ROAD_TOP;
+        const drawDash = (dash, travel) => {
+            const baseY = parseFloat(dash.dataset.y);
+            // La raya viaja hacia abajo (hacia la cámara) y, al salir por el borde
+            // inferior, reaparece arriba: sensación de recorrido infinito por el eje Z.
+            const y = ROAD_TOP + (((baseY - ROAD_TOP + travel) % ROAD_SPAN) + ROAD_SPAN) % ROAD_SPAN;
+            const ratio = (y - ROAD_TOP) / ROAD_SPAN;
+            const len = 4 + ratio * ratio * 30;
+            // El borde superior de la raya es el que marca su posición: así nunca
+            // sobresale por encima del horizonte al reaparecer arriba.
+            dash.setAttribute("y1", y);
+            dash.setAttribute("y2", y + len);
+        };
+
+        roadDashes.forEach((dash) => drawDash(dash, 0));
+
         events.forEach((el, index) => {
             const side = index % 2 === 0 ? -1 : 1;
             const restX = desktop ? side * 50 : 0;
@@ -1303,15 +1322,22 @@ const setupTimelineAnimation = () => {
                 onLeave: removePinnedClass,
                 onLeaveBack: removePinnedClass,
                 onUpdate: (self) => {
-                    if (!underlineFill) return;
-                    // El subrayado solo avanza durante la fase 2 (escena 3D), una vez
-                    // termina el zoom sobre la "p" y el div de la escena queda fijo.
-                    const sceneProgress = gsap.utils.clamp(
-                        0,
-                        1,
-                        (self.progress * totalUnits - ZOOM_UNITS) / (totalUnits - ZOOM_UNITS)
-                    );
-                    underlineFill.style.width = `${sceneProgress * 100}%`;
+                    if (underlineFill) {
+                        // El subrayado solo avanza durante la fase 2 (escena 3D), una vez
+                        // termina el zoom sobre la "p" y el div de la escena queda fijo.
+                        const sceneProgress = gsap.utils.clamp(
+                            0,
+                            1,
+                            (self.progress * totalUnits - ZOOM_UNITS) / (totalUnits - ZOOM_UNITS)
+                        );
+                        underlineFill.style.width = `${sceneProgress * 100}%`;
+                    }
+
+                    // Pocas rayas centrales, pero grandes: viajan hacia abajo (hacia la
+                    // cámara) mientras el scroll avanza, alargándose por perspectiva a
+                    // medida que se acercan, y vuelven a aparecer arriba al salir por abajo.
+                    const travel = self.progress * ROAD_SPAN * 2.5;
+                    roadDashes.forEach((dash) => drawDash(dash, travel));
                 }
             }
         });

@@ -326,13 +326,19 @@
                     </div>
                     <svg class="timeline-road" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                         <defs>
-                            <linearGradient id="timeline-road-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <linearGradient id="timeline-road-gradient" gradientUnits="userSpaceOnUse" x1="50" y1="38" x2="50" y2="120">
                                 <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85" />
                                 <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
                             </linearGradient>
                         </defs>
                         <line x1="47" y1="38" x2="35" y2="120" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
                         <line x1="53" y1="38" x2="65" y2="120" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
+                        <g id="timelineRoadDashes">
+                            <line class="timeline-road-dash" data-y="48" x1="50" x2="50" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
+                            <line class="timeline-road-dash" data-y="66" x1="50" x2="50" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
+                            <line class="timeline-road-dash" data-y="86" x1="50" x2="50" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
+                            <line class="timeline-road-dash" data-y="108" x1="50" x2="50" stroke="url(#timeline-road-gradient)" vector-effect="non-scaling-stroke" />
+                        </g>
                     </svg>
                     <div class="timeline-horizon"></div>
                     <div class="timeline-scene" id="timelineScene">
