@@ -123,6 +123,24 @@ body.no-scroll {
     filter: blur(0);
 }
 
+.custom-cursor-dot.is-image {
+    width: 190px;
+    height: 128px;
+    padding: 0;
+    border-radius: 18px;
+    background-color: #0a0a0a;
+    background-image: var(--cursor-img);
+    background-size: 55%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+}
+
+.custom-cursor-dot.is-image::after {
+    content: "";
+}
+
 /* Hide custom cursor on touch devices */
 @media (hover: none) and (pointer: coarse) {
     .custom-cursor-dot {
@@ -1919,8 +1937,7 @@ p {
 }
 
 .scene-event {
-    --rx: 0deg;
-    --ry: 0deg;
+    --lift: 0px;
     --card-scale: 1;
     position: absolute;
     top: 50%;
@@ -1946,11 +1963,15 @@ p {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
     overflow: hidden;
     z-index: 1;
-    transition: transform 0.22s linear, box-shadow 0.35s ease, border-color 0.35s ease;
-    transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--card-scale));
+    /* Elevación 2D (translateY + scale) en vez de tilt 3D con perspective()/rotateX/rotateY:
+       ese perspective() local anidaba un segundo contexto 3D dentro del que ya anima GSAP
+       en la card, y eso rompía el hit-testing de los enlaces dentro de la card. */
+    transition: transform 0.22s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    transform: translateY(var(--lift)) scale(var(--card-scale));
 }
 
 .scene-event.is-interactive {
+    --lift: -6px;
     --card-scale: 1.02;
 }
 

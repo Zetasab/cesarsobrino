@@ -1270,11 +1270,11 @@ const setupTimelineAnimation = () => {
             // Corrección manual: la card de "Julio 2026" quedaba visualmente más abajo que
             // el resto por el efecto de perspectiva (la distancia cámara-card en ese punto
             // del scroll no coincide exactamente con la del resto), así que se sube un poco.
-            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -30 : 30;
+            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? 30 : 90;
             gsap.set(el, {
                 z: -index * eventDepth,
                 x: restX,
-                y: restY - (desktop ? 160 : 100),
+                y: restY - (desktop ? 320 : 200),
                 autoAlpha: 0,
                 scale: 0.08
             });
@@ -1315,8 +1315,8 @@ const setupTimelineAnimation = () => {
             const isLast = index === events.length - 1;
             const cardUnits = isLast ? LAST_EVENT_UNITS : EVENT_UNITS;
             const start = ZOOM_UNITS + index * STAGGER_UNITS;
-            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? -30 : 30;
-            const enterY = restY - (desktop ? 160 : 100);
+            const restY = el.querySelector(".node-date")?.textContent.trim() === "Julio 2026" ? 30 : 90;
+            const enterY = restY - (desktop ? 320 : 200);
 
             tl.to(scene, { z: (index + 1) * eventDepth, duration: STAGGER_UNITS }, start);
 
@@ -1535,7 +1535,9 @@ const setupProjectCardsPointerReaction = () => {
 
 setupProjectCardsPointerReaction();
 
-// --- Interacción de ratón (solo tilt 3D, sin brillo/glow) en las cards del timeline ---
+// --- Interacción de ratón (elevación 2D, sin tilt 3D) en las cards del timeline ---
+// Se evita rotateX/rotateY/perspective aquí a propósito: anidaba un segundo contexto 3D
+// dentro del que ya anima GSAP en la card y rompía el hit-testing de los enlaces internos.
 const setupTimelineCardsPointerReaction = () => {
     const cardsMM = gsap.matchMedia();
 
@@ -1547,62 +1549,19 @@ const setupTimelineCardsPointerReaction = () => {
         const cards = gsap.utils.toArray(".scene-event");
         if (cards.length === 0) return;
 
-        const rafIds = new WeakMap();
         const listeners = [];
 
         cards.forEach((card) => {
-            const inner = card.querySelector(".scene-event-inner");
-            if (!inner) return;
-
-            const maxTilt = 8;
-
-            const onMouseMove = (event) => {
-                if (rafIds.get(card)) {
-                    cancelAnimationFrame(rafIds.get(card));
-                }
-
-                const rafId = requestAnimationFrame(() => {
-                    const rect = inner.getBoundingClientRect();
-                    if (!rect.width || !rect.height) return;
-
-                    const px = gsap.utils.clamp(0, 1, (event.clientX - rect.left) / rect.width);
-                    const py = gsap.utils.clamp(0, 1, (event.clientY - rect.top) / rect.height);
-
-                    const rotateY = (px - 0.5) * maxTilt;
-                    const rotateX = (0.5 - py) * maxTilt;
-
-                    card.classList.add("is-interactive");
-                    card.style.setProperty("--rx", `${rotateX.toFixed(2)}deg`);
-                    card.style.setProperty("--ry", `${rotateY.toFixed(2)}deg`);
-                });
-
-                rafIds.set(card, rafId);
-            };
-
-            const resetCardState = () => {
-                card.classList.remove("is-interactive");
-                card.style.setProperty("--rx", "0deg");
-                card.style.setProperty("--ry", "0deg");
-            };
-
-            const onMouseEnter = () => {
-                card.classList.add("is-interactive");
-            };
+            const onMouseEnter = () => card.classList.add("is-interactive");
+            const onMouseLeave = () => card.classList.remove("is-interactive");
 
             card.addEventListener("mouseenter", onMouseEnter);
-            card.addEventListener("mousemove", onMouseMove);
-            card.addEventListener("mouseleave", resetCardState);
+            card.addEventListener("mouseleave", onMouseLeave);
 
             listeners.push(() => {
                 card.removeEventListener("mouseenter", onMouseEnter);
-                card.removeEventListener("mousemove", onMouseMove);
-                card.removeEventListener("mouseleave", resetCardState);
-
-                if (rafIds.get(card)) {
-                    cancelAnimationFrame(rafIds.get(card));
-                }
-
-                resetCardState();
+                card.removeEventListener("mouseleave", onMouseLeave);
+                onMouseLeave();
             });
         });
 
@@ -1884,6 +1843,25 @@ if (customCursorDot) {
         }, 320);
     };
 
+    let clearCursorImageTimeout;
+
+    const setCursorImage = (src) => {
+        if (!src) return;
+        window.clearTimeout(clearCursorImageTimeout);
+        customCursorDot.style.setProperty('--cursor-img', `url("${src}")`);
+        customCursorDot.classList.add('is-image');
+    };
+
+    const clearCursorImage = () => {
+        customCursorDot.classList.remove('is-image');
+        window.clearTimeout(clearCursorImageTimeout);
+        clearCursorImageTimeout = window.setTimeout(() => {
+            if (!customCursorDot.classList.contains('is-image')) {
+                customCursorDot.style.removeProperty('--cursor-img');
+            }
+        }, 320);
+    };
+
     // Update mouse coordinates
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
@@ -1932,6 +1910,23 @@ if (customCursorDot) {
         target.addEventListener('mouseenter', updateCursorTextState);
         target.addEventListener('mousemove', updateCursorTextState);
         target.addEventListener('mouseleave', clearCursorText);
+    });
+
+    const cursorImageTargets = document.querySelectorAll('[data-cursor-image]');
+    cursorImageTargets.forEach((target) => {
+        const updateCursorImageState = () => {
+            const src = target.getAttribute('data-cursor-image');
+            if (!src) {
+                clearCursorImage();
+                return;
+            }
+
+            setCursorImage(src);
+        };
+
+        target.addEventListener('mouseenter', updateCursorImageState);
+        target.addEventListener('mousemove', updateCursorImageState);
+        target.addEventListener('mouseleave', clearCursorImage);
     });
 }
 
