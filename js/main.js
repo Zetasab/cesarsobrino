@@ -349,7 +349,7 @@ const heroScene = (() => {
             const screenCenter = screenBox.getCenter(new THREE.Vector3());
             const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(group.quaternion);
             lookEnd.copy(screenCenter);
-            camEnd.copy(screenCenter).addScaledVector(forward, 0.85);
+            camEnd.copy(screenCenter).addScaledVector(forward, 0.72);
 
             objectsGroup.rotation.set(prevRotX, prevRotY, 0);
             objectsGroup.updateMatrixWorld(true);
@@ -531,7 +531,7 @@ const setupHeroAnimation = () => {
             scrub: 0.5
         },
         onUpdate: function () {
-            const expanded = this.time() >= 2.7;
+            const expanded = this.time() >= 7;
             hero3d.classList.toggle("expanded", expanded);
             screenOverlay.classList.toggle("expanded", expanded);
         }
@@ -545,72 +545,72 @@ const setupHeroAnimation = () => {
             duration: 0.8
         }, 0)
 
-        // 1. Zoom de camara hacia la pantalla del monitor
+        // 1. Zoom de camara hacia la pantalla del monitor (muy alargado: se acerca mucho antes de que salga la pantalla de inicio)
         .to(zoomProxy, {
             progress: 1,
-            duration: 2.7
+            duration: 7
         }, 0)
 
-        // 2. La pantalla de login crece desde el centro hasta ocupar todo el viewport
+        // 2. La pantalla de login crece desde el centro hasta ocupar todo el viewport (retrasada al final del acercamiento)
         .to(screenOverlay, {
             autoAlpha: 1,
             duration: 0.7
-        }, 1.9)
+        }, 6.3)
         .to(screenOverlay, {
             scale: 1,
             duration: 0.8
-        }, 1.9)
+        }, 6.3)
         .to(".laptop-screen", {
             borderRadius: 0,
             duration: 0.5
-        }, 2.2)
+        }, 6.6)
 
-        // 3. Loading sequence (after screen is fully open at 2.7s)
+        // 3. Loading sequence (after screen is fully open at 7s)
         // Hide button, show progress bar
         .to(".btn-entrar", {
             autoAlpha: 0,
             duration: 0.2
-        }, 2.8)
+        }, 7.1)
         .to(".progress-bar-container", {
             autoAlpha: 1,
             duration: 0.2
-        }, 2.8)
+        }, 7.1)
         .to(".progress-bar-fill", {
             width: "100%",
             duration: 1.2
-        }, 2.8)
+        }, 7.1)
 
         // Hide progress bar, show tick (after some scroll distance)
         .to(".progress-bar-container", {
             autoAlpha: 0,
             duration: 0.2
-        }, 4.0)
+        }, 8.3)
         .to(".tick", {
             autoAlpha: 1,
             duration: 0.2
-        }, 4.0)
+        }, 8.3)
 
         // Hold the tick for a moment
         .to(".tick", {
             scale: 1.2,
             duration: 0.5
-        }, 4.2)
+        }, 8.5)
 
         // Hide logo and tick
         .to(".login-container", {
             autoAlpha: 0,
             duration: 0.5
-        }, 4.7)
+        }, 9.0)
 
         // Turn background black
         .to(".screen-wallpaper", {
             autoAlpha: 0,
             duration: 0.5
-        }, 5.2)
+        }, 9.5)
         .to(".laptop-screen", {
             backgroundColor: "#000000",
             duration: 0.5
-        }, 5.2);
+        }, 9.5);
 
     // Añadir evento click SOLO sobre la pantalla del monitor para hacer scroll hasta que esté full
     hero3d.addEventListener('click', (e) => {
@@ -619,10 +619,10 @@ const setupHeroAnimation = () => {
 
         const st = timeline.scrollTrigger;
         if (st) {
-            // El momento en el que la pantalla está full y cuadrada es a los 2.7s (el boton empieza a
-            // desvanecerse en el 2.8s). Apuntamos un poco mas alla del 2.7 para asegurar que el scroll
+            // El momento en el que la pantalla está full y cuadrada es a los 7s (el boton empieza a
+            // desvanecerse en el 7.1s). Apuntamos un poco mas alla del 7 para asegurar que el scroll
             // no se quede unos pixeles corto y el boton "Entrar" quede clicable.
-            const targetProgress = 2.75 / timeline.duration();
+            const targetProgress = 7.05 / timeline.duration();
             const targetScroll = st.start + (st.end - st.start) * targetProgress;
 
             // Usar lenis para hacer scroll suave hasta esa posición
