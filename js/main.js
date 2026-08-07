@@ -1222,6 +1222,10 @@ const setupTimelineAnimation = () => {
     const ROAD_BOTTOM = 120;
     const events = gsap.utils.toArray(".scene-event");
     const timelineSection = document.querySelector(".timeline-section");
+    // Card "anclada" al lateral (Formación/Experiencia) que corresponde a cada card 3D,
+    // por índice de orden en la escena (data-dock-index).
+    const dockCards = gsap.utils.toArray(".timeline-dock-card");
+    const getDockCard = (index) => dockCards.find((card) => Number(card.dataset.dockIndex) === index);
 
     if (!heroP || !zoomStage || !zoomTitle || !sceneStage || !scene || events.length === 0 || !timelineSection) return;
 
@@ -1283,6 +1287,8 @@ const setupTimelineAnimation = () => {
         };
 
         roadDashes.forEach((dash) => drawDash(dash, 0));
+
+        gsap.set(dockCards, { autoAlpha: 0, y: 12, scale: 0.94 });
 
         events.forEach((el, index) => {
             const side = index % 2 === 0 ? -1 : 1;
@@ -1369,6 +1375,20 @@ const setupTimelineAnimation = () => {
                     start
                 )
                 .to(el, { autoAlpha: 0, scale: 1.15, duration: cardUnits * 0.18 }, start + cardUnits * 0.82);
+
+            // En el mismo instante en que la card 3D "pasa de largo" y empieza a desvanecerse,
+            // se revela su versión anclada en el lateral correspondiente (Formación/Experiencia),
+            // como si se hubiera quedado fija ahí tras pasar por la cámara.
+            const dockCard = getDockCard(index);
+            if (dockCard) {
+                tl.to(dockCard, {
+                    autoAlpha: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: cardUnits * 0.3,
+                    ease: "power2.out"
+                }, start + cardUnits * 0.22);
+            }
         });
 
         return tl;

@@ -91,11 +91,11 @@
                     <span id="navHomeIcon" class="nav-home-icon" aria-hidden="true"></span>
                 </a>
             </li>
-            <li><a href="#portfolio" data-cursor-text="Ir a la seccion de Sobre mi">Sobre mí</a></li>
-            <li><a href="#lenguajes" data-cursor-text="Ir a la seccion de Lenguajes">Lenguajes</a></li>
-            <li><a href="#timeline" data-cursor-text="Ir a la seccion de Experiencia">Experiencia</a></li>
-            <li><a href="#projects" data-cursor-text="Ir a la seccion de Proyectos">Proyectos</a></li>
-            <li><a href="#contacto" data-cursor-text="Ir a la seccion de Contacto">Contacto</a></li>
+            <li><a href="#portfolio" data-cursor-text="Ir a la sección de Sobre mi">Sobre mí</a></li>
+            <li><a href="#lenguajes" data-cursor-text="Ir a la sección de Lenguajes">Lenguajes</a></li>
+            <li><a href="#timeline" data-cursor-text="Ir a la sección de Experiencia y Formación">Experiencia y Formación</a></li>
+            <li><a href="#projects" data-cursor-text="Ir a la sección de Proyectos">Proyectos</a></li>
+            <li><a href="#contacto" data-cursor-text="Ir a la sección de Contacto">Contacto</a></li>
             <li class="nav-stats-item">
                 <button class="nav-stats-trigger" type="button">
                     <span class="nav-stats-icon" aria-hidden="true">
@@ -322,7 +322,7 @@
                 <div class="timeline-zoom-stage" id="timelineZoomStage">
                     <p class="eyebrow">Trayectoria</p>
                     <h2 class="timeline-zoom-title" id="timelineZoomTitle">
-                        Mi Ex<span class="hero-p" id="timelineHeroP">p</span>eriencia
+                        Mi Ex<span class="hero-p" id="timelineHeroP">p</span>eriencia<br>y Formación
                     </h2>
                 </div>
 
@@ -335,7 +335,7 @@
                         </svg>
                     </div>
                     <div class="timeline-scene-header">
-                        <h3 class="timeline-scene-title">Mi experiencia</h3>
+                        <h3 class="timeline-scene-title">Mi experiencia y formación</h3>
                         <div class="container-underline" aria-hidden="true">
                             <div class="container-underline-fill" id="timelineUnderlineFill"></div>
                         </div>
@@ -358,65 +358,89 @@
                     </svg>
                     <div class="timeline-horizon"></div>
                     <div class="timeline-scene" id="timelineScene">
-                        <article class="scene-event type-edu">
+                        <article class="scene-event type-edu" data-category="formacion">
                             <div class="scene-event-inner">
-                                <span class="node-date">2019</span>
+                                <div class="node-meta">
+                                    <span class="node-date">2019</span>
+                                    <span class="node-category node-category-formacion">Formación</span>
+                                </div>
                                 <p>Graduado en Grado medio de sistemas microinformáticos en red</p>
                             </div>
                             <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
                         </article>
 
-                        <article class="scene-event type-cert">
+                        <article class="scene-event type-edu" data-category="formacion">
                             <div class="scene-event-inner">
-                                <span class="node-date">Septiembre 2021</span>
-                                <p><a href="https://www.udemy.com/certificate/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920.webp">Certificado</a> en Desarrollando Aplicaciones en Angular 12 y ASP.NET Core 5</p>
-                            </div>
-                            <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
-                        </article>
-
-                        <article class="scene-event type-edu">
-                            <div class="scene-event-inner">
-                                <span class="node-date">2021</span>
+                                <div class="node-meta">
+                                    <span class="node-date">2021</span>
+                                    <span class="node-category node-category-formacion">Formación</span>
+                                </div>
                                 <p>Graduado en el Grado Superior de Programación de Aplicaciones Multiplataforma (DAM)</p>
                             </div>
                             <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
                         </article>
 
-                        <article class="scene-event type-job">
+                        <article class="scene-event type-edu" data-category="formacion">
                             <div class="scene-event-inner">
-                                <span class="node-date">Octubre 2021 – marzo 2022</span>
-                                <p>Desarrollador de Software de Aplicaciones .NET Core con Angular en <a href="https://www.visiblesoft.com/index.html" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/visiblesoft.webp">VisibleSoft</a>.</p>
-                            </div>
-                            <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
-                        </article>
-
-                        <article class="scene-event type-edu">
-                            <div class="scene-event-inner">
-                                <span class="node-date">2022</span>
+                                <div class="node-meta">
+                                    <span class="node-date">2022</span>
+                                    <span class="node-category node-category-formacion">Formación</span>
+                                </div>
                                 <p>Graduado en el Grado Superior de Programación de Aplicaciones Web (DAW)</p>
                             </div>
                             <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
                         </article>
 
-                        <article class="scene-event type-job">
+                        <article class="scene-event type-cert" data-category="formacion">
                             <div class="scene-event-inner">
-                                <span class="node-date">Diciembre 2022 – actualmente</span>
+                                <div class="node-meta">
+                                    <span class="node-date">Septiembre 2021</span>
+                                    <span class="node-category node-category-formacion">Formación</span>
+                                </div>
+                                <p><a href="https://www.udemy.com/certificate/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920.webp">Certificado</a> en Desarrollando Aplicaciones en Angular 12 y ASP.NET Core 5</p>
+                            </div>
+                            <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
+                        </article>
+
+                        <article class="scene-event type-job" data-category="experiencia">
+                            <div class="scene-event-inner">
+                                <div class="node-meta">
+                                    <span class="node-date">Octubre 2021 – marzo 2022</span>
+                                    <span class="node-category node-category-experiencia">Experiencia</span>
+                                </div>
+                                <p>Desarrollador de Software de Aplicaciones .NET Core con Angular en <a href="https://www.visiblesoft.com/index.html" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/visiblesoft.webp">VisibleSoft</a>.</p>
+                            </div>
+                            <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
+                        </article>
+
+                        <article class="scene-event type-job" data-category="experiencia">
+                            <div class="scene-event-inner">
+                                <div class="node-meta">
+                                    <span class="node-date">Diciembre 2022 – actualmente</span>
+                                    <span class="node-category node-category-experiencia">Experiencia</span>
+                                </div>
                                 <p>Desarrollador de Software de Aplicaciones .NET Core con Angular/Blazor en <a href="https://excemtech.com/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/Excem-technologies.webp">Excem Technologies</a>.</p>
                             </div>
                             <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
                         </article>
 
-                        <article class="scene-event type-cert">
+                        <article class="scene-event type-cert" data-category="formacion">
                             <div class="scene-event-inner">
-                                <span class="node-date">Julio 2026</span>
+                                <div class="node-meta">
+                                    <span class="node-date">Julio 2026</span>
+                                    <span class="node-category node-category-formacion">Formación</span>
+                                </div>
                                 <p><a href="https://www.udemy.com/certificate/UC-a1b5e739-63d4-4ca1-b1b3-febc60b2b55a/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-a1b5e739-63d4-4ca1-b1b3-febc60b2b55a.webp">Certificado</a> en React: De cero a experto</p>
                             </div>
                             <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
                         </article>
 
-                        <article class="scene-event type-cert">
+                        <article class="scene-event type-cert" data-category="formacion">
                             <div class="scene-event-inner">
-                                <span class="node-date">Agosto 2026</span>
+                                <div class="node-meta">
+                                    <span class="node-date">Agosto 2026</span>
+                                    <span class="node-category node-category-formacion">Formación</span>
+                                </div>
                                 <p><a href="https://www.udemy.com/certificate/UC-c77d9170-c296-409b-9267-4214d90f82b6/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-c77d9170-c296-409b-9267-4214d90f82b6.webp">Certificado</a> en Claude Code: Guía completa para desarrolladores de software</p>
                             </div>
                             <div class="scene-node"><img src="assets/img/logo.png" alt="" loading="lazy" /></div>
@@ -424,37 +448,123 @@
                     </div>
                 </div>
 
+                <div class="timeline-dock timeline-dock-left" id="timelineDockLeft">
+                    <div class="timeline-dock-card" data-dock-index="0">
+                        <div class="node-meta">
+                            <span class="node-date">2019</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
+                        <p>Grado medio de sistemas microinformáticos en red</p>
+                    </div>
+                    <div class="timeline-dock-card" data-dock-index="1">
+                        <div class="node-meta">
+                            <span class="node-date">2021</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
+                        <p>Grado Superior de Programación de Aplicaciones Multiplataforma (DAM)</p>
+                    </div>
+                    <div class="timeline-dock-card" data-dock-index="2">
+                        <div class="node-meta">
+                            <span class="node-date">2022</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
+                        <p>Grado Superior de Programación de Aplicaciones Web (DAW)</p>
+                    </div>
+                    <div class="timeline-dock-card" data-dock-index="3">
+                        <div class="node-meta">
+                            <span class="node-date">Sept. 2021</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
+                        <p><a href="https://www.udemy.com/certificate/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920.webp">Certificado</a> en Angular 12 y ASP.NET Core 5</p>
+                    </div>
+                    <div class="timeline-dock-card" data-dock-index="6">
+                        <div class="node-meta">
+                            <span class="node-date">Julio 2026</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
+                        <p><a href="https://www.udemy.com/certificate/UC-a1b5e739-63d4-4ca1-b1b3-febc60b2b55a/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-a1b5e739-63d4-4ca1-b1b3-febc60b2b55a.webp">Certificado</a> en React: De cero a experto</p>
+                    </div>
+                    <div class="timeline-dock-card" data-dock-index="7">
+                        <div class="node-meta">
+                            <span class="node-date">Agosto 2026</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
+                        <p><a href="https://www.udemy.com/certificate/UC-c77d9170-c296-409b-9267-4214d90f82b6/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-c77d9170-c296-409b-9267-4214d90f82b6.webp">Certificado</a> en Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="timeline-dock timeline-dock-right" id="timelineDockRight">
+                    <div class="timeline-dock-card" data-dock-index="4">
+                        <div class="node-meta">
+                            <span class="node-date">Oct. 2021 – mar. 2022</span>
+                            <span class="node-category node-category-experiencia">Experiencia</span>
+                        </div>
+                        <p>.NET Core con Angular en <a href="https://www.visiblesoft.com/index.html" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/visiblesoft.webp">VisibleSoft</a></p>
+                    </div>
+                    <div class="timeline-dock-card" data-dock-index="5">
+                        <div class="node-meta">
+                            <span class="node-date">Dic. 2022 – actualmente</span>
+                            <span class="node-category node-category-experiencia">Experiencia</span>
+                        </div>
+                        <p>.NET Core con Angular/Blazor en <a href="https://excemtech.com/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/Excem-technologies.webp">Excem Technologies</a></p>
+                    </div>
+                </div>
+
                 <ul class="timeline-fallback-list">
                     <li>
-                        <span class="node-date">2019</span>
+                        <div class="node-meta">
+                            <span class="node-date">2019</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
                         <p>Graduado en Grado medio de sistemas microinformáticos en red</p>
                     </li>
                     <li>
-                        <span class="node-date">Septiembre 2021</span>
-                        <p><a href="https://www.udemy.com/certificate/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920.webp">Certificado</a> en Desarrollando Aplicaciones en Angular 12 y ASP.NET Core 5</p>
-                    </li>
-                    <li>
-                        <span class="node-date">2021</span>
+                        <div class="node-meta">
+                            <span class="node-date">2021</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
                         <p>Graduado en el Grado Superior de Programación de Aplicaciones Multiplataforma (DAM)</p>
                     </li>
                     <li>
-                        <span class="node-date">Octubre 2021 – marzo 2022</span>
-                        <p>Desarrollador de Software de Aplicaciones .NET Core con Angular en <a href="https://www.visiblesoft.com/index.html" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/visiblesoft.webp">VisibleSoft</a>.</p>
-                    </li>
-                    <li>
-                        <span class="node-date">2022</span>
+                        <div class="node-meta">
+                            <span class="node-date">2022</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
                         <p>Graduado en el Grado Superior de Programación de Aplicaciones Web (DAW)</p>
                     </li>
                     <li>
-                        <span class="node-date">Diciembre 2022 – actualmente</span>
+                        <div class="node-meta">
+                            <span class="node-date">Septiembre 2021</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
+                        <p><a href="https://www.udemy.com/certificate/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-93dead9b-241a-4bd3-bbb8-6e83a2198920.webp">Certificado</a> en Desarrollando Aplicaciones en Angular 12 y ASP.NET Core 5</p>
+                    </li>
+                    <li>
+                        <div class="node-meta">
+                            <span class="node-date">Octubre 2021 – marzo 2022</span>
+                            <span class="node-category node-category-experiencia">Experiencia</span>
+                        </div>
+                        <p>Desarrollador de Software de Aplicaciones .NET Core con Angular en <a href="https://www.visiblesoft.com/index.html" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/visiblesoft.webp">VisibleSoft</a>.</p>
+                    </li>
+                    <li>
+                        <div class="node-meta">
+                            <span class="node-date">Diciembre 2022 – actualmente</span>
+                            <span class="node-category node-category-experiencia">Experiencia</span>
+                        </div>
                         <p>Desarrollador de Software de Aplicaciones .NET Core con Angular/Blazor en <a href="https://excemtech.com/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/experience/Excem-technologies.webp">Excem Technologies</a>.</p>
                     </li>
                     <li>
-                        <span class="node-date">Julio 2026</span>
+                        <div class="node-meta">
+                            <span class="node-date">Julio 2026</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
                         <p><a href="https://www.udemy.com/certificate/UC-a1b5e739-63d4-4ca1-b1b3-febc60b2b55a/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-a1b5e739-63d4-4ca1-b1b3-febc60b2b55a.webp">Certificado</a> en React: De cero a experto</p>
                     </li>
                     <li>
-                        <span class="node-date">Agosto 2026</span>
+                        <div class="node-meta">
+                            <span class="node-date">Agosto 2026</span>
+                            <span class="node-category node-category-formacion">Formación</span>
+                        </div>
                         <p><a href="https://www.udemy.com/certificate/UC-c77d9170-c296-409b-9267-4214d90f82b6/" target="_blank" rel="noopener noreferrer" class="timeline-link" data-cursor-image="/assets/img/certificates/UC-c77d9170-c296-409b-9267-4214d90f82b6.webp">Certificado</a> en Claude Code: Guía completa para desarrolladores de software</p>
                     </li>
                 </ul>
