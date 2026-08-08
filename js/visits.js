@@ -1,7 +1,7 @@
 (function () {
     console.log("v2");
-    const VISIT_ENDPOINT = "https://cesarsobapigateway.up.railway.app/api/Visits/addvisit";
-    // const VISIT_ENDPOINT = "http://localhost:5112/api/Visits/addvisit";
+    const PROD_API_BASE = "https://cesarsobapigateway.up.railway.app";
+    const DEV_API_BASE = "http://localhost:5112";
     const BOT_UA_PATTERN = /(bot|crawler|spider|slurp|curl|wget|python-requests|headless|phantom|scrapy|httpclient|monitor|uptime)/i;
     const DEV_HOSTNAME_PATTERN = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/i;
 
@@ -11,7 +11,14 @@
             window.location.hostname.endsWith(".local");
     }
 
+    const API_BASE = isDevEnvironment() ? DEV_API_BASE : PROD_API_BASE;
+    const VISIT_ENDPOINT = API_BASE + "/api/Visits/addvisit";
+    const PROJECT_VISIT_ENDPOINT = API_BASE + "/api/Visits/addvisitingproyect";
+
+    const MAX_VISIT_RETRIES = 3;
+
     let hasRegisteredVisit = false;
+    let visitAttempts = 0;
     let hasInteraction = false;
     let visibleStartedAt = document.visibilityState === "visible" ? Date.now() : 0;
     let visibleAccumulatedMs = 0;
@@ -81,7 +88,14 @@
                 cache: "no-store"
             });
         } catch (error) {
-            console.warn("No se pudo registrar la visita:", error);
+            visitAttempts += 1;
+
+            if (visitAttempts >= MAX_VISIT_RETRIES) {
+                console.warn("No se pudo registrar la visita tras " + visitAttempts + " intentos, se deja de reintentar:", error);
+                return;
+            }
+
+            console.warn("No se pudo registrar la visita (intento " + visitAttempts + "/" + MAX_VISIT_RETRIES + "):", error);
             hasRegisteredVisit = false;
         }
     }
@@ -117,11 +131,6 @@
     }
 
     function scheduleRegisterVisit() {
-        if (isDevEnvironment()) {
-            console.log("Visits: entorno de desarrollo detectado, no se registrará la visita.");
-            return;
-        }
-
         document.addEventListener("visibilitychange", onVisibilityChange);
         window.addEventListener("pointerdown", markInteraction, { passive: true });
         window.addEventListener("keydown", markInteraction, { passive: true });
@@ -146,5 +155,43 @@
         scheduleRegisterVisit();
     } else {
         window.addEventListener("load", scheduleRegisterVisit, { once: true });
+    }
+
+    function registerProjectVisit(proyect) {
+        try {
+            const visitParam = getVisitParam();
+            const endpointUrl = new URL(PROJECT_VISIT_ENDPOINT);
+
+            if (visitParam) {
+                endpointUrl.searchParams.set("visitparams", visitParam);
+            }
+            endpointUrl.searchParams.set("proyect", proyect);
+
+            fetch(endpointUrl.toString(), {
+                method: "POST",
+                mode: "cors",
+                credentials: "omit",
+                cache: "no-store"
+            }).catch(function (error) {
+                console.warn("No se pudo registrar la visita al proyecto:", error);
+            });
+        } catch (error) {
+            console.warn("No se pudo registrar la visita al proyecto:", error);
+        }
+    }
+
+    function setupProjectVisitTracking() {
+        document.querySelectorAll(".project-link").forEach(function (link) {
+            link.addEventListener("click", function () {
+                const proyect = link.dataset.cursorText || link.href;
+                registerProjectVisit(proyect);
+            });
+        });
+    }
+
+    if (document.readyState === "complete") {
+        setupProjectVisitTracking();
+    } else {
+        window.addEventListener("load", setupProjectVisitTracking, { once: true });
     }
 })();

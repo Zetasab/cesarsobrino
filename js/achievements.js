@@ -70,6 +70,12 @@
             icon: "github",
             title: "Curioso",
             desc: "Abriste el GitHub"
+        },
+        {
+            id: "completionist",
+            icon: "achivement",
+            title: "Completista",
+            desc: "Desbloqueaste todos los demás logros"
         }
     ];
 
@@ -295,6 +301,42 @@
     const TOAST_DURATION_MS = 5000;
     let toastSeq = 0;
 
+    const CONFETTI_COLORS = ["#f59e0b", "#fbbf24", "#f97316", "#facc15", "#eab308", "#ffffff"];
+
+    // Ráfaga de confeti a los lados del toast, puramente decorativa
+    function spawnConfetti(container) {
+        const pieceCount = 20;
+        for (let i = 0; i < pieceCount; i++) {
+            const piece = document.createElement("span");
+            piece.className = "achievement-confetti";
+
+            const side = i % 2 === 0 ? -1 : 1;
+            const distance = 70 + Math.random() * 90;
+            const x = side * distance;
+            const y = (Math.random() * 120 - 60);
+            const rot = Math.random() * 720 - 360;
+            const size = 8 + Math.random() * 6;
+            const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+            const delay = Math.random() * 150;
+
+            piece.style.setProperty("--x", x + "px");
+            piece.style.setProperty("--y", y + "px");
+            piece.style.setProperty("--rot", rot + "deg");
+            piece.style.width = size + "px";
+            piece.style.height = size + "px";
+            piece.style.background = color;
+            piece.style.animationDelay = delay + "ms";
+
+            container.appendChild(piece);
+        }
+
+        window.setTimeout(function () {
+            container.querySelectorAll(".achievement-confetti").forEach(function (piece) {
+                piece.remove();
+            });
+        }, 1900);
+    }
+
     function showToast(achievement) {
         const wrapper = document.querySelector(".achievements-btn-wrapper");
         if (!wrapper) return;
@@ -369,6 +411,8 @@
             progressFill.style.width = "0%";
         }
 
+        spawnConfetti(toast);
+
         dismissTimer = window.setTimeout(dismiss, TOAST_DURATION_MS);
     }
 
@@ -386,6 +430,20 @@
         unreadCount += 1;
         saveUnreadCount();
         renderBadge();
+
+        if (id !== "completionist") {
+            checkCompletion();
+        }
+    }
+
+    // "Completista": se desbloquea solo al conseguir todos los demás logros
+    function checkCompletion() {
+        const allOthersUnlocked = ACHIEVEMENTS.every(function (a) {
+            return a.id === "completionist" || isUnlocked(a.id);
+        });
+        if (allOthersUnlocked) {
+            unlockAchievement("completionist");
+        }
     }
 
     window.unlockAchievement = unlockAchievement;
