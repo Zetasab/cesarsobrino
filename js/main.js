@@ -261,6 +261,17 @@ const heroScene = (() => {
         return raycaster.intersectObjects(cupMeshes, true).length > 0;
     };
 
+    // Referencia al papel del CV que sostiene la persona: al hacer click, abre el PDF
+    let paperMesh = null;
+    const isPaperHit = (clientX, clientY) => {
+        if (!paperMesh) return false;
+        const rect = heroCanvas.getBoundingClientRect();
+        pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+        return raycaster.intersectObject(paperMesh, true).length > 0;
+    };
+
     // Interruptores de luz en la pared de la derecha: uno por modo (dia/tarde/noche)
     let switchMeshes = [];
     const isSwitchHit = (clientX, clientY) => {
@@ -304,6 +315,9 @@ const heroScene = (() => {
         group.position.z = 0.5;
         group.rotation.y = 0.35;
         objectsGroup.add(group);
+
+        // Papel del CV que sostiene la persona en la mano: al hacer click, se abre el PDF
+        paperMesh = personaModel.getObjectByName("papel_cv");
 
         // El modelo no trae brazo izquierdo: usamos brazo.glb, reflejando en X la pose del brazo derecho
         loader.load("assets/objects/brazo.glb", (armGltf) => {
@@ -497,7 +511,7 @@ const heroScene = (() => {
     });
 
     return {
-        zoom, renderer, scene, camera, objectsGroup, mouseParallax, isScreenHit, isDuckHit, isCupHit, isSwitchHit,
+        zoom, renderer, scene, camera, objectsGroup, mouseParallax, isScreenHit, isDuckHit, isCupHit, isSwitchHit, isPaperHit,
         setLightingMode,
         getLightingMode: () => currentLightingMode,
         lightingModes: Object.keys(LIGHT_PRESETS)
@@ -642,6 +656,7 @@ const setupHeroAnimation = () => {
         const hover = heroScene.isScreenHit(e.clientX, e.clientY)
             || heroScene.isDuckHit(e.clientX, e.clientY)
             || heroScene.isCupHit(e.clientX, e.clientY)
+            || heroScene.isPaperHit(e.clientX, e.clientY)
             || !!heroScene.isSwitchHit(e.clientX, e.clientY);
         hero3d.classList.toggle('hero-3d--pointer', hover);
     });
@@ -657,6 +672,8 @@ const setupHeroAnimation = () => {
 
         duckQuak.currentTime = 0;
         duckQuak.play().catch(() => {});
+
+        if (window.unlockAchievement) window.unlockAchievement('duck-click');
     });
 
     // Añadir evento click sobre las tazas (escritorio y estanteria): reproduce un "sorbo"
@@ -667,10 +684,23 @@ const setupHeroAnimation = () => {
 
         cupSip.currentTime = 0;
         cupSip.play().catch(() => {});
+
+        if (window.unlockAchievement) window.unlockAchievement('cup-sip');
+    });
+
+    // Añadir evento click sobre el papel del CV que sostiene la persona: abre el PDF en una pestaña nueva
+    hero3d.addEventListener('click', (e) => {
+        if (hero3d.classList.contains('expanded') || !heroScene) return;
+        if (!heroScene.isPaperHit(e.clientX, e.clientY)) return;
+
+        window.open('assets/cv/Cesar_SobrinoArribas_CV.pdf', '_blank', 'noopener,noreferrer');
+
+        if (window.unlockAchievement) window.unlockAchievement('cv-download');
     });
 
     // Añadir evento click sobre los interruptores de la pared: cambian la iluminación (día/tarde/noche)
     const switchSound = new Audio('assets/objects/interruptor.mp3');
+    const triedLightingModes = new Set();
     hero3d.addEventListener('click', (e) => {
         if (hero3d.classList.contains('expanded') || !heroScene) return;
         const mode = heroScene.isSwitchHit(e.clientX, e.clientY);
@@ -680,6 +710,11 @@ const setupHeroAnimation = () => {
         switchSound.play().catch(() => {});
 
         window.heroLighting.setMode(mode);
+
+        triedLightingModes.add(mode);
+        if (triedLightingModes.size >= 3 && window.unlockAchievement) {
+            window.unlockAchievement('lighting-explorer');
+        }
     });
 
     // Añadir evento click al botón "Entrar" para hacer scroll hasta la sección "Sobre mí"
@@ -2046,6 +2081,11 @@ setupHoverLottieIcon('cvIcon', 'assets/icons/file.json', 'a');
 setupHoverLottieIcon('aiChatSendIcon', 'assets/icons/email.json', 'button', { duration: 1400 });
 setupHoverLottieIcon('aiChatCloseIcon', 'assets/icons/close.json', 'button', { duration: 1400 });
 setupHoverLottieIcon('scrollToTopIcon', 'assets/icons/up-arrow.json', 'button');
+setupHoverLottieIcon('achievementsIcon', 'assets/icons/trophy.json', 'button');
+setupHoverLottieIcon('achievementsCloseIcon', 'assets/icons/close.json', 'button', { duration: 1400 });
+
+// Expuesto para achievements.js, que crea botones de cierre (con icono Lottie) dinámicamente
+window.setupHoverLottieIcon = setupHoverLottieIcon;
 
 // Efecto "máquina de escribir" en los enlaces de texto del nav al hacer hover:
 // se parte el texto en letras y se revelan en cascada, como si se tecleasen.

@@ -108,6 +108,10 @@
         window.setTimeout(function () {
             input.focus();
         }, 250);
+
+        if (window.unlockAchievement) {
+            window.unlockAchievement("chat-opened");
+        }
     }
 
     function closeChat() {
