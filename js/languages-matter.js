@@ -93,7 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const imagesReady = Promise.all(items.map(loadImageSize));
+    // Pato escondido entre los objetos arrastrables: al soltarlo/arrastrarlo suena un "quak"
+    const duckItem = { src: 'assets/img/achievements/duck.png', naturalWidth: 512, naturalHeight: 512 };
+
+    const imagesReady = Promise.all(items.map(loadImageSize).concat(loadImageSize(duckItem)));
 
     function wrapText(ctx, text, maxWidth) {
         const words = text.split(' ');
@@ -249,6 +252,27 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
 
+        // Pato escondido: un cuerpo más entre los objetos arrastrables
+        const duckSize = iconSize * 1.3;
+        const duckX = duckSize + Math.random() * (width - duckSize * 2);
+        const duckY = -100 - dropOrder * 70;
+        dropOrder++;
+        const duckBody = Bodies.circle(duckX, duckY, duckSize / 2, {
+            restitution: 0.6,
+            friction: 0.15,
+            frictionAir: 0.01,
+            angle: (Math.random() - 0.5) * 1.2,
+            render: {
+                sprite: {
+                    texture: duckItem.src,
+                    xScale: duckSize / duckItem.naturalWidth,
+                    yScale: duckSize / duckItem.naturalHeight
+                }
+            }
+        });
+        duckBody.plugin.isDuck = true;
+        bodies.push(duckBody);
+
         Composite.add(engine.world, bodies);
 
         const mouse = Mouse.create(render.canvas);
@@ -258,6 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         Composite.add(engine.world, mouseConstraint);
         render.mouse = mouse;
+
+        // Al agarrar el pato para arrastrarlo, suena un "quak" y cuenta como logro
+        Events.on(mouseConstraint, 'startdrag', (event) => {
+            if (event.body && event.body.plugin && event.body.plugin.isDuck && window.triggerDuckClick) {
+                window.triggerDuckClick('languages');
+            }
+        });
 
         Events.on(render, 'afterRender', () => drawTextBodies(render));
 

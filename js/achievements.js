@@ -15,7 +15,13 @@
             id: "duck-click",
             icon: "duck",
             title: "Cuack curioso",
-            desc: "Hiciste sonar el pato del escritorio"
+            desc: "Hiciste sonar un pato"
+        },
+        {
+            id: "quack-expert",
+            icon: "goldenegg",
+            title: "Quack experto",
+            desc: "Pulsaste todos los patos escondidos por la web"
         },
         {
             id: "cup-sip",
@@ -41,8 +47,6 @@
             title: "Reclutador al acecho",
             desc: "Descargaste el CV"
         },
-        // Pendiente: "Quack esperto" (pulsar todos los patos ocultos de la web).
-        // Se añadirá cuando haya más patos repartidos por la página (icono ya disponible: goldenegg.png).
         {
             id: "paypal-donate",
             icon: "paypal",
@@ -99,6 +103,82 @@
         return Boolean(unlocked[id]);
     }
 
+    // --- Patos escondidos: cuenta cuántos distintos se han pulsado, para "Quack experto" ---
+    const DUCKS_STORAGE_KEY = "cesarsobrino_ducks_clicked";
+    const ALL_DUCK_IDS = ["hero-desk", "hero-shelf", "languages", "projects", "footer", "ai-chat"];
+
+    function loadClickedDucks() {
+        try {
+            const raw = window.localStorage.getItem(DUCKS_STORAGE_KEY);
+            const arr = raw ? JSON.parse(raw) : [];
+            return new Set(Array.isArray(arr) ? arr.filter(function (id) { return ALL_DUCK_IDS.indexOf(id) !== -1; }) : []);
+        } catch (e) {
+            return new Set();
+        }
+    }
+
+    let clickedDucks = loadClickedDucks();
+
+    function saveClickedDucks() {
+        try {
+            window.localStorage.setItem(DUCKS_STORAGE_KEY, JSON.stringify(Array.from(clickedDucks)));
+        } catch (e) {
+            // localStorage no disponible: el progreso solo dura la sesión
+        }
+    }
+
+    function registerDuckClick(duckId) {
+        unlockAchievement("duck-click");
+
+        if (ALL_DUCK_IDS.indexOf(duckId) !== -1 && !clickedDucks.has(duckId)) {
+            clickedDucks.add(duckId);
+            saveClickedDucks();
+            renderPanel();
+        }
+
+        if (clickedDucks.size >= ALL_DUCK_IDS.length) {
+            unlockAchievement("quack-expert");
+        }
+    }
+
+    window.registerDuckClick = registerDuckClick;
+
+    // --- Pistas: revela el título/descripción de un logro bloqueado sin desbloquearlo ---
+    const HINTS_STORAGE_KEY = "cesarsobrino_achievements_hints";
+
+    function loadRevealedHints() {
+        try {
+            const raw = window.localStorage.getItem(HINTS_STORAGE_KEY);
+            const arr = raw ? JSON.parse(raw) : [];
+            return new Set(Array.isArray(arr) ? arr : []);
+        } catch (e) {
+            return new Set();
+        }
+    }
+
+    let revealedHints = loadRevealedHints();
+
+    function saveRevealedHints() {
+        try {
+            window.localStorage.setItem(HINTS_STORAGE_KEY, JSON.stringify(Array.from(revealedHints)));
+        } catch (e) {
+            // localStorage no disponible: la pista solo dura la sesión
+        }
+    }
+
+    function toggleHint(id) {
+        if (revealedHints.has(id)) {
+            revealedHints.delete(id);
+        } else {
+            revealedHints.add(id);
+        }
+        saveRevealedHints();
+        renderPanel();
+    }
+
+    const EYE_OPEN_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYE_OFF_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.62 21.62 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>';
+
     function loadUnreadCount() {
         try {
             const raw = window.localStorage.getItem(UNREAD_KEY);
@@ -147,14 +227,19 @@
         panelListEl.innerHTML = "";
         ACHIEVEMENTS.forEach(function (achievement) {
             const got = isUnlocked(achievement.id);
+            const hinted = revealedHints.has(achievement.id);
+            const revealed = got || hinted;
 
             const item = document.createElement("div");
             item.className = "achievement-item" + (got ? " achievement-item-unlocked" : " achievement-item-locked");
 
+            const main = document.createElement("div");
+            main.className = "achievement-main";
+
             const icon = document.createElement("img");
             icon.className = "achievement-icon";
             icon.src = iconPath(achievement);
-            icon.alt = achievement.title;
+            icon.alt = revealed ? achievement.title : "Logro bloqueado";
             icon.loading = "lazy";
             icon.draggable = false;
 
@@ -163,16 +248,40 @@
 
             const title = document.createElement("p");
             title.className = "achievement-title";
-            title.textContent = achievement.title;
+            title.textContent = revealed ? achievement.title : "???";
 
             const desc = document.createElement("p");
             desc.className = "achievement-desc";
-            desc.textContent = achievement.desc;
+            desc.textContent = revealed ? achievement.desc : "Logro bloqueado";
 
             text.appendChild(title);
             text.appendChild(desc);
-            item.appendChild(icon);
-            item.appendChild(text);
+
+            if (achievement.id === "quack-expert" && !got) {
+                const progress = document.createElement("p");
+                progress.className = "achievement-progress";
+                progress.textContent = clickedDucks.size + " / " + ALL_DUCK_IDS.length + " patos encontrados";
+                text.appendChild(progress);
+            }
+
+            main.appendChild(icon);
+            main.appendChild(text);
+            item.appendChild(main);
+
+            if (!got) {
+                const hintBtn = document.createElement("button");
+                hintBtn.type = "button";
+                hintBtn.className = "achievement-hint-btn";
+                hintBtn.setAttribute("aria-label", hinted ? "Ocultar pista" : "Ver pista");
+                hintBtn.setAttribute("aria-pressed", String(hinted));
+                hintBtn.innerHTML = hinted ? EYE_OFF_SVG : EYE_OPEN_SVG;
+                hintBtn.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    toggleHint(achievement.id);
+                });
+                item.appendChild(hintBtn);
+            }
+
             panelListEl.appendChild(item);
         });
 
@@ -281,9 +390,25 @@
 
     window.unlockAchievement = unlockAchievement;
 
+    // --- Reiniciar logros: borra el progreso como si no se hubiera desbloqueado nada ---
+    function resetAchievements() {
+        unlocked = {};
+        saveUnlocked();
+
+        clickedDucks = new Set();
+        saveClickedDucks();
+
+        unreadCount = 0;
+        saveUnreadCount();
+        renderBadge();
+
+        renderPanel();
+    }
+
     // --- Panel toggle ---
     const toggleBtn = document.getElementById("achievementsToggle");
     const closeBtn = document.getElementById("achievementsClose");
+    const resetBtn = document.getElementById("achievementsReset");
     const panel = document.getElementById("achievementsPanel");
 
     panelListEl = document.getElementById("achievementsList");
@@ -328,6 +453,61 @@
 
         if (closeBtn) {
             closeBtn.addEventListener("click", closePanel);
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener("click", function () {
+                openConfirmDialog(resetAchievements);
+            });
+        }
+    }
+
+    // --- Diálogo de confirmación propio (reemplaza al confirm() nativo del navegador) ---
+    const confirmOverlay = document.getElementById("resetConfirmOverlay");
+    const confirmCancelBtn = document.getElementById("resetConfirmCancel");
+    const confirmAcceptBtn = document.getElementById("resetConfirmAccept");
+    let confirmDialogOnAccept = null;
+
+    function closeConfirmDialog() {
+        if (!confirmOverlay) return;
+        confirmOverlay.classList.remove("open");
+        confirmOverlay.setAttribute("aria-hidden", "true");
+        confirmDialogOnAccept = null;
+    }
+
+    function openConfirmDialog(onAccept) {
+        if (!confirmOverlay) {
+            // Sin diálogo en el DOM (no debería pasar): ejecuta directamente como último recurso
+            onAccept();
+            return;
+        }
+        confirmDialogOnAccept = onAccept;
+        confirmOverlay.classList.add("open");
+        confirmOverlay.setAttribute("aria-hidden", "false");
+        if (confirmAcceptBtn) confirmAcceptBtn.focus();
+    }
+
+    if (confirmOverlay) {
+        confirmOverlay.addEventListener("click", function (event) {
+            if (event.target === confirmOverlay) closeConfirmDialog();
+        });
+
+        window.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && confirmOverlay.classList.contains("open")) {
+                closeConfirmDialog();
+            }
+        });
+
+        if (confirmCancelBtn) {
+            confirmCancelBtn.addEventListener("click", closeConfirmDialog);
+        }
+
+        if (confirmAcceptBtn) {
+            confirmAcceptBtn.addEventListener("click", function () {
+                const onAccept = confirmDialogOnAccept;
+                closeConfirmDialog();
+                if (onAccept) onAccept();
+            });
         }
     }
 

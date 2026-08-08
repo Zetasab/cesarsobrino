@@ -611,6 +611,9 @@
                                 </div>
                             </a>
                         </div>
+                        <div class="project-duck-wrapper" id="projectDuck" role="button" tabindex="0" aria-label="Pato escondido" data-cursor-text="¡Cuack!">
+                            <img src="assets/img/achievements/duck.png" alt="" draggable="false">
+                        </div>
                         <div class="project-wrapper">
                             <a href="https://movies.cesarsobrino.es" target="_blank" rel="noopener noreferrer" class="project-link" data-cursor-text="movies.cesarsobrino.es">
                                 <div class="project-item">
@@ -660,6 +663,7 @@
                 <svg viewBox="0 0 1200 400" preserveAspectRatio="none">
                     <path d="M0,400 L0,280 Q200,220 450,300 T900,250 L1200,310 L1200,400 Z" fill="#4d4d4d" />
                 </svg>
+                <img src="assets/img/achievements/duck.png" alt="" class="footer-duck" id="footerDuck" role="button" tabindex="0" aria-label="Pato escondido" data-cursor-text="¡Cuack!" draggable="false">
             </div>
             <div class="parallax-layer layer-trees" data-speed="0.9">
                 <svg viewBox="0 0 1200 400" preserveAspectRatio="none">
@@ -757,17 +761,39 @@
     <div class="achievements-panel" id="achievementsPanel" aria-hidden="true">
         <div class="achievements-header">
             <span>Logros <span id="achievementsCount" class="achievements-count">0/0</span></span>
-            <button type="button" id="achievementsClose" class="achievements-close" aria-label="Cerrar logros">
-                <span id="achievementsCloseIcon" class="ai-chat-icon-lottie" aria-hidden="true"></span>
-            </button>
+            <div class="achievements-header-actions">
+                <button type="button" id="achievementsReset" class="achievements-close" aria-label="Reiniciar logros">
+                    <span id="achievementsResetIcon" class="ai-chat-icon-lottie" aria-hidden="true"></span>
+                </button>
+                <button type="button" id="achievementsClose" class="achievements-close" aria-label="Cerrar logros">
+                    <span id="achievementsCloseIcon" class="ai-chat-icon-lottie" aria-hidden="true"></span>
+                </button>
+            </div>
         </div>
         <div class="achievements-list" id="achievementsList"></div>
+    </div>
+
+    <!-- Diálogo de confirmación para reiniciar logros -->
+    <div class="confirm-dialog-overlay" id="resetConfirmOverlay" aria-hidden="true">
+        <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="resetConfirmTitle" aria-describedby="resetConfirmDesc">
+            <h3 id="resetConfirmTitle" class="confirm-dialog-title">¿Reiniciar todos los logros?</h3>
+            <p id="resetConfirmDesc" class="confirm-dialog-desc">Se borrará todo tu progreso y volverán a estar bloqueados. Esta acción no se puede deshacer.</p>
+            <div class="confirm-dialog-actions">
+                <button type="button" id="resetConfirmCancel" class="confirm-dialog-btn confirm-dialog-btn-cancel">Cancelar</button>
+                <button type="button" id="resetConfirmAccept" class="confirm-dialog-btn confirm-dialog-btn-accept">Reiniciar</button>
+            </div>
+        </div>
     </div>
 
     <!-- AI Chat Window -->
     <div class="ai-chat-window" id="aiChatWindow" aria-hidden="true">
         <div class="ai-chat-header">
-            <span>Asistente del portfolio</span>
+            <div class="ai-chat-header-title">
+                <span>Asistente del portfolio</span>
+                <button type="button" id="aiChatDuckBtn" class="ai-chat-duck-btn" aria-label="Pato secreto" data-cursor-text="¡Cuack!">
+                    <img src="assets/img/achievements/duck.png" alt="" draggable="false">
+                </button>
+            </div>
             <button type="button" id="aiChatClose" class="ai-chat-close" aria-label="Cerrar chat">
                 <span id="aiChatCloseIcon" class="ai-chat-icon-lottie ai-chat-icon-lottie-lg" aria-hidden="true"></span>
             </button>

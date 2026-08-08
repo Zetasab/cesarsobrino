@@ -239,15 +239,24 @@ const heroScene = (() => {
         return raycaster.intersectObject(screenMesh, true).length > 0;
     };
 
-    // Referencia al pato del escritorio: al hacer click sobre el, suena un "quak"
-    let duckMeshes = [];
-    const isDuckHit = (clientX, clientY) => {
-        if (!duckMeshes.length) return false;
+    // Referencia a los patos (escritorio y estantería): son dos patos distintos, cada uno con su propio logro
+    let deskDuckMeshes = [];
+    let shelfDuckMeshes = [];
+    const isDeskDuckHit = (clientX, clientY) => {
+        if (!deskDuckMeshes.length) return false;
         const rect = heroCanvas.getBoundingClientRect();
         pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
         pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(pointerNDC, camera);
-        return raycaster.intersectObjects(duckMeshes, true).length > 0;
+        return raycaster.intersectObjects(deskDuckMeshes, true).length > 0;
+    };
+    const isShelfDuckHit = (clientX, clientY) => {
+        if (!shelfDuckMeshes.length) return false;
+        const rect = heroCanvas.getBoundingClientRect();
+        pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+        return raycaster.intersectObjects(shelfDuckMeshes, true).length > 0;
     };
 
     // Referencia a las tazas (escritorio y estanteria): al hacer click, suena un "sorbo"
@@ -369,11 +378,10 @@ const heroScene = (() => {
             objectsGroup.updateMatrixWorld(true);
         }
 
-        // Piezas del pato, para detectar el click sobre el
-        const deskDuckMeshes = ["pato_cuerpo", "pato_cola", "pato_cabeza", "pato_pico", "pato_ojo_izq", "pato_ojo_der"]
+        // Piezas del pato del escritorio, para detectar el click sobre el
+        deskDuckMeshes = ["pato_cuerpo", "pato_cola", "pato_cabeza", "pato_pico", "pato_ojo_izq", "pato_ojo_der"]
             .map((name) => group.getObjectByName(name))
             .filter(Boolean);
-        duckMeshes = duckMeshes.concat(deskDuckMeshes);
 
         // Piezas de la taza de cafe del escritorio, para detectar el click sobre ella
         const deskCupMeshes = ["taza_cafe", "taza", "cafe", "asa"]
@@ -395,11 +403,10 @@ const heroScene = (() => {
         group.rotation.y = -0.5;
         objectsGroup.add(group);
 
-        // Pato de la estanteria: se suma a los del escritorio para que tambien suene al clickarlo
-        const shelfDuckMeshes = ["pato_cuerpo", "pato_cabeza", "pato_pico"]
+        // Piezas del pato de la estanteria, para detectar el click sobre el (pato distinto al del escritorio)
+        shelfDuckMeshes = ["pato_cuerpo", "pato_cabeza", "pato_pico"]
             .map((name) => roomModel.getObjectByName(name))
             .filter(Boolean);
-        duckMeshes = duckMeshes.concat(shelfDuckMeshes);
 
         // Taza de la estanteria: se suma a la del escritorio para que tambien suene al clickarla
         const shelfCupMeshes = ["taza", "taza_asa"]
@@ -511,7 +518,7 @@ const heroScene = (() => {
     });
 
     return {
-        zoom, renderer, scene, camera, objectsGroup, mouseParallax, isScreenHit, isDuckHit, isCupHit, isSwitchHit, isPaperHit,
+        zoom, renderer, scene, camera, objectsGroup, mouseParallax, isScreenHit, isDeskDuckHit, isShelfDuckHit, isCupHit, isSwitchHit, isPaperHit,
         setLightingMode,
         getLightingMode: () => currentLightingMode,
         lightingModes: Object.keys(LIGHT_PRESETS)
@@ -654,7 +661,8 @@ const setupHeroAnimation = () => {
     hero3d.addEventListener('mousemove', (e) => {
         if (hero3d.classList.contains('expanded') || !heroScene) return;
         const hover = heroScene.isScreenHit(e.clientX, e.clientY)
-            || heroScene.isDuckHit(e.clientX, e.clientY)
+            || heroScene.isDeskDuckHit(e.clientX, e.clientY)
+            || heroScene.isShelfDuckHit(e.clientX, e.clientY)
             || heroScene.isCupHit(e.clientX, e.clientY)
             || heroScene.isPaperHit(e.clientX, e.clientY)
             || !!heroScene.isSwitchHit(e.clientX, e.clientY);
@@ -664,16 +672,15 @@ const setupHeroAnimation = () => {
         hero3d.classList.remove('hero-3d--pointer');
     });
 
-    // Añadir evento click sobre el pato del escritorio: reproduce un "quak"
-    const duckQuak = new Audio('assets/objects/quak.mp3');
+    // Añadir evento click sobre los patos del escritorio y de la estanteria: son dos patos distintos
     hero3d.addEventListener('click', (e) => {
-        if (hero3d.classList.contains('expanded') || !heroScene) return;
-        if (!heroScene.isDuckHit(e.clientX, e.clientY)) return;
+        if (hero3d.classList.contains('expanded') || !heroScene || !window.triggerDuckClick) return;
 
-        duckQuak.currentTime = 0;
-        duckQuak.play().catch(() => {});
-
-        if (window.unlockAchievement) window.unlockAchievement('duck-click');
+        if (heroScene.isDeskDuckHit(e.clientX, e.clientY)) {
+            window.triggerDuckClick('hero-desk');
+        } else if (heroScene.isShelfDuckHit(e.clientX, e.clientY)) {
+            window.triggerDuckClick('hero-shelf');
+        }
     });
 
     // Añadir evento click sobre las tazas (escritorio y estanteria): reproduce un "sorbo"
@@ -2083,9 +2090,49 @@ setupHoverLottieIcon('aiChatCloseIcon', 'assets/icons/close.json', 'button', { d
 setupHoverLottieIcon('scrollToTopIcon', 'assets/icons/up-arrow.json', 'button');
 setupHoverLottieIcon('achievementsIcon', 'assets/icons/trophy.json', 'button');
 setupHoverLottieIcon('achievementsCloseIcon', 'assets/icons/close.json', 'button', { duration: 1400 });
+setupHoverLottieIcon('achievementsResetIcon', 'assets/icons/refresh.json', 'button', { duration: 1400 });
 
 // Expuesto para achievements.js, que crea botones de cierre (con icono Lottie) dinámicamente
 window.setupHoverLottieIcon = setupHoverLottieIcon;
+
+// --- Patos escondidos por la web: mismo sonido y logro para todos ---
+// duckId identifica a cada pato individual, para el logro "Quack experto" (pulsarlos todos)
+const siteDuckQuak = new Audio('assets/objects/quak.mp3');
+function triggerDuckClick(duckId) {
+    siteDuckQuak.currentTime = 0;
+    siteDuckQuak.play().catch(() => {});
+
+    if (window.registerDuckClick) {
+        window.registerDuckClick(duckId);
+    } else if (window.unlockAchievement) {
+        window.unlockAchievement('duck-click');
+    }
+}
+window.triggerDuckClick = triggerDuckClick;
+
+const DECORATIVE_DUCKS = {
+    projectDuck: 'projects',
+    footerDuck: 'footer',
+    aiChatDuckBtn: 'ai-chat'
+};
+
+Object.keys(DECORATIVE_DUCKS).forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const duckId = DECORATIVE_DUCKS[id];
+    el.addEventListener('click', () => triggerDuckClick(duckId));
+
+    // Los patos que no son <button> nativo (div/img con role="button") necesitan soporte de teclado a mano
+    if (el.getAttribute('role') === 'button') {
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                triggerDuckClick(duckId);
+            }
+        });
+    }
+});
 
 // Efecto "máquina de escribir" en los enlaces de texto del nav al hacer hover:
 // se parte el texto en letras y se revelan en cascada, como si se tecleasen.
