@@ -2163,3 +2163,47 @@ document.querySelectorAll('.nav-links > li > a:not(.nav-icon)').forEach((link) =
         gsap.set(chars, { opacity: 1 });
     });
 });
+
+// Overlay de aviso en móvil: recomienda ver la web desde ordenador.
+(function setupMobileWarningOverlay() {
+    const overlay = document.getElementById('mobileWarningOverlay');
+    const btn = document.getElementById('mobileWarningBtn');
+    if (!overlay || !btn) return;
+
+    btn.addEventListener('click', () => {
+        overlay.classList.add('is-hidden');
+    });
+})();
+
+// Scrollspy: resalta en el nav el enlace de la sección actualmente visible.
+(function setupNavScrollSpy() {
+    const navLinks = Array.from(document.querySelectorAll('.nav-links > li > a[href^="#"]'));
+    if (navLinks.length === 0) return;
+
+    const sections = navLinks
+        .map((link) => {
+            const id = link.getAttribute('href').slice(1);
+            const section = document.getElementById(id);
+            return section ? { link, section } : null;
+        })
+        .filter(Boolean);
+
+    if (sections.length === 0) return;
+
+    const setActiveLink = (activeLink) => {
+        navLinks.forEach((link) => link.classList.toggle('active', link === activeLink));
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const match = sections.find((s) => s.section === entry.target);
+            if (match) setActiveLink(match.link);
+        });
+    }, {
+        rootMargin: '-45% 0px -45% 0px',
+        threshold: 0
+    });
+
+    sections.forEach(({ section }) => observer.observe(section));
+})();

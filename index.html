@@ -33,6 +33,13 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" href="assets/img/logo.png" type="image/x-icon">
 
+    <!-- iOS: icono y título al guardar como app en la pantalla de inicio -->
+    <link rel="apple-touch-icon" href="assets/img/logo.png">
+    <meta name="apple-mobile-web-app-title" content="César Sobrino">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <!-- Structured data (Person) -->
     <script type="application/ld+json">
     {
@@ -63,6 +70,15 @@
 <body class="no-scroll">
     <!-- Custom Cursor -->
     <div class="custom-cursor-dot" id="customCursorDot"></div>
+
+    <!-- Mobile Desktop Recommendation Overlay -->
+    <div class="mobile-warning-overlay" id="mobileWarningOverlay">
+        <div class="mobile-warning-content">
+            <h2>Esta web se ve mejor en ordenador</h2>
+            <p>Estás entrando desde un dispositivo móvil. En esta versión pueden aparecer errores o detalles que no se perciban bien. Para la mejor experiencia, te recomiendo verla desde un ordenador.</p>
+            <button type="button" class="mobile-warning-btn" id="mobileWarningBtn">Lo entiendo, ¡vamos!</button>
+        </div>
+    </div>
 
     <!-- Mobile Menu Toggle -->
     <button class="mobile-menu-toggle" aria-label="Toggle menu">
