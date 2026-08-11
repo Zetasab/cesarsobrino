@@ -971,6 +971,25 @@ gsap.from(".languages-right .eyebrow, .languages-title", {
     }
 });
 
+// Calcular y mostrar la experiencia (años/meses) desde data-since
+document.querySelectorAll(".lang-info[data-since]").forEach((info) => {
+    const since = new Date(info.dataset.since);
+    const now = new Date();
+    let months = (now.getFullYear() - since.getFullYear()) * 12 + (now.getMonth() - since.getMonth());
+    if (now.getDate() < since.getDate()) months--;
+    months = Math.max(months, 0);
+
+    const experienceEl = info.querySelector(".lang-experience");
+    if (!experienceEl) return;
+
+    if (months < 12) {
+        experienceEl.textContent = months <= 1 ? "1 mes" : `${months} meses`;
+    } else {
+        const years = Math.floor(months / 12);
+        experienceEl.textContent = years === 1 ? "1 año" : `${years} años`;
+    }
+});
+
 // Animación para los lenguajes de programación (Pinned)
 const langCategories = gsap.utils.toArray(".lang-category");
 const langItems = gsap.utils.toArray(".lang-item");

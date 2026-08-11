@@ -2026,6 +2026,35 @@ p {
     line-height: 1.3;
 }
 
+.lang-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.1rem;
+}
+
+.lang-title-row h4 {
+    margin: 0;
+}
+
+.lang-experience:empty {
+    display: none;
+}
+
+.lang-experience {
+    display: inline-block;
+    flex: 0 0 auto;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.12);
+    color: #0284c7;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
 @media (min-width: 768px) {
     .lang-info h4 {
         margin: 0 0 0.2rem 0;
@@ -2033,6 +2062,9 @@ p {
     }
     .lang-info p {
         font-size: 0.85rem; /* Reducido de 0.95rem */
+    }
+    .lang-experience {
+        font-size: 0.75rem;
     }
 }
 
