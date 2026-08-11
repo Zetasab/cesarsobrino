@@ -2638,6 +2638,128 @@ p {
     }
 }
 
+/* --- Screensaver (Analog Clock) --- */
+.screensaver-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.screensaver-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.screensaver-clock-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: screensaver-drift 18s ease-in-out infinite;
+}
+
+@keyframes screensaver-drift {
+    0%, 100% { transform: translate(0, 0); }
+    25%      { transform: translate(18px, -12px); }
+    50%      { transform: translate(-14px, 10px); }
+    75%      { transform: translate(-18px, -16px); }
+}
+
+.screensaver-clock {
+    width: min(46vh, 340px);
+    height: min(46vh, 340px);
+    filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.5));
+}
+
+.clock-face {
+    fill: var(--surface);
+    stroke: var(--muted);
+    stroke-width: 1;
+    opacity: 0.98;
+}
+
+.clock-tick {
+    stroke: var(--muted);
+    stroke-width: 1;
+}
+
+.clock-tick-hour {
+    stroke: var(--text);
+    stroke-width: 2;
+}
+
+.clock-number {
+    fill: var(--text);
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.clock-hand {
+    stroke-linecap: round;
+    transform-origin: 100px 100px;
+    transition: transform 0.2s cubic-bezier(0.4, 2.3, 0.6, 1);
+}
+
+.clock-hand-hour {
+    stroke: var(--text);
+    stroke-width: 5;
+}
+
+.clock-hand-minute {
+    stroke: var(--text);
+    stroke-width: 3.5;
+}
+
+.clock-hand-second {
+    stroke: #ef4444;
+    stroke-width: 1.5;
+}
+
+.clock-center {
+    fill: var(--text);
+}
+
+.screensaver-date {
+    color: var(--bg);
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+}
+
+.screensaver-hint {
+    color: var(--muted);
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+    .screensaver-clock {
+        width: min(60vw, 280px);
+        height: min(60vw, 280px);
+    }
+    .screensaver-hint {
+        padding: 0 24px;
+        text-align: center;
+    }
+}
+
 /* --- Projects Gallery (Horizontal Scroll) --- */
 /* --- PayPal Support Button --- */
 @keyframes paypal-float {
