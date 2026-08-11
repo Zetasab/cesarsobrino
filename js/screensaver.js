@@ -1,5 +1,5 @@
 (function () {
-    var IDLE_TIME = 1 * 60 * 1000; // 5 minutos
+    var IDLE_TIME = 5 * 60 * 1000; // 5 minutos
 
     var overlay = document.createElement('div');
     overlay.className = 'screensaver-overlay';

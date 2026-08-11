@@ -36,6 +36,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Mensajes rotativos del splash screen para dar sensación de progreso
+const splashMessages = [
+    'Preparando todo',
+    'Cargando recursos',
+    'Ya casi está listo',
+    'Falta un poquito más',
+    'Afinando los últimos detalles'
+];
+let splashMessageInterval = null;
+
+function startSplashMessages() {
+    const textEl = document.getElementById('splashLoadingText');
+    if (!textEl) return;
+
+    let index = 0;
+    splashMessageInterval = setInterval(() => {
+        index = (index + 1) % splashMessages.length;
+        textEl.classList.add('text-swap');
+        setTimeout(() => {
+            textEl.textContent = splashMessages[index];
+            textEl.classList.remove('text-swap');
+        }, 350);
+    }, 5000);
+}
+
+function stopSplashMessages() {
+    if (splashMessageInterval) {
+        clearInterval(splashMessageInterval);
+        splashMessageInterval = null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', startSplashMessages);
+
 window.addEventListener('load', () => {
     // Asegurarnos de que estamos arriba del todo
     window.scrollTo(0, 0);
@@ -66,6 +100,7 @@ window.addEventListener('load', () => {
                 // Pequeño retraso después de llegar al 100% antes de abrir
                 setTimeout(() => {
                     splashScreen.classList.add('loaded');
+                    stopSplashMessages();
 
                     // Iniciar la animación de escritura del título justo cuando empieza a abrirse el splash screen
                     if (heroTitle) {
@@ -83,6 +118,7 @@ window.addEventListener('load', () => {
         }, 40); // Actualizamos cada 40ms para que complete la carga rápida
 
     } else {
+        stopSplashMessages();
         lenis.start();
         document.body.classList.remove('no-scroll');
         if (heroTitle) {
