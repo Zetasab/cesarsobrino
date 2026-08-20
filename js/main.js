@@ -143,7 +143,11 @@ const debounce = (fn, delay = 120) => {
 };
 
 // --- Escena 3D del hero (persona sentada + escritorio) ---
-const heroScene = (() => {
+// Se define como funcion en vez de IIFE porque three.js/GLTFLoader se cargan
+// de forma diferida (tras el primer render) para no bloquear la indexacion/carga inicial;
+// js/lazy-loader.js llama a window.initHeroScene() en cuanto esas libs terminan de cargar,
+// lo que reasigna la variable `heroScene` que usan los controles de abajo (clicks, luces...).
+function createHeroScene() {
     if (typeof THREE === "undefined" || typeof THREE.GLTFLoader === "undefined" || !heroCanvas) {
         return null;
     }
@@ -559,9 +563,15 @@ const heroScene = (() => {
         getLightingMode: () => currentLightingMode,
         lightingModes: Object.keys(LIGHT_PRESETS)
     };
-})();
+}
 
+let heroScene = createHeroScene();
 window.__heroScene = heroScene;
+window.initHeroScene = function () {
+    heroScene = createHeroScene();
+    window.__heroScene = heroScene;
+    return heroScene;
+};
 
 // API pública para el futuro botón de día/tarde/noche:
 // window.heroLighting.setMode("day" | "afternoon" | "night")
@@ -1766,32 +1776,40 @@ function setupFooterParallax() {
         );
     });
 
-    // Inicializar Vanta Birds en el cielo del footer
-    if (typeof VANTA !== 'undefined') {
-        VANTA.BIRDS({
-            el: ".layer-sky",
-            mouseControls: true,
-            touchControls: true,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            scale: 1.00,
-            scaleMobile: 1.00,
-            backgroundColor: 0x0,
-            color1: 0x0,
-            color2: 0xffffff,
-            colorMode: "lerpGradient",
-            birdSize: 0.90,
-            wingSpan: 23.00,
-            speedLimit: 3.00,
-            separation: 88.00,
-            alignment: 14.00,
-            cohesion: 14.00,
-            quantity: 4.00,
-            backgroundAlpha: 0.00
-        });
-    }
+    // Inicializar Vanta Birds en el cielo del footer (diferido: ver initVantaBirds)
+    initVantaBirds();
 }
+
+// Vanta se carga de forma diferida (tras el primer render); js/lazy-loader.js
+// llama a window.initVantaBirds() en cuanto la libreria termina de cargar.
+function initVantaBirds() {
+    if (typeof VANTA === 'undefined') {
+        return;
+    }
+    VANTA.BIRDS({
+        el: ".layer-sky",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        backgroundColor: 0x0,
+        color1: 0x0,
+        color2: 0xffffff,
+        colorMode: "lerpGradient",
+        birdSize: 0.90,
+        wingSpan: 23.00,
+        speedLimit: 3.00,
+        separation: 88.00,
+        alignment: 14.00,
+        cohesion: 14.00,
+        quantity: 4.00,
+        backgroundAlpha: 0.00
+    });
+}
+window.initVantaBirds = initVantaBirds;
 
 setupFooterParallax();
 

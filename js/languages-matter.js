@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+// matter.js se carga de forma diferida (tras el primer render); esta funcion se
+// invoca una vez en DOMContentLoaded (no-op, Matter aun no existe) y de nuevo desde
+// js/lazy-loader.js via window.initLanguagesMatter() en cuanto la libreria carga.
+function initLanguagesMatter() {
     const compare = document.getElementById('langCompare');
     const langList = document.getElementById('langList');
     const matterContainer = document.getElementById('langMatterContainer');
@@ -343,4 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Render.setPixelRatio(render, window.devicePixelRatio || 1);
         }, 200);
     });
-});
+}
+
+window.initLanguagesMatter = initLanguagesMatter;
+document.addEventListener('DOMContentLoaded', initLanguagesMatter);
