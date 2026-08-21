@@ -143,6 +143,10 @@ const debounce = (fn, delay = 120) => {
 };
 
 // --- Escena 3D del hero (persona sentada + escritorio) ---
+// Objeto de progreso del zoom, compartido entre la timeline de GSAP (que se crea de inmediato)
+// y la escena 3D real (que se crea de forma diferida): asi ambas siempre leen/escriben el mismo objeto.
+const heroZoom = { progress: 0 };
+
 // Se define como funcion en vez de IIFE porque three.js/GLTFLoader se cargan
 // de forma diferida (tras el primer render) para no bloquear la indexacion/carga inicial;
 // js/lazy-loader.js llama a window.initHeroScene() en cuanto esas libs terminan de cargar,
@@ -254,7 +258,11 @@ function createHeroScene() {
     const lookStart = new THREE.Vector3(0, 1.35, 0);
     const camEnd = new THREE.Vector3(1.7, 1.35, 1.2);
     const lookEnd = new THREE.Vector3(1.7, 1.35, 0);
-    const zoom = { progress: 0 };
+    // Objeto compartido a nivel de modulo (heroZoom): la escena se crea de forma diferida
+    // (three.js llega via lazy-loader.js) y la timeline de GSAP se engancha a este objeto
+    // antes de que exista la escena real. Si aqui se creara un objeto {progress:0} nuevo,
+    // la timeline quedaria animando un objeto huerfano que la escena nunca lee.
+    const zoom = heroZoom;
 
     const tmpCam = new THREE.Vector3();
     const tmpLook = new THREE.Vector3();
@@ -583,7 +591,7 @@ window.heroLighting = {
 };
 
 const setupHeroAnimation = () => {
-    const zoomProxy = heroScene ? heroScene.zoom : { progress: 0 };
+    const zoomProxy = heroZoom;
 
     // Estado inicial: overlay de la pantalla oculto y pequeño (como si fuera el monitor)
     gsap.set(screenOverlay, { autoAlpha: 0, scale: 0.22, transformOrigin: "50% 50%" });

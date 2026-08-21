@@ -1,9 +1,10 @@
 (function () {
-    console.log("v2");
+    console.log("v3");
     const PROD_API_BASE = "https://cesarsobapigateway.up.railway.app";
-    const DEV_API_BASE = "http://localhost:5112";
+    const DEV_API_BASE = "http://localhost:5300";
     const BOT_UA_PATTERN = /(bot|crawler|spider|slurp|curl|wget|python-requests|headless|phantom|scrapy|httpclient|monitor|uptime)/i;
     const DEV_HOSTNAME_PATTERN = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/i;
+    const ID_SEG_KEY = "portfolio_id_seg";
 
     function isDevEnvironment() {
         return window.location.protocol === "file:" ||
@@ -12,16 +13,27 @@
     }
 
     const API_BASE = isDevEnvironment() ? DEV_API_BASE : PROD_API_BASE;
-    const VISIT_ENDPOINT = API_BASE + "/api/Visits/addvisit";
-    const PROJECT_VISIT_ENDPOINT = API_BASE + "/api/Visits/addvisitingproyect";
+    const ADD_VISIT_ENDPOINT = API_BASE + "/api/addportfolio";
+    const KEEPALIVE_ENDPOINT = API_BASE + "/api/addkeepaliveportfolio";
 
     const MAX_VISIT_RETRIES = 3;
+    const HEARTBEAT_INTERVAL_MS = 60000;
 
     let hasRegisteredVisit = false;
     let visitAttempts = 0;
     let hasInteraction = false;
     let visibleStartedAt = document.visibilityState === "visible" ? Date.now() : 0;
     let visibleAccumulatedMs = 0;
+    let heartbeatIntervalId = null;
+
+    function getIdSeg() {
+        let idSeg = sessionStorage.getItem(ID_SEG_KEY);
+        if (!idSeg) {
+            idSeg = crypto.randomUUID();
+            sessionStorage.setItem(ID_SEG_KEY, idSeg);
+        }
+        return idSeg;
+    }
 
     function getVisitParam() {
         const queryParam = new URLSearchParams(window.location.search).get("visitparams");
@@ -39,6 +51,17 @@
         }
 
         return null;
+    }
+
+    function buildUrlWithVisitOverride(baseUrl) {
+        const url = new URL(baseUrl);
+        const visitParam = getVisitParam();
+
+        if (visitParam) {
+            url.searchParams.set("visit", visitParam);
+        }
+
+        return url;
     }
 
     function isLikelyBot() {
@@ -74,18 +97,15 @@
 
     async function registerVisit() {
         try {
-            const visitParam = getVisitParam();
-            const endpointUrl = new URL(VISIT_ENDPOINT);
-
-            if (visitParam) {
-                endpointUrl.searchParams.set("visitparams", visitParam);
-            }
+            const endpointUrl = buildUrlWithVisitOverride(ADD_VISIT_ENDPOINT);
 
             await fetch(endpointUrl.toString(), {
                 method: "POST",
                 mode: "cors",
                 credentials: "omit",
-                cache: "no-store"
+                cache: "no-store",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idSeg: getIdSeg() })
             });
         } catch (error) {
             visitAttempts += 1;
@@ -120,6 +140,28 @@
         window.removeEventListener("touchstart", markInteraction);
     }
 
+    function sendHeartbeat() {
+        const endpointUrl = buildUrlWithVisitOverride(KEEPALIVE_ENDPOINT);
+        endpointUrl.searchParams.set("idSeg", getIdSeg());
+
+        fetch(endpointUrl.toString(), {
+            method: "POST",
+            mode: "cors",
+            credentials: "omit",
+            cache: "no-store"
+        }).catch(function (error) {
+            console.warn("No se pudo enviar el keepalive de visita:", error);
+        });
+    }
+
+    function startHeartbeat() {
+        if (heartbeatIntervalId !== null) {
+            return;
+        }
+
+        heartbeatIntervalId = window.setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS);
+    }
+
     function tryRegisterVisit() {
         if (!canRegisterVisit()) {
             return;
@@ -128,6 +170,7 @@
         hasRegisteredVisit = true;
         cleanupSignals();
         registerVisit();
+        startHeartbeat();
     }
 
     function scheduleRegisterVisit() {
@@ -159,19 +202,15 @@
 
     function registerProjectVisit(proyect) {
         try {
-            const visitParam = getVisitParam();
-            const endpointUrl = new URL(PROJECT_VISIT_ENDPOINT);
-
-            if (visitParam) {
-                endpointUrl.searchParams.set("visitparams", visitParam);
-            }
-            endpointUrl.searchParams.set("proyect", proyect);
+            const endpointUrl = buildUrlWithVisitOverride(ADD_VISIT_ENDPOINT);
 
             fetch(endpointUrl.toString(), {
                 method: "POST",
                 mode: "cors",
                 credentials: "omit",
-                cache: "no-store"
+                cache: "no-store",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idSeg: getIdSeg(), proyect: proyect })
             }).catch(function (error) {
                 console.warn("No se pudo registrar la visita al proyecto:", error);
             });
