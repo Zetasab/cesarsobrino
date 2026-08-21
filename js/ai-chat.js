@@ -16,8 +16,8 @@
             answer: "Tecnologías que utiliza César:\n- Base: HTML5, CSS3, JavaScript\n- Profesional: C# & .NET, Angular, Blazor\n- Hobby: React, Vue.js, Node.js"
         },
         {
-            keywords: ["proyecto", "proyectos", "portfolio", "templates", "games", "movies"],
-            answer: "Proyectos personales de César:\n- Templates: plantillas gratuitas para descargar (templates.cesarsobrino.es)\n- Games: gestor de videojuegos con React.js y la API de RAWG (games.cesarsobrino.es)\n- Movies: gestor de películas con Vue.js y la API de TheMovieDatabase (movies.cesarsobrino.es)\n- Portfolio en Angular con animaciones de scroll (portfoliong.cesarsobrino.es)"
+            keywords: ["proyecto", "proyectos", "portfolio", "templates", "games", "zgaming", "movies"],
+            answer: "Proyectos personales de César:\n- Templates: plantillas gratuitas para descargar (templates.cesarsobrino.es)\n- ZGaming: gestor de videojuegos con React.js y node.js (zgaming.vercel.app)\n- Movies: gestor de películas con Vue.js y la API de TheMovieDatabase (movies.cesarsobrino.es)\n- Portfolio en Angular con animaciones de scroll (portfoliong.cesarsobrino.es)"
         },
         {
             keywords: ["contacto", "contactar", "email", "correo", "linkedin", "github", "instagram", "cv", "curriculum"],
