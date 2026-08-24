@@ -56,7 +56,13 @@
                     window.initVantaBirds();
                 }
             })
-            .catch(() => { /* si falla el CDN, la web sigue funcionando sin estos extras decorativos */ });
+            .catch(() => {
+                // si falla el CDN, la web sigue funcionando sin estos extras decorativos;
+                // avisamos igualmente al splash screen para que no se quede esperando para siempre
+                if (typeof window.__resolveHeroAssetsReady === 'function') {
+                    window.__resolveHeroAssetsReady();
+                }
+            });
 
         loadScript('https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js')
             .then(() => {

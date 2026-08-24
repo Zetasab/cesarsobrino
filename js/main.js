@@ -83,18 +83,28 @@ window.addEventListener('load', () => {
         // Al terminar el "load" real, quitamos la animación indeterminada y progresamos a 100
         progressBar.classList.remove('loading-anim');
         progressBar.style.left = '0';
-        
+
+        // No dejamos que la barra llegue al 100% hasta que los .glb de la escena 3D
+        // (persona, escritorio, habitacion, interruptores...) hayan terminado de cargar,
+        // para no abrir el splash con la escena a medias.
+        let assetsReady = false;
+        heroAssetsReadyPromise.then(() => { assetsReady = true; });
+        // Salvaguarda: si el CDN de three.js/GLTFLoader fallara y nada resolviera la promesa,
+        // no dejamos el splash bloqueado para siempre.
+        setTimeout(() => { assetsReady = true; }, 15000);
+
         let progress = 0;
         const progressInterval = setInterval(() => {
             progress += Math.random() * 15; // Incremento aleatorio
             if (progress > 100) progress = 100;
 
-            progressBar.style.width = `${progress}%`;
+            const displayProgress = assetsReady ? progress : Math.min(progress, 95);
+            progressBar.style.width = `${displayProgress}%`;
             if (progressText) {
-                progressText.textContent = `${Math.floor(progress)}%`;
+                progressText.textContent = `${Math.floor(displayProgress)}%`;
             }
 
-            if (progress >= 100) {
+            if (progress >= 100 && assetsReady) {
                 clearInterval(progressInterval);
 
                 // Pequeño retraso después de llegar al 100% antes de abrir
@@ -133,6 +143,15 @@ const screenOverlay = document.getElementById("screenOverlay");
 const heroStage = document.querySelector(".hero-stage");
 const scrollHint = document.querySelector(".scroll-hint");
 const heroTitleWrapper = document.getElementById("heroTitleWrapper");
+
+// Promesa que resuelve cuando los .glb de la escena 3D terminan de cargar (o cuando no hay
+// nada que esperar). El splash screen se apoya en ella para no abrirse con la escena a medias.
+let resolveHeroAssetsReady;
+const heroAssetsReadyPromise = new Promise((resolve) => { resolveHeroAssetsReady = resolve; });
+window.__resolveHeroAssetsReady = resolveHeroAssetsReady;
+if (!heroCanvas) {
+    resolveHeroAssetsReady();
+}
 
 const debounce = (fn, delay = 120) => {
     let timer;
@@ -269,6 +288,17 @@ function createHeroScene() {
 
     const loader = new THREE.GLTFLoader();
 
+    // Cuenta los 7 .glb de la escena (persona, brazo, escritorio, habitacion y 3 interruptores)
+    // para avisar al splash screen cuando la escena ya esta completa y no antes.
+    const TOTAL_GLB_LOADS = 7;
+    let completedGlbLoads = 0;
+    const markGlbDone = () => {
+        completedGlbLoads++;
+        if (completedGlbLoads >= TOTAL_GLB_LOADS) {
+            resolveHeroAssetsReady();
+        }
+    };
+
     // Referencia al brazo izquierdo para animar el saludo (se rellena cuando termina de cargar)
     let waveArm = null;
     const waveAxis = new THREE.Vector3(0, 0, 1);
@@ -394,8 +424,10 @@ function createHeroScene() {
             arm.userData.baseQuaternion = arm.quaternion.clone();
             personaModel.add(arm);
             waveArm = arm; // A partir de aqui el ticker anima el saludo pivotando sobre el hombro
-        });
-    });
+            markGlbDone();
+        }, undefined, markGlbDone);
+        markGlbDone();
+    }, undefined, markGlbDone);
 
     // Escritorio con ordenador a la derecha
     loader.load("assets/objects/escritorio-informatico.glb", (gltf) => {
@@ -436,7 +468,8 @@ function createHeroScene() {
             .map((name) => group.getObjectByName(name))
             .filter(Boolean);
         cupMeshes = cupMeshes.concat(deskCupMeshes);
-    });
+        markGlbDone();
+    }, undefined, markGlbDone);
 
     // Habitacion de fondo, detras de la persona y el escritorio
     loader.load("assets/objects/habitacion-programador.glb", (gltf) => {
@@ -461,7 +494,8 @@ function createHeroScene() {
             .map((name) => roomModel.getObjectByName(name))
             .filter(Boolean);
         cupMeshes = cupMeshes.concat(shelfCupMeshes);
-    });
+        markGlbDone();
+    }, undefined, markGlbDone);
 
     // Interruptores de luz en la pared de la derecha (dia / tarde / noche).
     // Todo lo que puedas necesitar ajustar esta aqui: posicion, rotacion (en grados) y tamaño.
@@ -514,7 +548,8 @@ function createHeroScene() {
                 degToRad(SWITCH_ROTATION_DEG.z)
             );
             objectsGroup.add(group);
-        });
+            markGlbDone();
+        }, undefined, markGlbDone);
     });
 
     const resize = () => {
