@@ -681,10 +681,10 @@ html.dark-scrollbar .navbar {
 /* --- Splash Screen --- */
 .splash-screen {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -692,8 +692,10 @@ html.dark-scrollbar .navbar {
     pointer-events: all;
     overflow: hidden;
     background: transparent;
+    --splash-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Agujero que se abre en circulo para revelar el hero */
 .splash-hole {
     position: absolute;
     top: 50%;
@@ -713,84 +715,62 @@ html.dark-scrollbar .navbar {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease, transform 0.7s var(--splash-ease), filter 0.5s ease;
 }
 
 .splash-logo {
-    width: 80px;
-    height: 80px;
-    animation: splash-pulse 2s infinite;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin-bottom: 28px;
+    animation: splashFadeIn 1s var(--splash-ease) both;
 }
 
-.splash-loading-text {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--text);
-    letter-spacing: 2px;
+/* Contador de porcentaje */
+.splash-counter {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 1.5em;
-    transition: opacity 0.35s ease, transform 0.35s ease;
+    align-items: flex-start;
+    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.06em;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    animation: splashFadeIn 1s var(--splash-ease) 0.1s both;
 }
 
-.splash-loading-text.text-swap {
-    opacity: 0;
-    transform: translateY(4px);
+.splash-counter-unit {
+    margin: 0.14em 0 0 6px;
+    font-size: 0.4em;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--muted);
 }
 
+/* Linea de progreso finisima */
 .splash-progress-container {
-    width: 150px;
-    height: 2px;
+    width: 200px;
+    height: 1px;
+    margin-top: 20px;
     background: rgba(15, 23, 42, 0.1);
-    border-radius: 2px;
     overflow: hidden;
-    margin-top: 10px;
     position: relative;
+    animation: splashFadeIn 1s var(--splash-ease) 0.2s both;
 }
 
 .splash-progress-bar {
     width: 0%;
     height: 100%;
     background: var(--text);
-    border-radius: 2px;
-    transition: width 0.1s ease;
+    transition: width 0.9s var(--splash-ease);
     position: absolute;
     left: 0;
     top: 0;
-    overflow: hidden;
-}
-
-.splash-progress-bar::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background-image: linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.3) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(255, 255, 255, 0.3) 50%,
-        rgba(255, 255, 255, 0.3) 75%,
-        transparent 75%,
-        transparent
-    );
-    background-size: 10px 10px;
-    animation: progress-stripes 1s linear infinite;
-}
-
-@keyframes progress-stripes {
-    from { background-position: 10px 0; }
-    to { background-position: 0 0; }
 }
 
 .splash-progress-bar.loading-anim {
     width: 30%;
-    animation: splash-loading-bar 1.5s infinite ease-in-out;
+    animation: splash-loading-bar 2.6s infinite cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 @keyframes splash-loading-bar {
@@ -798,18 +778,38 @@ html.dark-scrollbar .navbar {
     100% { left: 100%; }
 }
 
-@keyframes splash-pulse {
-    0% { transform: scale(0.95); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(0.95); opacity: 0.8; }
+.splash-loading-text {
+    margin-top: 18px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    animation: splashFadeIn 1s var(--splash-ease) 0.3s both;
+    transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
 }
 
+.splash-loading-text.text-swap {
+    opacity: 0;
+    transform: translateY(4px);
+    filter: blur(4px);
+}
+
+@keyframes splashFadeIn {
+    from { opacity: 0; transform: translateY(8px); filter: blur(6px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* Salida: el contenido sube y se desenfoca mientras el circulo se abre */
 .splash-screen.loaded {
     pointer-events: none;
 }
 
 .splash-screen.loaded .splash-content {
     opacity: 0;
+    transform: translateY(-12px);
+    filter: blur(8px);
 }
 
 .splash-screen.loaded .splash-hole {
@@ -820,6 +820,12 @@ html.dark-scrollbar .navbar {
 
 .splash-screen.hidden {
     display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .splash-progress-bar.loading-anim {
+        animation: none;
+    }
 }
 
 .page {

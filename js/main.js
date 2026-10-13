@@ -95,13 +95,13 @@ window.addEventListener('load', () => {
 
         let progress = 0;
         const progressInterval = setInterval(() => {
-            progress += Math.random() * 15; // Incremento aleatorio
+            progress += Math.random() * 3; // Incremento aleatorio (pequeño para que la barra avance despacio)
             if (progress > 100) progress = 100;
 
             const displayProgress = assetsReady ? progress : Math.min(progress, 95);
             progressBar.style.width = `${displayProgress}%`;
             if (progressText) {
-                progressText.textContent = `${Math.floor(displayProgress)}%`;
+                progressText.textContent = Math.floor(displayProgress);
             }
 
             if (progress >= 100 && assetsReady) {
